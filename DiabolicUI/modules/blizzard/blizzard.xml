@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+<Script file='altpower.lua'/>
+<Script file='buffs.lua'/>
+<Script file='fonts.lua'/>
+<Script file='gamemenu.lua'/>
+<Script file='levelup.lua'/>
+<Script file='mirrortimers.lua'/>
+<Script file='popups.lua'/>
+<Script file='tooltips.lua'/>
+<Script file='totembar.lua'/>
+<Script file='tracker.lua'/>
+
+</Ui>

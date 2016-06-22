@@ -1,0 +1,11 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+<Include file='actionbars\actionbars.xml'/>
+<Include file='blizzard\blizzard.xml'/>
+<Include file='chat\chat.xml'/>
+<Include file='maps\maps.xml'/>
+<Include file='nameplates\nameplates.xml'/>
+<Include file='objectives\objectives.xml'/>
+<Include file='unitframes\unitframes.xml'/>
+
+</Ui>

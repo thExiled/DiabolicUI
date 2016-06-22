@@ -1,0 +1,231 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/"
+ xmlGUIS:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+	<Font name="DiabolicTooltipHeader" font="Interface\AddOns\DiabolicUI\media\fonts\ExocetBlizzardLight.ttf" justifyH="LEFT" virtual="true">
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="16"/></FontHeight>
+	</Font>
+	<Font name="DiabolicTooltipHeaderSmall" font="Interface\AddOns\DiabolicUI\media\fonts\ExocetBlizzardLight.ttf" justifyH="LEFT" virtual="true">
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="14"/></FontHeight>
+	</Font>
+	
+	<Font name="DiabolicTooltipNormal" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSans.ttf" justifyH="LEFT" virtual="true">
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="12"/></FontHeight>
+	</Font>
+	<Font name="DiabolicTooltipNormalSmall" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSans.ttf" justifyH="LEFT" virtual="true">
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="10"/></FontHeight>
+	</Font>
+	<Font name="DiabolicTooltipNormalLarger" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSans.ttf" justifyH="LEFT" virtual="true">
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="13"/></FontHeight>
+	</Font>
+
+	<Font name="DiabolicTooltipNormalRight" inherits="DiabolicTooltipNormal" justifyH="RIGHT" virtual="true">
+	</Font>
+	<Font name="DiabolicTooltipNormalRightSmall" inherits="DiabolicTooltipNormalSmall" justifyH="RIGHT" virtual="true">
+	</Font>
+
+	<Font name="DiabolicTooltipSmall" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSans.ttf" justifyH="LEFT" virtual="true">
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="10"/></FontHeight>
+	</Font>
+	
+	<!-- font isn't readable under 10px -->
+	<Font name="DiabolicTooltipVerySmall" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSans.ttf" justifyH="LEFT" virtual="true">
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="10"/></FontHeight>
+	</Font>
+
+	<Font name="DiabolicTooltipDescription" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSerif-Italic.ttf" justifyH="LEFT" virtual="true"> <!-- DejaVuSerifCondensed-Italic.ttf -->
+		<Color r="1.320610687022901" g="0.5137254901960784" b="0.3529411764705882"/>
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="12"/></FontHeight>
+	</Font>
+	<Font name="DiabolicTooltipDescriptionSmall" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSerif-Italic.ttf" justifyH="LEFT" virtual="true">
+		<Color r="1.320610687022901" g="0.5137254901960784" b="0.3529411764705882"/>
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="10"/></FontHeight>
+	</Font>
+	
+	<Font name="DiabolicTooltipDPS" font="Interface\AddOns\DiabolicUI\media\fonts\Sylfaen.ttf" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="32"/></FontHeight>
+	</Font>
+	<Font name="DiabolicTooltipDPSSmall" font="Interface\AddOns\DiabolicUI\media\fonts\Sylfaen.ttf" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="24"/></FontHeight>
+	</Font>
+	<Font name="DiabolicTooltipNumber" font="Interface\AddOns\DiabolicUI\media\fonts\Sylfaen.ttf" justifyH="LEFT" virtual="true">
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="14"/></FontHeight>
+	</Font>
+	<Font name="DiabolicTooltipNumberRight" inherits="DiabolicTooltipNumber" justifyH="RIGHT" virtual="true">
+	</Font>
+
+	<Font name="DiabolicWatchFrameHeader" font="Interface\AddOns\DiabolicUI\media\fonts\ExocetBlizzardLight.ttf" justifyH="LEFT" virtual="true">
+		<!--
+		<Color r="1.0" g="0.9176470588235294" b="0.5372549019607843"/>
+		-->
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="16"/></FontHeight>
+	</Font>
+	
+	<Font name="DiabolicWatchFrameNormal" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSans.ttf" justifyH="LEFT" virtual="true">
+		<!--
+		<Color r="0.5" g="0.5" b="0.5"/>
+		-->
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="12"/></FontHeight>
+	</Font>
+	
+	<Font name="DiabolicWarning" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSerifCondensed.ttf" justifyH="LEFT" virtual="true">
+		<!--
+		<Color r="0.5" g="0.5" b="0.5"/>
+		-->
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="18"/></FontHeight>
+	</Font>
+	
+	<Font name="DiabolicKeybind" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSans.ttf" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset><AbsDimension x="-1.0" y="-1.0"/></Offset>
+			<Color r="0" g="0" b="0" a="1"/>
+		</Shadow>
+		<FontHeight><AbsValue val="10"/></FontHeight>
+	</Font>
+	
+	<Font name="DiabolicUnitFrameLarge" font="Interface\AddOns\DiabolicUI\media\fonts\ExocetBlizzardLight.ttf" justifyH="LEFT" virtual="true">
+		<Shadow>
+			<Offset><AbsDimension x="-1.0" y="-1.0"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="18"/></FontHeight>
+	</Font>
+	
+	<Font name="DiabolicUnitFrameNormal" font="Interface\AddOns\DiabolicUI\media\fonts\ExocetBlizzardLight.ttf" justifyH="LEFT" virtual="true">
+		<Shadow>
+			<Offset><AbsDimension x="-1.0" y="-1.0"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="16"/></FontHeight>
+	</Font>
+
+	<Font name="DiabolicCastBarNormal" font="Interface\AddOns\DiabolicUI\media\fonts\ExocetBlizzardLight.ttf" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset><AbsDimension x="-1.0" y="-1.0"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="16"/></FontHeight>
+	</Font>
+
+	<Font name="DiabolicCastBarLatency" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSans.ttf" justifyH="LEFT" virtual="true">
+		<Color r="0.6" g="0.6" b="0.6"/>
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="8"/></FontHeight>
+	</Font>
+	
+	
+	<Font name="DiabolicDialogHeader" font="Interface\AddOns\DiabolicUI\media\fonts\ExocetBlizzardLight.ttf" justifyH="LEFT" virtual="true">
+		<Color r="1" g="0.92" b="0"/>
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="18"/></FontHeight>
+	</Font>
+	<Font name="DiabolicDialogNormal" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSans.ttf" justifyH="LEFT" virtual="true">
+		<Color r="0.941176470588" g="0.941176470588" b="0.941176470588"/>
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="12"/></FontHeight>
+	</Font>
+	<Font name="DiabolicDialogNumberLarge" font="Interface\AddOns\DiabolicUI\media\fonts\Sylfaen.ttf" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="18"/></FontHeight>
+	</Font>
+	
+	<!--
+	<Font name="DiabolicTooltipNormalWhite" inherits="DiabolicTooltipNormal" virtual="true">
+		<Color r="1" g="1" b="1" />
+	</Font>
+	
+	<Font name="DiabolicTooltipNormalBlue" inherits="DiabolicTooltipNormal" virtual="true">
+		<Color r="0.4745098039215686" g="0.4745098039215686" b="0.8313725490196078" />
+	</Font>
+
+	<Font name="DiabolicTooltipNormalLightBlue" inherits="DiabolicTooltipNormal" virtual="true">
+		<Color r="0.7411764705882353" g="0.6509803921568627" b="0.8588235294117647" />
+	</Font>
+
+	<Font name="DiabolicTooltipNormalYellow" inherits="DiabolicTooltipNormal" virtual="true">
+		<Color r="0.8705882352941176" g="0.8235294117647059" b="0.6705882352941176" />
+	</Font>
+
+	<Font name="DiabolicTooltipFlavor" inherits="DiabolicTooltipNormal" virtual="true">
+		<Color r="0.6627450980392157" g="0.596078431372549" b="0.4666666666666667" />
+	</Font>
+	-->
+	
+</Ui>

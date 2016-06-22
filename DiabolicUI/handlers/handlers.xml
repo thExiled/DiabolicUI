@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+<Script file="blizzard.lua"/>
+<Script file="fade.lua"/>
+<Script file="flash.lua"/>
+<Script file="orb.lua"/>
+<Script file="popups.lua"/>
+<Script file="slider.lua"/>
+<Script file="statusbar.lua"/>
+<Script file="tooltip.lua"/>
+<Script file="unitframe.lua"/>
+
+</Ui>

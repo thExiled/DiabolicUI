@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+<Script file="actionbars.lua"/>
+<Script file="auras.lua"/>
+<Script file="blizzard.lua"/>
+<Script file="chat.lua"/>
+<Script file="fonts.lua"/>
+<Script file="minimap.lua"/>
+<Script file="objectives.lua"/>
+<Script file="tooltips.lua"/>
+<Script file="ui.lua"/>
+<Script file="unitframes.lua"/>
+<Script file="warnings.lua"/>
+
+</Ui>

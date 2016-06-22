@@ -1,0 +1,30 @@
+﻿## Interface: 60200
+## Name: DiabolicUI
+## Title: |cff8a0707Diabolic|r|cffffffffUI|r |cff666666(WoW 3.3.5a - 7.0.3)|r
+## Notes: |cff666666By Lars Norberg|r |n|n|cff4488ffPayPal|r|cffffffff:|r |n|cfffffffflars@larsnorbergofficial.com|r |n|n|cff4488ffPayPal.Me|r|cffffffff:|r|n|cffffffffwww.paypal.me/larsnorberg|r
+## Author: Lars Norberg
+## Version: 1.0
+## DefaultState: Enabled
+## SavedVariables: DiabolicUI_DB
+## X-eMail: lars@larsnorbergofficial.com
+## X-Website: http://www.larsnorbergofficial.com
+## X-Donate: PayPal:lars@larsnorbergofficial.com
+## X-License: The MIT License (MIT)
+## X-Category: Interface Enhancements
+
+### localization
+locale\locale.xml
+
+### the main engine
+engine\engine.xml
+
+### task handlers
+handlers\handlers.xml
+
+### the module databases
+data\data.xml
+media\media.xml
+config\config.xml
+
+### the modules
+modules\modules.xml

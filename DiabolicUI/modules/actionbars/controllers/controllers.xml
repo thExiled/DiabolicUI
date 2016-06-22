@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+<Script file='controller_main.lua'/>
+<Script file='controller_side.lua'/>
+
+<Script file='controller_pet.lua'/>
+<Script file='controller_stance.lua'/>
+
+<Script file='controller_menu.lua'/>
+<Script file='controller_chat.lua'/>
+<Script file='controller_custom.lua'/>
+
+</Ui>
