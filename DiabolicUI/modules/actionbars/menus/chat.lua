@@ -122,7 +122,7 @@ MenuWidget.OnEnable = function(self)
 		if InputBox:IsShown() then
 			InputBox:Hide()
 		else
-			InputBox:Show()
+			InputBox:Show() ; print("showing", InputBox:GetName(), InputBox:IsShown(), InputBox:GetParent():GetName(), InputBox:GetPoint())
 			InputBox:SetFocus()
 		end
 		if button == "LeftButton" then

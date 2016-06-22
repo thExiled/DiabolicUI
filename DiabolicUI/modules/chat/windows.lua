@@ -321,6 +321,7 @@ Module.StyleFrame = function(self, frame)
 					end
 				end
 				if stuck then
+					self:SetText("")
 					self:Hide()
 					return
 				end
