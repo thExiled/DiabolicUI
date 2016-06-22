@@ -277,7 +277,7 @@ end)
 
 Module.OnInit = function(self, event, ...)
 	self.config = self:GetStaticConfig("ActionBars") -- setup
-	self.db = self:GetConfig("ActionBars", "character") -- user settings
+	self.db = self:GetConfig("ActionBars", "character") -- per user settings for bars
 
 	-- enable controllers
 	self:GetWidget("Controller: Main"):Enable()
