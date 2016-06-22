@@ -20,11 +20,11 @@ Making stuff like this takes a boatload of time and effort. I do it because I lo
 
 It is in no way required, since my addons always has been and always will be free and fully available to everybody without restrictions. But if you truly wish to support my hard work, a donation goes a long way! Because nothing is quite as motivating as beer money! :D
 
-PayPal Me: [www.paypal.me/larsnorberg](https://www.paypal.me/larsnorberg) \
-PayPal: [lars@larsnorbergofficial.com](https://www.paypal.com/cgi-bin/webscr?hosted_button_id=NYTWF68FKGLL6&item_name=DiabolicUI+%28By+Lars+Norberg%29&cmd=_s-xclick) (click to go straight to PayPal) \
-Patreon: [www.patreon.com/goldpaw](https://www.patreon.com/goldpaw) 
+* PayPal Me: [www.paypal.me/larsnorberg](https://www.paypal.me/larsnorberg)
+* PayPal: [lars@larsnorbergofficial.com](https://www.paypal.com/cgi-bin/webscr?hosted_button_id=NYTWF68FKGLL6&item_name=DiabolicUI+%28By+Lars+Norberg%29&cmd=_s-xclick) (click to go straight to PayPal) 
+* Patreon: [www.patreon.com/goldpaw](https://www.patreon.com/goldpaw) 
 
 
 
-Regards \
+Regards 
 Lars *"Goldpaw"* Norberg
