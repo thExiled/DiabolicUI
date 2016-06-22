@@ -1243,8 +1243,6 @@ do
 			self:UnregisterEvent("VARIABLES_LOADED", "PreInit")
 		end
 		if variables and loaded then
-			-- update stored settings (needs to happen before init)
-			self:ParseSavedVariables()
 			if not IsLoggedIn() then
 				self:RegisterEvent("PLAYER_LOGIN", "Enable")
 			end
@@ -1464,6 +1462,9 @@ Engine.Init = function(self, event, ...)
 	if arg1 ~= ADDON then
 		return 
 	end
+
+	-- update stored settings (needs to happen before init)
+	self:ParseSavedVariables()
 	
 	-- Might as well do this
 	if self:IsBuild("MoP") then
