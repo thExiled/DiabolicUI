@@ -98,9 +98,17 @@ Module.UpdateEditBox = function(self, editbox)
 end
 
 Module.OnEnter = function(self)
+	if not self.UIHider then
+		self.UIHider = CreateFrame("Frame")
+		self.UIHider:Hide()
+	end
+	
 	-- kill off FriendsMicroButton
 	FriendsMicroButton:UnregisterAllEvents()
 	FriendsMicroButton:Hide()
+	FriendsMicroButton:SetAlpha(0)
+	FriendsMicroButton:EnableMouse(false)
+	FriendsMicroButton:SetParent(self.UIHider)
 end
 
 Module.OnInit = function(self, event, ...)
@@ -192,6 +200,7 @@ Module.OnInit = function(self, event, ...)
 
 	-- kill friends button
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEnter")
+	self:OnEnter()
 
 	-- FCF_SetWindowAlpha(frame, alpha, doNotSave)
 	
