@@ -19,7 +19,7 @@ ControllerWidget.OnEnable = function(self)
 	self.Controller:SetFrameStrata("BACKGROUND")
 	self.Controller:SetAllPoints()
 
-
+	
 	
 end
 

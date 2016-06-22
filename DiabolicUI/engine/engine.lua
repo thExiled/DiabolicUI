@@ -159,8 +159,8 @@ local game_versions = {
 			["6.2.4a"] = 21463,
 			["6.2.4a"] = 21463,
 			["6.2.4a"] = 21742,
-	["Legion"] = 22000,
-			["7.0.3"] = 22000
+	["Legion"] = 21996,
+			["7.0.3"] = 21996
 }
 
 
@@ -175,6 +175,7 @@ local UICenter = CreateFrame("Frame", nil, UIParent)
 UICenter:SetFrameLevel(UIParent:GetFrameLevel())
 UICenter:SetSize(UIParent:GetSize())
 UICenter:SetPoint("CENTER", UIParent, "CENTER")
+
 
 
 -------------------------------------------------------------
@@ -1464,6 +1465,11 @@ Engine.Init = function(self, event, ...)
 		return 
 	end
 	
+	-- Might as well do this
+	if self:IsBuild("MoP") then
+		RegisterStateDriver(UICenter, "visibility", "[petbattle]hide;show")
+	end
+
 	self:RegisterEvent("UI_SCALE_CHANGED", "UpdateScale")
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED", "UpdateScale")
 	if VideoOptionsFrameApply then

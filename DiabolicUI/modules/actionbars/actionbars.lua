@@ -276,7 +276,7 @@ Module.GrabKeybinds = Module:Wrap(function(self)
 end)
 
 Module.OnInit = function(self, event, ...)
-	self.config = self:GetStaticConfig("ActionBars") -- setup
+	self.config = self:GetStaticConfig("ActionBars") -- static config
 	self.db = self:GetConfig("ActionBars", "character") -- per user settings for bars
 
 	-- enable controllers
@@ -305,7 +305,6 @@ Module.OnInit = function(self, event, ...)
 		-- skinning (TODO: move to the blizzard skinning module)
 		StreamingIcon:ClearAllPoints()
 		StreamingIcon:SetPoint("CENTER", self:GetWidget("Controller: Main"):GetFrame(), "TOP", 0, 66)
-		--StreamingIcon:SetPoint("CENTER", self:GetWidget("Controller: Main"):GetFrame(), "TOP", 0, 28)
 	end
 	
 	-- This is used to reassign the keybinds, 

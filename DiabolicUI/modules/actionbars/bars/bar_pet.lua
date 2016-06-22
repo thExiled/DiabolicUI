@@ -23,6 +23,35 @@ BarWidget.OnEnable = function(self)
 		button:SetPoint("LEFT", (i-1)*(36 + 4), 0)
 	end
 	
+	-- reset the page before applying a new page driver
+	Bar:SetAttribute("state-page", "0") 
+
+
+	--------------------------------------------------------------------
+	-- Visibility Drivers
+	--------------------------------------------------------------------
+	Bar:SetAttribute("_onstate-vis", [[
+		if newstate == "hide" then
+			self:Hide();
+		elseif newstate == "show" then
+			self:Show();
+		end
+	]])
+
+	local driver = {}
+	tinsert(driver, "[bonusbar:5]hide")
+	tinsert(driver, "show")
+
+	-- Register a proxy visibility driver
+	local visibility_driver = tconcat(driver, "; ")
+	RegisterStateDriver(Bar, "vis", visibility_driver)
+	
+	-- Give the secure environment access to the current visibility macro, 
+	-- so it can check for the correct visibility when user enabling the bar!
+	Bar:SetAttribute("visibility-driver", visibility_driver)
+
+
+
 	Bar:SetPoint("CENTER", UICenter, 0, 40)
 
 	self.Bar = Bar
