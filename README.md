@@ -9,7 +9,7 @@ It's frequently tested on Warmane's WotLK-, Cata- and MoP clients, as well as re
 
 ## How to install
 
-Download and unzip it, navigate into the "DiabolicUI-master" folder, and move the folder named just "DiabolicUI" to your [i]\World of Warcraft\Interface\AddOns\[/i] directory. It's important that you move the correct folder, or the game won't find the addon! 
+Download and unzip it, navigate into the "DiabolicUI-master" folder, and move the folder named just "DiabolicUI" to your **World of Warcraft\\Interface\\AddOns\\** directory. It's important that you move the correct folder, or the game won't find the addon! 
 
 Also, make sure the game is closed when moving new files into the addon directory as it is unable to discover new files when it's already running. And remember to check the "load out of date addons" checkbox in the addon listing on the character selection screen, or the game won't load the addon.
 
@@ -20,11 +20,11 @@ Making stuff like this takes a boatload of time and effort. I do it because I lo
 
 It is in no way required, since my addons always has been and always will be free and fully available to everybody without restrictions. But if you truly wish to support my hard work, a donation goes a long way! Because nothing is quite as motivating as beer money! :D
 
-### PayPal.Me: [url=https://www.paypal.me/larsnorberg]www.paypal.me/larsnorberg[/url]
-### PayPal: [url=https://www.paypal.com/cgi-bin/webscr?hosted_button_id=NYTWF68FKGLL6&item_name=DiabolicUI+%28By+Lars+Norberg%29&cmd=_s-xclick]lars@larsnorbergofficial.com[/url] [size=-1](click to go straight to PayPal)[/size]
-### Patreon: [url=https://www.patreon.com/goldpaw]www.patreon.com/goldpaw[/url]
+PayPal Me: [www.paypal.me/larsnorberg](https://www.paypal.me/larsnorberg) \
+PayPal: [lars@larsnorbergofficial.com](https://www.paypal.com/cgi-bin/webscr?hosted_button_id=NYTWF68FKGLL6&item_name=DiabolicUI+%28By+Lars+Norberg%29&cmd=_s-xclick) (click to go straight to PayPal) \
+Patreon: [www.patreon.com/goldpaw](https://www.patreon.com/goldpaw) 
 
 
 
-Regards
-Lars "Goldpaw" Norberg
+Regards \
+Lars *"Goldpaw"* Norberg
