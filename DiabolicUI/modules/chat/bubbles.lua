@@ -86,9 +86,9 @@ Updater.OnUpdate = function(self, elapsed)
 			bubbles[bubble].color[3] = b
 			if blizzTextWidth and blizzTextHeight and point and rpoint and blizzX and blizzY then
 				if not bubbles[bubble]:IsShown() then
-					bubbles[bubble]:SetAlpha(0)
+					--bubbles[bubble]:SetAlpha(0)
 					bubbles[bubble]:Show()
-					bubbles[bubble]:StartFadeIn(.25, 1)
+					--bubbles[bubble]:StartFadeIn(.25, 1)
 				end
 				local msg = bubble.text:GetText()
 				if msg and (bubbles[bubble].last ~= msg) then
@@ -126,7 +126,8 @@ Updater.OnUpdate = function(self, elapsed)
 			bubble.text:SetTextColor(r, g, b, 0)
 		else
 			if bubbles[bubble]:IsShown() then
-				bubbles[bubble]:StartFadeOut()
+				bubbles[bubble]:Hide()
+				--bubbles[bubble]:StartFadeOut()
 			else
 				bubbles[bubble].last = nil -- to avoid repeated messages not being shown
 			end
@@ -172,10 +173,11 @@ Updater.InitBubble = function(self, bubble)
 	bubbles[bubble].regions = {}
 	bubbles[bubble].color = { 1, 1, 1, 1 }
 	
-	local flash = Engine:GetHandler("Flash")
-	flash:ApplyFadersToFrame(bubbles[bubble])
+	-- This causes client crashes for some people (?)
+	--local flash = Engine:GetHandler("Flash")
+	--flash:ApplyFadersToFrame(bubbles[bubble])
 
-	bubbles[bubble]:SetFadeOut(.1)
+	--bubbles[bubble]:SetFadeOut(.1)
 
 	-- gather up info about the existing blizzard bubble
 	for i = 1, bubble:GetNumRegions() do
