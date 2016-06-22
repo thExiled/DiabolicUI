@@ -274,7 +274,11 @@ BarWidget.SpawnExitButton = function(self)
 	VehicleExitButton:SetAttribute("type", "macro")
 	VehicleExitButton:SetAttribute("macrotext", [[/run VehicleExit(); ]])
 	
-	RegisterStateDriver(VehicleExitButton, "visibility", "[target=vehicle,exists,canexitvehicle] show; hide")
+	if Engine:IsBuild("MoP") then
+		RegisterStateDriver(VehicleExitButton, "visibility", "[target=vehicle,exists,canexitvehicle] show; hide")
+	else
+		RegisterStateDriver(VehicleExitButton, "visibility", "[target=vehicle,exists] show; hide")
+	end
 end
 
 BarWidget.GetFrame = function(self)
