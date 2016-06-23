@@ -77,3 +77,15 @@ L["No Bars"] = true
 L["One"] = true
 L["Two"] = true
 L["Three"] = true
+
+-- xp bar
+L["Current XP: "] = true
+L["Rested Bonus: "] = true
+L["Rested"] = true
+L["%s of normal experience\ngained from monsters."] = true
+L["Resting"] = true
+L["You must rest for %s additional\nhours to become fully rested."] = true
+L["You must rest for %s additional\nminutes to become fully rested."] = true
+L["Normal"] = true
+L["You should rest at an Inn."] = true
+

@@ -294,6 +294,7 @@ Module.OnInit = function(self, event, ...)
 	self:GetWidget("Bar: 5"):Enable()
 	--self:GetWidget("Bar: Stance"):Enable()
 	--self:GetWidget("Bar: Pet"):Enable()
+	self:GetWidget("Bar: XP"):Enable()
 	
 	-- enable menus
 	self:GetWidget("Menu: Main"):Enable()
@@ -324,6 +325,17 @@ Module.OnInit = function(self, event, ...)
 	self:GrabKeybinds()
 	self:RegisterEvent("UPDATE_BINDINGS", "GrabKeybinds")
 
+	-- make sure the artwork module captures xp visibility updates
+	self:RegisterEvent("PLAYER_ALIVE", "UpdateArtwork")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateArtwork")
+	self:RegisterEvent("PLAYER_LEVEL_UP", "UpdateArtwork")
+	self:RegisterEvent("PLAYER_XP_UPDATE", "UpdateArtwork")
+	self:RegisterEvent("PLAYER_LOGIN", "UpdateArtwork")
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UpdateArtwork")
+	self:RegisterEvent("DISABLE_XP_GAIN", "UpdateArtwork")
+	self:RegisterEvent("ENABLE_XP_GAIN", "UpdateArtwork")
+	self:RegisterEvent("PLAYER_UPDATE_RESTING", "UpdateArtwork")
+	
 end
 
 Module.OnEnable = function(self, event, ...)

@@ -82,6 +82,31 @@ StatusBar.Update = function(self, elapsed)
 			spark:SetSize(width, spark._height)
 		end
 		
+		if elapsed then
+			local current_alpha = spark:GetAlpha()
+			local target_alpha = spark._direction == "IN" and spark._max_alpha or spark._min_alpha
+			local range = spark._max_alpha - spark._min_alpha
+			local alpha_change = elapsed/(spark._direction == "IN" and spark._duration_in or spark._duration_out) * range
+		
+			if spark._direction == "IN" then
+				if current_alpha + alpha_change < target_alpha then
+					current_alpha = current_alpha + alpha_change
+				else
+					current_alpha = target_alpha
+					spark._direction = "OUT"
+				end
+			elseif spark._direction == "OUT" then
+				if current_alpha + alpha_change > target_alpha then
+					current_alpha = current_alpha - alpha_change
+				else
+					current_alpha = target_alpha
+					spark._direction = "IN"
+				end
+			end
+			--spark:SetAlpha(current_alpha)
+			spark:SetAlpha(current_alpha)
+		end
+
 		if not bar:IsShown() then
 			bar:Show()
 		end
@@ -303,6 +328,18 @@ StatusBar.GetSize = function(self, ...)
 	return self.scaffold:GetSize(...)
 end
 
+StatusBar.SetFrameLevel = function(self, ...)
+	self.scaffold:SetFrameLevel(...)
+end
+
+StatusBar.SetFrameStrata = function(self, ...)
+	self.scaffold:SetFrameStrata(...)
+end
+
+StatusBar.SetAlpha = function(self, ...)
+	self.scaffold:SetAlpha(...)
+end
+
 StatusBar.SetParent = function(self, ...)
 	self.scaffold:SetParent()
 end
@@ -321,6 +358,18 @@ end
 
 StatusBar.GetOrientation = function(self)
 	return self._orientation
+end
+
+StatusBar.GetFrameLevel = function(self)
+	return self.scaffold:GetFrameLevel()
+end
+
+StatusBar.GetFrameStrata = function(self)
+	return self.scaffold:GetFrameStrata()
+end
+
+StatusBar.GetAlpha = function(self)
+	return self.scaffold:GetAlpha()
 end
 
 StatusBar.GetParent = function(self)

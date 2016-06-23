@@ -124,6 +124,16 @@ local config = {
 					yoffset = 20
 				},
 				size = { 61*2 + 10*2, 55 }
+			},
+			
+			-- xp / rep bar holders
+			xp = {
+				position = { "TOP", 0, 10 + 6 },
+				size = {
+					["1"] = { 2 + buttonsize.single*num_buttons + padding*(num_buttons-1) + 2, 10 },
+					["2"] = { 2 + buttonsize.double*num_buttons + padding*(num_buttons-1) + 2, 10 },
+					["3"] = { 2 + buttonsize.triple*num_buttons + padding*(num_buttons-1) + 2, 10 }
+				}
 			}
 			
 		},
@@ -1155,6 +1165,34 @@ local config = {
 				}
 			}
 
+		},
+		xp = {
+			font_object = DiabolicDialogNormal,
+			bar = {
+				alpha = 1,
+				texture = path .. [[statusbars\DiabolicUI_StatusBar_512x64_Dark_Warcraft.tga]],
+				spark = {
+					size = { 16, 10 },
+					texture = path .. [[statusbars\DiabolicUI_StatusBar_16x16_Spark_Warcraft.tga]]
+				}
+			},
+			rested = {
+				alpha = 1,
+				texture = path .. [[statusbars\DiabolicUI_StatusBar_512x64_Dark_Warcraft.tga]],
+				spark = {
+					size = { 16, 10 },
+					texture = path .. [[statusbars\DiabolicUI_StatusBar_16x16_Spark_Warcraft.tga]]
+				}
+			},
+			backdrop = {
+				texture_size = { 1024, 32 },
+				texture_position = { "CENTER", 0, 0 },
+				textures = { 
+					["1"] = path .. [[textures\DiabolicUI_XPBackdrop1Bar.tga]],
+					["2"] = path .. [[textures\DiabolicUI_XPBackdrop2Bars.tga]],
+					["3"] = path .. [[textures\DiabolicUI_XPBackdrop3Bars.tga]]
+				}
+			}
 		}
 	}
 }

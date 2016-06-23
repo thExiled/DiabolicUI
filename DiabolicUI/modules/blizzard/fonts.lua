@@ -111,7 +111,10 @@ Module.SetFontObjects = function(self)
 	self:SetFont(MailFont_Large, fonts.header_normal, nil, "", 0, 0, 0) -- 15
 	
 	-- floating combat text
-	self:SetFont(CombatTextFont, self.fonts.damage, 100, "", 2.5, -2.5, .35) 
+	self:SetFont(CombatTextFont, self.fonts.damage, 100, "", -2.5, -2.5, .35) 
+	
+	-- chat font
+	self:SetFont(ChatFontNormal, nil, nil, "", -.75, -.75, 1)
 	
 end
 
@@ -121,6 +124,10 @@ Module.SetFont = function(self, fontObject, font, size, style, shadowX, shadowY,
 		return
 	end
 	local oldFont, oldSize, oldStyle  = fontObject:GetFont()
+
+	if not font then
+		font = oldFont
+	end
 
 	if not size then
 		size = oldSize

@@ -167,7 +167,7 @@ Frame.SetFadeOut = function(self, durationOut)
 		fadeFrames[self] = {}
 	end
 	fadeFrames[self].durationOut = durationOut or .75
-	-- fadeFrames[self].isFading = self:GetAlpha() ~= 0
+	-- fadeFrames[self].isFading = self:GetAlpha() ~= 0 
 	
 	-- create animation if it doesn't exist
 	if not fadeFrames[self].fadeOutAnimation then
