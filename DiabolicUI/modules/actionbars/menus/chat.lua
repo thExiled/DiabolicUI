@@ -102,8 +102,6 @@ MenuWidget.OnEnable = function(self)
 	FriendsWindow:HookScript("OnShow", function() SocialButton:SetButtonState("PUSHED", 1) end)
 	FriendsWindow:HookScript("OnHide", function() SocialButton:SetButtonState("NORMAL") end)
 
-
-
 	ChatButton.OnEnter = function(self) 
 		if ChatButton:GetButtonState() == "PUSHED"
 		or SocialButton:GetButtonState() == "PUSHED" then
@@ -122,7 +120,7 @@ MenuWidget.OnEnable = function(self)
 		if InputBox:IsShown() then
 			InputBox:Hide()
 		else
-			InputBox:Show() ; print("showing", InputBox:GetName(), InputBox:IsShown(), InputBox:GetParent():GetName(), InputBox:GetPoint())
+			InputBox:Show() 
 			InputBox:SetFocus()
 		end
 		if button == "LeftButton" then
