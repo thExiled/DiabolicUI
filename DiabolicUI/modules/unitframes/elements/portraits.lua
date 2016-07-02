@@ -36,6 +36,8 @@ local Enable = function(self, unit)
 		self:RegisterEvent("UNIT_MODEL_CHANGED", Update)
 		self:RegisterEvent("UNIT_ENTERED_VEHICLE", Update)
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", Update)
+		self:RegisterEvent("UNIT_NAME_UPDATE", Update)
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
 
 		-- The quest log uses PARTY_MEMBER_{ENABLE,DISABLE} to handle updating of
 		-- party members overlapping quests. This will probably be enough to handle
@@ -57,6 +59,9 @@ local Disable = function(self, unit)
 		self:UnregisterEvent("UNIT_MODEL_CHANGED", Update)
 		self:UnregisterEvent("UNIT_ENTERED_VEHICLE", Update)
 		self:UnregisterEvent("UNIT_EXITED_VEHICLE", Update)
+		self:UnregisterEvent("UNIT_NAME_UPDATE", Update)
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
+
 		if unit:find("party") then
 			self:UnregisterEvent("PARTY_MEMBER_ENABLE", Update)
 		end

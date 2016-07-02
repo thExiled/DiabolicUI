@@ -35,6 +35,7 @@ BarWidget.OnEnable = function(self)
 		for state = 1,14 do
 			button:SetStateAction(state, "action", (state - 1) * NUM_ACTIONBAR_BUTTONS + i)
 		end
+		button:SetAttribute("flyoutDirection", "LEFT")
 
 		-- button:SetStateAction(0, "action", button_id)
 		-- tinsert(Bar.buttons, button)

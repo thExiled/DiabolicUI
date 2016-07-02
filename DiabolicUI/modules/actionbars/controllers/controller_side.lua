@@ -48,6 +48,7 @@ ControllerWidget.OnEnable = function(self)
 	-- store controller settings
 	local control_config = config.structure.controllers.side
 	self.Controller:SetAttribute("padding", control_config.padding)
+	self.Controller:SetAttribute("offset", control_config.offset)
 
 	for id in pairs(control_config.size) do
 		self.Controller:SetAttribute("controller_width-"..id, control_config.size[id][1])
@@ -133,13 +134,14 @@ ControllerWidget.OnEnable = function(self)
 		if name == "state" then
 		end
 		
-		-- user changed number of visible bars
-		if name == "numbars" then
+		-- User changed number of visible bars, 
+		-- or a pet was called/dismissed and we need a size change for padding.
+		if name == "numbars" or name == "petupdate" then
 			local num = tonumber(value);
 			if num then
 				local old_num = self:GetAttribute("old_numbars");
-				if old_num ~= num then
-
+				if old_num ~= num or name == "petupdate" then 
+					
 					-- tell the secure children about the bar number update
 					control:ChildUpdate("set_numbars", num);
 					self:SetAttribute("old_numbars", num);
@@ -150,12 +152,20 @@ ControllerWidget.OnEnable = function(self)
 					-- update controller size
 					-- *don't do this if we're currently in a vehicle
 					local current_state = self:GetAttribute("state-page");
-					if tonumber(current_state) then					
-						local width = self:GetAttribute("controller_width-"..num);
-						local height = self:GetAttribute("controller_height-"..num);
+					if tonumber(current_state) then
+						if num == 0 and UnitExists("pet") then
+							local width = self:GetAttribute("offset");
+							local height = self:GetAttribute("controller_height-"..num);
 
-						self:SetWidth(width);
-						self:SetHeight(height);
+							self:SetWidth(width);
+							self:SetHeight(height);
+						else
+							local width = self:GetAttribute("controller_width-"..num);
+							local height = self:GetAttribute("controller_height-"..num);
+
+							self:SetWidth(width);
+							self:SetHeight(height);
+						end
 
 						-- tell the addon to update artwork
 						--control:CallMethod("UpdateArtwork");

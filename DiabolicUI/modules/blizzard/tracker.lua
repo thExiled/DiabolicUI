@@ -146,6 +146,7 @@ Module.StyleWatchFrame = function(self)
 	local ActionBars = Engine:GetModule("ActionBars")
 	local Main = ActionBars:GetWidget("Controller: Main"):GetFrame()
 	local Side = ActionBars:GetWidget("Controller: Side"):GetFrame()
+	local Pet = ActionBars:GetWidget("Controller: Pet"):GetFrame()
 	local UICenter = Engine:GetFrame()
 	local WatchFrame = WatchFrame
 	
@@ -154,7 +155,7 @@ Module.StyleWatchFrame = function(self)
 	WatchFrameHolder:SetHeight(600)
 	WatchFrameHolder:SetPoint("TOP", UICenter, "TOP", 0, -326) -- to avoid depending on the minimap
 	WatchFrameHolder:SetPoint("BOTTOM", UICenter, "BOTTOM", 0, 160 + 60)
-	WatchFrameHolder:SetPoint("RIGHT", Side, "LEFT", -30, 0)
+	WatchFrameHolder:SetPoint("RIGHT", Pet, "LEFT", -30, 0)
 
 	WatchFrame:ClearAllPoints()
 	WatchFrame:SetPoint("TOP", WatchFrameHolder, "TOP")
@@ -340,6 +341,7 @@ Module.StyleObjectivesTracker = function(self)
 	local ActionBars = Engine:GetModule("ActionBars")
 	local Main = ActionBars:GetWidget("Controller: Main"):GetFrame()
 	local Side = ActionBars:GetWidget("Controller: Side"):GetFrame()
+	local Pet = ActionBars:GetWidget("Controller: Pet"):GetFrame()
 	local UICenter = Engine:GetFrame()
 	
 	-- some shortcuts for readability
@@ -355,7 +357,7 @@ Module.StyleObjectivesTracker = function(self)
 	TrackerFrameHolder:SetHeight(600)
 	TrackerFrameHolder:SetPoint("TOP", UICenter, "TOP", 0, -326) -- to avoid depending on the minimap
 	TrackerFrameHolder:SetPoint("BOTTOM", UICenter, "BOTTOM", 0, 160 + 60)
-	TrackerFrameHolder:SetPoint("RIGHT", Side, "LEFT", -30, 0)
+	TrackerFrameHolder:SetPoint("RIGHT", Pet, "LEFT", -30, 0)
 
 	-- lock the tracker down
 	TrackerFrame:SetFrameStrata("LOW")

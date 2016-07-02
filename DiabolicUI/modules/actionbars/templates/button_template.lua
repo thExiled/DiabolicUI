@@ -9,6 +9,8 @@ local select, pairs, ipairs, unpack = select, pairs, ipairs, unpack
 local setmetatable = setmetatable
 
 -- WoW API
+local AutoCastShine_AutoCastStart = AutoCastShine_AutoCastStart
+local AutoCastShine_AutoCastStop = AutoCastShine_AutoCastStop
 local CreateFrame = CreateFrame
 local FindSpellBookSlotBySpellID = FindSpellBookSlotBySpellID
 local GetActionCharges = GetActionCharges
@@ -134,7 +136,8 @@ local colors = {
 	}
 }
 
--- kudos to the LibKeyBound team for all these translations
+-- Kudos to the LibKeyBound team for all these translations,
+-- as I didn't make a single one of them. 
 local game_locale = GetLocale()
 local L = game_locale == "deDE" and {
 	["Alt"] = "A",
@@ -818,6 +821,42 @@ end
 -- Button Template
 --------------------------------------------------------------------
 
+-- petbutton grid
+local ShowPetGrid = function(self)
+	self.showgrid = self.showgrid + 1
+	if self:GetTexture() or self:HasAction() then -- filled
+		--self.data.empty = false
+	else -- empty / grid display
+		--self.data.empty = true
+	end
+	self:UpdateLayers()
+	self:SetAlpha(1.0)
+end
+
+local HidePetGrid = function(self)
+	if self.showgrid > 0 then 
+		self.showgrid = self.showgrid - 1 
+	end
+	-- print(self:GetName(), self.showgrid, (self.icon:GetTexture()), (GetPetActionInfo(self.id)))
+	if self.showgrid == 0 then
+		if self:GetTexture() or self:HasAction() then -- filled
+			--self.data.empty = false
+			self:SetAlpha(1)
+		else -- empty 
+			--self.data.empty = true
+			self:SetAlpha(0)
+		end
+	end
+	self:UpdateLayers()
+end
+local ShowPetButton = function(self)
+	self:UpdateLayers()
+	self:SetAlpha(1.0)
+end
+local HidePetButton = function(self)
+	self:SetAlpha(0)
+end
+
 Button.Update = function(self)
 	if self:HasAction() then
 		ActiveButtons[self] = true
@@ -828,18 +867,24 @@ Button.Update = function(self)
 			ActionButtons[self] = nil
 			NonActionButtons[self] = nil
 			-- self:SetNormalTexture("")
-			-- ShowPetButton(self)
-			-- local _, _, _, _, _, autoCastAllowed, autoCastEnabled = GetPetActionInfo(self.id)
-			-- if autoCastAllowed and not autoCastEnabled then
-				-- self.autocastable:Show()
-				-- AutoCastShine_AutoCastStop(self.autocast)
-			-- elseif autoCastAllowed then
-				-- self.autocastable:Hide()
-				-- AutoCastShine_AutoCastStart(self.autocast)
-			-- else
-				-- self.autocastable:Hide()
-				-- AutoCastShine_AutoCastStop(self.autocast)
-			-- end
+			ShowPetButton(self)
+			local name, subtext, _, isToken, _, autoCastAllowed, autoCastEnabled = GetPetActionInfo(self.id)
+		
+			-- needed for tooltip functionality
+			self.tooltipName = isToken and _G[name] or name -- :GetActionText() also returns this
+			self.isToken = isToken
+			self.tooltipSubtext = subtext
+			
+			if autoCastAllowed and not autoCastEnabled then
+				self.autocastable:Show()
+				AutoCastShine_AutoCastStop(self.autocast)
+			elseif autoCastAllowed then
+				self.autocastable:Hide()
+				AutoCastShine_AutoCastStart(self.autocast)
+			else
+				self.autocastable:Hide()
+				AutoCastShine_AutoCastStop(self.autocast)
+			end
 		elseif self.type_by_state == "stance" then
 			ActionButtons[self] = true -- good idea? bad?
 			NonActionButtons[self] = nil
@@ -861,14 +906,10 @@ Button.Update = function(self)
 		if self.type_by_state == "pet" then
 			ActionButtons[self] = nil
 			NonActionButtons[self] = nil
-			-- self.autocastable:Hide()
-			-- AutoCastShine_AutoCastStop(self.autocast)
-			-- self:SetNormalTexture("")
-			-- HidePetButton(self)
-		-- else
-			-- if gridCounter == 0 and not self.config.showGrid then
-				-- self:SetAlpha(0)
-			-- end
+			self.autocastable:Hide()
+			AutoCastShine_AutoCastStop(self.autocast)
+			self:SetNormalTexture("")
+			HidePetButton(self)
 		end
 		-- self.data.empty = false
 		self.icon:Hide()
@@ -899,8 +940,8 @@ end
 -- for the insecure environment. 
 Button.UpdateAction = function(self, force)
 	local button_type, button_action = self:GetAction()
-	if force or button_type ~= self._type or button_action ~= self.action_by_state then
-		if force or self._type ~= button_type then
+	if force or button_type ~= self.type_by_state or button_action ~= self.action_by_state then
+		if force or self.type_by_state ~= button_type then
 			setmetatable(self, button_type_meta_map[button_type] or button_type_meta_map.empty)
 			self.type_by_state = button_type
 		end
@@ -1258,6 +1299,192 @@ Button.IsFlashing = function(self)
 	return self.flashing == 1
 end
 
+local overlay_cache = {}
+local num_overlays = 0
+
+local OverlayGlow_OnHide = function(self)
+	if self.animOut:IsPlaying() then
+		self.animOut:Stop()
+		OverlayGlowAnimOutFinished(self.animOut)
+	end
+end
+
+local GetOverlayGlow = function(self)
+	local overlay = tremove(overlay_cache);
+	if not overlay then
+		num_overlays = num_overlays + 1
+		overlay = CreateFrame("Frame", "EngineActionButtonOverlay"..num_overlays, UIParent, "ActionBarButtonSpellActivationAlert")
+		overlay.animOut:SetScript("OnFinished", OverlayGlowAnimOutFinished)
+		overlay:SetScript("OnHide", OverlayGlow_OnHide)
+	end
+	return overlay
+end
+
+Button.ShowOverlayGlow = function(self)
+	if self.OverlayGlow then
+		if self.OverlayGlow.animOut:IsPlaying() then
+			self.OverlayGlow.animOut:Stop()
+			self.OverlayGlow.animIn:Play()
+		end
+	else
+		self.OverlayGlow = GetOverlayGlow()
+		local frameWidth, frameHeight = self:GetSize()
+		self.OverlayGlow:SetParent(self)
+		self.OverlayGlow:ClearAllPoints()
+		--Make the height/width available before the next frame:
+		self.OverlayGlow:SetSize(frameWidth * 1.4, frameHeight * 1.4)
+		self.OverlayGlow:SetPoint("TOPLEFT", self, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2)
+		self.OverlayGlow:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2)
+		self.OverlayGlow.animIn:Play()
+	end
+end
+
+Button.HideOverlayGlow = function(self)
+	if self.OverlayGlow then
+		if self.OverlayGlow.animIn:IsPlaying() then
+			self.OverlayGlow.animIn:Stop()
+		end
+		if self:IsVisible() then
+			self.OverlayGlow.animOut:Play()
+		else
+			OverlayGlowAnimOutFinished(self.OverlayGlow.animOut)
+		end
+	end
+end
+local OverlayGlowAnimOutFinished = function(animGroup)
+	local overlay = animGroup:GetParent()
+	local button = overlay:GetParent()
+	overlay:Hide()
+	tinsert(overlay_cache, overlay)
+	button.OverlayGlow = nil
+end
+
+Button.UpdateOverlayGlow = function(self)
+	local spellId = self:GetSpellId()
+	if spellId and IsSpellOverlayed(spellId) then
+		ShowOverlayGlow(self)
+	else
+		HideOverlayGlow(self)
+	end
+end
+
+Button.UpdateFlyout = function(self)
+	self.FlyoutBorder:Hide()
+	self.FlyoutBorderShadow:Hide()
+
+	if self.type_by_state == "action" then
+		-- based on ActionButton_UpdateFlyout in ActionButton.lua
+		local actionType = GetActionInfo(self.action_by_state)
+		if actionType == "flyout" then
+			-- Update border and determine arrow position
+			local arrowDistance
+			if (SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self then
+				arrowDistance = 5
+			else
+				arrowDistance = 2
+			end
+
+			-- Update arrow
+			self.FlyoutArrow:Show()
+			self.FlyoutArrow:ClearAllPoints()
+			local direction = self:GetAttribute("flyoutDirection")
+			if direction == "LEFT" then
+				self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0)
+				SetClampedTextureRotation(self.FlyoutArrow, 270)
+			elseif direction == "RIGHT" then
+				self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", arrowDistance, 0)
+				SetClampedTextureRotation(self.FlyoutArrow, 90)
+			elseif direction == "DOWN" then
+				self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, -arrowDistance)
+				SetClampedTextureRotation(self.FlyoutArrow, 180)
+			else
+				self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, arrowDistance)
+				SetClampedTextureRotation(self.FlyoutArrow, 0)
+			end
+
+			-- return here, otherwise flyout is hidden
+			return
+		end
+	end 
+	self.FlyoutArrow:Hide()
+end
+ButtonWidget.StyleFlyouts = function(self)
+	if not SpellFlyout then 
+		return 
+	end
+
+	local GetFlyoutInfo = GetFlyoutInfo
+	local GetNumFlyouts = GetNumFlyouts
+	local GetFlyoutID = GetFlyoutID
+	local SpellFlyout = SpellFlyout
+	local SpellFlyoutBackgroundEnd = SpellFlyoutBackgroundEnd
+	local SpellFlyoutHorizontalBackground = SpellFlyoutHorizontalBackground
+	local SpellFlyoutVerticalBackground = SpellFlyoutVerticalBackground
+	local numFlyoutButtons = 0
+	local flyoutButtons = {}
+	local buttonBackdrop = {
+		bgFile = BLANK_TEXTURE,
+		edgeFile = BLANK_TEXTURE,
+		edgeSize = 1,
+		insets = { 
+			left = -1, 
+			right = -1, 
+			top = -1, 
+			bottom = -1
+		}
+	}
+	local UpdateFlyout = function(self)
+		if not self.FlyoutArrow then return end
+		SpellFlyoutHorizontalBackground:SetAlpha(0)
+		SpellFlyoutVerticalBackground:SetAlpha(0)
+		SpellFlyoutBackgroundEnd:SetAlpha(0)
+		-- self.FlyoutBorder:SetAlpha(0)
+		-- self.FlyoutBorderShadow:SetAlpha(0)
+		for i = 1, GetNumFlyouts() do
+			local _, _, numSlots, isKnown = GetFlyoutInfo(GetFlyoutID(i))
+			if isKnown then
+				numFlyoutButtons = numSlots
+				break
+			end
+		end
+	end
+	local updateFlyoutButton = function(self)
+		self.icon:SetTexCoord(5/64, 59/64, 5/64, 59/64)
+		self.icon:ClearAllPoints()
+		self.icon:SetPoint("TOPLEFT", 2, -2)
+		self.icon:SetPoint("BOTTOMRIGHT", -2, 2)
+		self.icon:SetDrawLayer("BORDER", 0) -- tends to disappear into BACKGROUND, 0
+		self:SetBackdrop(buttonBackdrop)
+		self:SetBackdropColor(0, 0, 0, 1)
+		self:SetBackdropBorderColor(.15, .15, .15, 1)
+	end
+	local SetupFlyoutButton = function()
+		local button
+		for i = 1, numFlyoutButtons do
+			button = _G["SpellFlyoutButton"..i]
+			if button then
+				if not flyoutButtons[button] then
+					updateFlyoutButton(button)
+					flyoutButtons[button] = true
+				end
+				if button:GetChecked() == true then
+					button:SetChecked(false) -- do we need to see this?
+				end
+			else
+				return
+			end
+		end
+	end
+	SpellFlyout:HookScript("OnShow", SetupFlyoutButton)
+	hooksecurefunc("ActionButton_UpdateFlyout", function(self, ...)
+		if ButtonRegistry[self] and self.UpdateFlyout then
+			self:UpdateFlyout()
+		end
+	end)
+end
+
+
+
 
 -- Button API Mapping
 -----------------------------------------------------------
@@ -1395,7 +1622,17 @@ PetActionButton.HasAction 			= function(self) return GetPetActionInfo(self.id) e
 PetActionButton.GetCooldown 		= function(self) return GetPetActionCooldown(self.id) end
 PetActionButton.IsCurrentlyActive 	= function(self) return select(5, GetPetActionInfo(self.id)) end
 PetActionButton.IsAutoRepeat 		= function(self) return nil end -- select(7, GetPetActionInfo(self.id))
-PetActionButton.SetTooltip 			= function(self) return GameTooltip:SetPetAction(self:GetID()) end
+PetActionButton.SetTooltip 			= function(self) 
+	if not self.tooltipName then
+		return
+	end
+	GameTooltip:SetText(self.tooltipName, 1.0, 1.0, 1.0);
+	if self.tooltipSubtext then
+		GameTooltip:AddLine(self.tooltipSubtext, "", 0.5, 0.5, 0.5);
+	end
+	return GameTooltip:Show() -- or the tooltip will get the wrong height if it has a subtext
+	--return GameTooltip:SetPetAction(self.id) -- this isn't good enough, as it don't work for the generic attack/defense and so on
+end
 PetActionButton.IsAttack 			= function(self) return nil end
 PetActionButton.IsUsable 			= function(self) return GetPetActionsUsable() end
 PetActionButton.GetActionText 		= function(self)
@@ -1431,7 +1668,7 @@ end
 
 ButtonWidget.OnEvent = function(self, event, ...)
 	local arg1 = ...
-	
+
 	if (event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") 
 	or event == "LEARNED_SPELL_IN_TAB" then
 		-- local tooltipOwner = GameTooltip:GetOwner()
@@ -1564,34 +1801,34 @@ ButtonWidget.OnEvent = function(self, event, ...)
 		end
 	
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
-		-- for button in next, ActiveButtons do
-			-- local spellId = button:GetSpellId()
-			-- if spellId and spellId == arg1 then
-				-- ShowOverlayGlow(button)
-			-- else
-				-- if button.type_by_state == "action" then
-					-- local actionType, id = GetActionInfo(button.action_by_state)
-					-- if actionType == "flyout" and FlyoutHasSpell(id, arg1) then
-						-- ShowOverlayGlow(button)
-					-- end
-				-- end
-			-- end
-		-- end
+		for button in next, ActiveButtons do
+			local spellId = button:GetSpellId()
+			if spellId and spellId == arg1 then
+				ShowOverlayGlow(button)
+			else
+				if button.type_by_state == "action" then
+					local actionType, id = GetActionInfo(button.action_by_state)
+					if actionType == "flyout" and FlyoutHasSpell(id, arg1) then
+						ShowOverlayGlow(button)
+					end
+				end
+			end
+		end
 	
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
-		-- for button in next, ActiveButtons do
-			-- local spellId = button:GetSpellId()
-			-- if spellId and spellId == arg1 then
-				-- HideOverlayGlow(button)
-			-- else
-				-- if button.type_by_state == "action" then
-					-- local actionType, id = GetActionInfo(button.action_by_state)
-					-- if actionType == "flyout" and FlyoutHasSpell(id, arg1) then
-						-- HideOverlayGlow(button)
-					-- end
-				-- end
-			-- end
-		-- end
+		for button in next, ActiveButtons do
+			local spellId = button:GetSpellId()
+			if spellId and spellId == arg1 then
+				HideOverlayGlow(button)
+			else
+				if button.type_by_state == "action" then
+					local actionType, id = GetActionInfo(button.action_by_state)
+					if actionType == "flyout" and FlyoutHasSpell(id, arg1) then
+						HideOverlayGlow(button)
+					end
+				end
+			end
+		end
 	
 	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
 		for button in next, ActiveButtons do
@@ -1606,36 +1843,45 @@ ButtonWidget.OnEvent = function(self, event, ...)
 		-- end
 	
 	elseif event == "UPDATE_SUMMONPETS_ACTION" then
-		-- for button in next, ActiveButtons do
-			-- if button.type_by_state == "action" then
-				-- local actionType, id = GetActionInfo(button.action_by_state)
-				-- if actionType == "summonpet" then
-					-- local texture = GetActionTexture(button.action_by_state)
-					-- if texture then
-						-- button.icon:SetTexture(texture)
-					-- end
-				-- end
-			-- end
-		-- end
+		for button in next, ActiveButtons do
+			if button.type_by_state == "action" then
+				local actionType, id = GetActionInfo(button.action_by_state)
+				if actionType == "summonpet" then
+					local texture = GetActionTexture(button.action_by_state)
+					if texture then
+						button.icon:SetTexture(texture)
+					end
+				end
+			end
+		end
 	
 	elseif event == "PET_BAR_SHOWGRID" then
-		-- for button in next, ButtonRegistry do
-			-- if button:IsShown() and button.buttonActionType == "pet" then
-				-- ShowPetGrid(button)
-			-- end
-		-- end
+		for button in next, ButtonRegistry do
+			if button:IsShown() and button.type_by_state == "pet" then
+				ShowPetGrid(button)
+			end
+		end
 	
 	elseif event == "PET_BAR_HIDEGRID" then
-		-- for button in next, ButtonRegistry do
-			-- if button.buttonActionType == "pet" then
-				-- HidePetGrid(button)
-			-- end
-		-- end
-	
-	elseif event == "PET_BAR_UPDATE" then
 		for button in next, ButtonRegistry do
-			if button:IsShown() and button.buttonActionType == "pet" then
+			if button.type_by_state == "pet" then
+				 HidePetGrid(button)
+			end
+		end
+	
+	elseif event == "PET_BAR_UPDATE" or 
+	(event == "UNIT_PET" and arg1 == "player") or ((event == "UNIT_FLAGS" or event == "UNIT_AURA") and arg1 == "pet") or
+	event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" then
+		for button in next, ButtonRegistry do
+			if button:IsShown() and button.type_by_state == "pet" then
 				button:Update()
+			end
+		end
+
+	elseif event == "PET_BAR_UPDATE_USABLE" then
+		for button in next, ButtonRegistry do
+			if button:IsShown() and button.type_by_state == "pet" then
+				button:UpdateUsable()
 			end
 		end
 	
@@ -1658,11 +1904,7 @@ end
 ButtonWidget.LoadEvents = function(self)
 	-- taxi ending
 	self:RegisterEvent("UNIT_FLAGS", "OnEvent")
-	--self:RegisterEvent("UNIT_AURA", "OnEvent")
-	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "OnEvent")
-	--self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "OnEvent")
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN", "OnEvent")
-	--self:RegisterEvent("SPELL_UPDATE_USABLE", "OnEvent")
 	
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
@@ -1710,6 +1952,14 @@ ButtonWidget.LoadEvents = function(self)
 	self:RegisterEvent("PET_BAR_UPDATE", "OnEvent")
 	self:RegisterEvent("PET_BAR_SHOWGRID", "OnEvent")
 	self:RegisterEvent("PET_BAR_HIDEGRID", "OnEvent")
+	self:RegisterEvent("PET_BAR_UPDATE_USABLE", "OnEvent")
+	self:RegisterEvent("UNIT_PET", "OnEvent")
+	self:RegisterEvent("UNIT_AURA", "OnEvent")
+	self:RegisterEvent("UNIT_FLAGS", "OnEvent")
+	self:RegisterEvent("PLAYER_CONTROL_LOST", "OnEvent")
+	self:RegisterEvent("PLAYER_CONTROL_GAINED", "OnEvent")
+	self:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED", "OnEvent")
+
 
   -- for items, as we want the count and similar updated!
 	self:RegisterEvent("BAG_UPDATE", "OnEvent")
@@ -1732,7 +1982,12 @@ end
 ButtonWidget.OnEnable = function(self)
 	self:LoadEvents()
 	self:StartUpdates()
+	self:StyleFlyouts()
 end
+
+-- frame to gather up stuff we want to hide from the actionbutton templates
+local UIHider = CreateFrame("Frame")
+UIHider:Hide()
 
 -- button constructor
 ButtonWidget.New = function(self, buttonType, id, header)
@@ -1768,39 +2023,51 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	elseif header.id == "custom" then
 		name = "EngineCustomBarButton"..id
 	end
-
-	local button = setmetatable(CreateFrame("CheckButton", name , header, "SecureActionButtonTemplate"), Button_MT)
+	
+	local button
+	if buttonType == "pet" then
+		button = setmetatable(CreateFrame("CheckButton", name , header, "PetActionButtonTemplate"), Button_MT)
+	elseif button == "stance" then
+		button = setmetatable(CreateFrame("CheckButton", name , header, "StanceButtonTemplate"), Button_MT)
+	--elseif button == "extra" then
+	--	button = setmetatable(CreateFrame("CheckButton", name , header, "ExtraActionButtonTemplate"), Button_MT)
+	else
+		button = setmetatable(CreateFrame("CheckButton", name , header, "SecureActionButtonTemplate, ActionButtonTemplate"), Button_MT)
+	end
+	
 	button.config = header.config
 	button.id = id -- the initial id (or action) of the button
 	button.header = header -- header/parent containing statedrivers and layout methods
+	button.showgrid = 0 -- mostly used for pet and stance, but we're adding it in for all
+
+	-- Variables used for our own push/check/highlight textures
+	-- They are only listed here for semantic reasons
 	button._pushed = nil
 	button._checked = nil
 	button._highlighted = nil
 
-	-- button:UnregisterAllEvents()
-	-- button:SetScript("OnEvent", nil)
-	-- button:SetScript("OnUpdate", nil)
+	-- tables to hold the button type and button action, 
+	-- for the various states the button can have. 
+	button._action_by_state = {} -- if the button action changes with its state/page
+	button._type_by_state = {} -- if the button type changes with its state/page
+	button.action_by_state = button.id -- initial/current action
+	button.type_by_state = buttonType -- store the button type for faster reference
+
+	-- remove everything that the templates might have added, we don't want it
+	button:UnregisterAllEvents()
+	button:SetScript("OnEvent", nil)
+	button:SetScript("OnUpdate", nil)
 
 	button:SetID(id)
-	--button:SetFrameStrata("LOW")
-	-- button:SetAttribute("actionpage", 0)
-
 	button:SetAttribute("type", buttonType) -- assign the correct button type for the secure templates
-	-- button:SetAttribute("showgrid", 0) -- we hate grids
-	
 
-	-- custom mapping of states, actions and types
-	-- button._action_by_state = {} -- table to hold different action for different states
-	-- button._type_by_state = {} -- table to hold different buttonType for different states
-
-
-	--button:SetAttribute("flyoutDirection", button.config.flyout_direction)
-	--button:RegisterForDrag(button.config.drag_with and unpack(button.config.drag_with))
-	--button:RegisterForClicks(button.config.cast_on_down and "AnyDown" or "AnyUp")
+	-- TODO: let the user control clicks and locks
 	button:RegisterForDrag("LeftButton", "RightButton")
 	button:RegisterForClicks("AnyUp")
 	button:SetAttribute("buttonlock", true)
-
+	button:SetAttribute("flyoutDirection", "UP")
+	button.action = 0 -- hack needed for the flyouts to not bug out
+	
 	-- Drag N Drop Fuctionality, allow the user to pick up and drop stuff on the buttons! 
 	-- params:
 	-- 		self = the actionbutton frame handle
@@ -1843,6 +2110,7 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	end
 	setmetatable(button, button_type_meta_map[buttonType]) -- assign correct metatable
 
+
 	-- Frames and Layers
 	---------------------------------------------------------
 	
@@ -1879,6 +2147,51 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	end
 	button.flash:Hide()
 
+	-- We're doing these ourselves with our own system, 
+	-- so we simply blank out the ones existing
+	-- in the blizzard templates. 
+	if button.SetCheckedTexture then
+		button:SetCheckedTexture("")
+	end
+	if button.SetHighlightTexture then
+		button:SetHighlightTexture("")
+	end
+	if button.SetNormalTexture then
+		button:SetNormalTexture("")
+	end
+
+	-- exists on action, pet and stance templates
+	local old_flyoutarrow = _G[button:GetName().."FlyoutArrow"]
+	if old_flyoutarrow then
+		button.FlyoutArrow = old_flyoutarrow
+	end
+	local old_flyoutborder = _G[button:GetName().."FlyoutBorder"]
+	if old_flyoutborder then
+		button.FlyoutBorder = old_flyoutborder
+		button.FlyoutBorder:SetAlpha(0)
+		button.FlyoutBorder:SetParent(UIHider)
+	end
+	local old_flyoutbordershadow = _G[button:GetName().."FlyoutBorderShadow"]
+	if old_flyoutbordershadow then
+		button.FlyoutBorderShadow = old_flyoutbordershadow
+		button.FlyoutBorderShadow:SetAlpha(0)
+		button.FlyoutBorderShadow:SetParent(UIHider)
+	end
+
+	-- cooldown frame
+	-- stance and pet buttons have this in their template, I think
+	local old_cooldown = _G[button:GetName().."Cooldown"]
+	if old_cooldown then
+		button.cooldown = old_cooldown
+		button.cooldown:ClearAllPoints()
+		button.cooldown:SetAllPoints(button.icon)
+		button.cooldown:SetFrameLevel(button:GetFrameLevel() + 2)
+	else
+		button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+		button.cooldown:SetAllPoints(button.icon)
+		button.cooldown:SetFrameLevel(button:GetFrameLevel() + 2)
+	end
+	
 	-- let blizz handle this one
 	button.pushed = button:CreateTexture(nil, "OVERLAY")
 	button.pushed:SetAllPoints(button.icon)
@@ -1887,21 +2200,17 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	else
 		button.pushed:SetTexture(1, 1, 1, .25)
 	end
---	button.pushed:SetTexture(1, .97, 0, .25)
+	--button.pushed:SetTexture(1, .97, 0, .25)
 
 	button:SetPushedTexture(button.pushed)
 	button:GetPushedTexture():SetBlendMode("BLEND")
 	
-	-- we need to put it back in its correct drawlayer, 
+	-- We need to put it back in its correct drawlayer, 
 	-- or Blizzard will set it to ARTWORK which can lead 
-	-- to it randomly drawn behind the icon texture. 
+	-- to it randomly being drawn behind the icon texture. 
 	button:GetPushedTexture():SetDrawLayer("OVERLAY") 
-
-	-- cooldown frame
-	button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
-	button.cooldown:SetAllPoints(button.icon)
-	button.cooldown:SetFrameLevel(button:GetFrameLevel() + 2)
-
+	
+	-- cooldown finished effect
 	if button.cooldown.SetSwipeColor then
 		button.cooldown:SetSwipeColor(0, 0, 0, .75)
 		button.cooldown:SetBlingTexture(BLING_TEXTURE, .3, .6, 1, .75) -- what wow uses, only with slightly lower alpha
@@ -1910,10 +2219,7 @@ ButtonWidget.New = function(self, buttonType, id, header)
 		button.cooldown:SetDrawBling(true)
 		button.cooldown:SetDrawEdge(false)
 		button.cooldown:SetHideCountdownNumbers(false) -- todo: add better numbering
-	end
-	
-	-- cooldown finished effect
-	if button.cooldown.SetSwipeColor then
+
 		button.cooldown.shine = Engine:GetHandler("Flash"):ApplyShine(button, 1, .75, 3) -- alpha, duration, scale
 		button.cooldown.shine:SetFrameLevel(button:GetFrameLevel() + 4)
 		button.cooldown:SetScript("OnCooldownDone", function(self)
@@ -1983,12 +2289,20 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	button.cooldowncount:SetFontObject(GameFontNormal)
 	button.cooldowncount:SetPoint("CENTER")
 
-	-- tables to hold the button type and button action, 
-	-- for the various states the button can have. 
-	button._action_by_state = {}
-	button._type_by_state = {}
-	button.action_by_state = button.id -- initial action
+	-- autocast texture
+	-- exists on pet button templates
+	if buttonType == "pet" then
+		button.autocastable = _G[button:GetName() .. "AutoCastable"]
+		button.autocastable:SetParent(button.border)
+		button.autocastable:SetDrawLayer("OVERLAY")
+		
+		button.autocast = _G[button:GetName() .. "Shine"]
+		button.autocast:SetParent(button.border)
+		button.autocast:SetAllPoints(button.icon)
+		button.autocast:SetFrameLevel(button.border:GetFrameLevel() + 3)
+	end
 
+	-- assign our own scripts
 	button:SetScript("OnEnter", button.OnEnter)
 	button:SetScript("OnLeave", button.OnLeave)
 	button:SetScript("OnMouseDown", button.OnMouseDown)
@@ -1999,8 +2313,13 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	-- this solves the checking for our custom textures
 	hooksecurefunc(button, "SetChecked", button.UpdateLayers) 
 	
-	button:UpdateAction()
---	button:UpdateStyle()
+	-- Set the initial action of the button (not needed?)
+	--button:UpdateAction()
+	
+	-- We're doing this with a callback from the bars and controllers instead, 
+	-- to make sure the configuration files are loaded and textures in place. 
+	-- No point in doing tons of extra calls and double loading/replacing textures. 
+	--button:UpdateStyle() 
 	
 	ButtonRegistry[button] = true
 	

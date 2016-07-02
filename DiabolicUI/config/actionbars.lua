@@ -60,6 +60,7 @@ local config = {
 			-- *side holder is always hidden while in a vehicle
 			side = {
 				padding = padding,
+				offset = sidebar_inset,
 				position = {
 					-- If the position table contains more tables, 
 					-- the module will position the frame by all of them. 
@@ -69,7 +70,7 @@ local config = {
 						point = "RIGHT",
 						anchor = "UICenter", 
 						anchor_point = "RIGHT",
-						xoffset = -sidebar_inset,
+						xoffset = 0,
 						yoffset = 0
 					},
 					{
@@ -96,9 +97,39 @@ local config = {
 				},
 				size = {
 					["0"] = { 1/1e3, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["1"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["2"] = { buttonsize.triple*2 + padding, buttonsize.triple*num_buttons + padding*(num_buttons-1) }
+					["1"] = { sidebar_inset + buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
+					["2"] = { sidebar_inset + buttonsize.triple*2 + padding, buttonsize.triple*num_buttons + padding*(num_buttons-1) }
 				}
+			},
+			
+			-- holder for pet bar
+			pet = {
+				padding = padding,
+				position = {
+					point = "RIGHT",
+					anchor = "Side", 
+					anchor_point = "LEFT",
+					xoffset = 0,
+					yoffset = 0
+				},
+				size = { sidebar_inset + buttonsize.triple + padding, buttonsize.triple*num_pet_buttons + padding*(num_pet_buttons-1) },
+				-- we’re using a different size for vehicles since the quest tracker might be anchored to this
+				size_vehicle = { sidebar_inset, buttonsize.triple*num_pet_buttons + padding*(num_pet_buttons-1) }
+			},
+			
+			-- holder for stance bar
+			stance = {
+				position = {
+					point = "BOTTOM",
+					anchor = "Main", 
+					anchor_point = "TOP",
+					xoffset = 0,
+					yoffset = 60
+				},
+				-- This should be calculated on the fly from buttonsize and padding down in the bar settings,
+				-- so that the secure environment can update the size (?)
+				size = { buttonsize.triple*num_stance_buttons + padding*(num_stance_buttons-1), buttonsize.triple },
+				size_vehicle = { 0.0001, 0.0001 }
 			},
 			
 			-- holder for menu buttons
@@ -192,6 +223,7 @@ local config = {
 				growthX = "RIGHT", 
 				growthY = "UP",
 				padding = padding,
+				offset = sidebar_inset,
 				bar_size = {
 					["0"] = { 0.0001, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
 					["1"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
@@ -224,6 +256,22 @@ local config = {
 				padding = padding,
 				buttonsize = buttonsize.vehicle,
 				bar_size = { buttonsize.vehicle*num_vehicle_buttons + padding*(num_vehicle_buttons-1), buttonsize.vehicle }
+			},
+			stance = {
+				position = { "BOTTOM", 0, 0 }, -- where the bar is anchored to its controller
+				flyout_direction = "UP",
+				growth = "RIGHT", 
+				padding = padding,
+				buttonsize = buttonsize.triple,
+				bar_size = { buttonsize.triple*num_stance_buttons + padding*(num_stance_buttons-1), buttonsize.triple }
+			},
+			pet = {
+				position = { "RIGHT", -padding, 0 }, -- where the bar is anchored to its controller
+				flyout_direction = "LEFT",
+				growth = "DOWN",
+				padding = padding,
+				buttonsize = buttonsize.triple,
+				bar_size = { buttonsize.triple, buttonsize.triple*num_pet_buttons + padding*(num_pet_buttons-1) }
 			}
 		}
 	},
@@ -455,26 +503,13 @@ local config = {
 					color = { 1, 1, 1 }
 				},
 				keybind = {
-					font_object = GameFontNormal,
-					font_size = 10,
-					font_style = "",
-					font_shadow = 1.25, 
-					font_shadow_alpha = 1,
-					points = { { "TOPRIGHT", -2, -2 } }, 
-					alpha = 1,
-					color = { 1, 1, 1 }
+					font_object = DiabolicKeybind,
+					points = { { "TOPRIGHT", -5, -4 } }
 				},
 				stacksize = {
-					font_object = GameFontNormal,
-					font_size = 10,
-					font_style = "",
-					font_shadow = 1.25, 
-					font_shadow_alpha = 1,
-					points = { { "BOTTOMRIGHT", -2, 2 } }, 
-					alpha = 1,
-					color = { 1, 1, 1 }
-				}				
-				
+					font_object = DiabolicKeybind,
+					points = { { "BOTTOMRIGHT", -5, 4 } }
+				}
 			},
 			
 			-- two main bars
@@ -584,24 +619,12 @@ local config = {
 					color = { 1, 1, 1 }
 				},
 				keybind = {
-					font_object = GameFontNormal,
-					font_size = 10,
-					font_style = "",
-					font_shadow = 1.25, 
-					font_shadow_alpha = 1,
-					points = { { "TOPRIGHT", -2, -2 } }, 
-					alpha = 1,
-					color = { 1, 1, 1 }
+					font_object = DiabolicKeybind,
+					points = { { "TOPRIGHT", -7, -6 } }
 				},
 				stacksize = {
-					font_object = GameFontNormal,
-					font_size = 10,
-					font_style = "",
-					font_shadow = 1.25, 
-					font_shadow_alpha = 1,
-					points = { { "BOTTOMRIGHT", -2, 2 } }, 
-					alpha = 1,
-					color = { 1, 1, 1 }
+					font_object = DiabolicKeybind,
+					points = { { "BOTTOMRIGHT", -7, 6 } }
 				}
 			},
 			
@@ -1123,7 +1146,7 @@ local config = {
 							bottom = 23
 						}
 					},
-					backdrop_color = { 0, 0, 0, .75 },
+					backdrop_color = { 0, 0, 0, .95 },
 					backdrop_border_color = { 1, 1, 1, 1 },
 					
 				},

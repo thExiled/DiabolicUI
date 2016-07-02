@@ -80,6 +80,7 @@ ControllerWidget.OnEnable = function(self)
 
 	if Engine:IsBuild("MoP") then -- also applies to WoD and (possibly) Legion
 		tinsert(driver, "[overridebar][possessbar][shapeshift]vehicle")
+		tinsert(driver, "[vehicleui]vehicle")
 		tinsert(driver, "[bar:2]2; [bar:3]3; [bar:4]4; [bar:5]5; [bar:6]6")
 
 		if player_class == "DRUID" then
@@ -208,8 +209,6 @@ ControllerWidget.OnEnable = function(self)
 	
 	-- enable the new page driver
 	RegisterStateDriver(self.Controller, "page", page_driver)
-
-	
 	
 end
 

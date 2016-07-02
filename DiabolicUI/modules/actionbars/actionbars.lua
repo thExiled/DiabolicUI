@@ -173,8 +173,8 @@ Module.GrabKeybinds = Module:Wrap(function(self)
 			"MULTIACTIONBAR2BUTTON%d", 		-- bottomright bar
 			"MULTIACTIONBAR3BUTTON%d",  	-- right sidebar
 			"MULTIACTIONBAR4BUTTON%d", 		-- left sidebar
-			"SHAPESHIFTBUTTON%d", 			-- stance bar
-			"BONUSACTIONBUTTON%d" 			-- pet bar
+			"BONUSACTIONBUTTON%d", 			-- pet bar
+			"SHAPESHIFTBUTTON%d" 			-- stance bar
 		}
 		if Engine:IsBuild("Cata") then
 			tinsert(self.binding_table, "EXTRAACTIONBUTTON%d") -- extra action button
@@ -279,26 +279,33 @@ Module.OnInit = function(self, event, ...)
 	self.config = self:GetStaticConfig("ActionBars") -- static config
 	self.db = self:GetConfig("ActionBars", "character") -- per user settings for bars
 
-	-- enable controllers
+	-- Enable controllers
+	-- These mostly handle visibility, size and layout,
+	-- so that other secure frames can anchor themselves to the bars.
 	self:GetWidget("Controller: Main"):Enable()
 	self:GetWidget("Controller: Side"):Enable()
+	self:GetWidget("Controller: Stance"):Enable()
+	self:GetWidget("Controller: Pet"):Enable()
 	self:GetWidget("Controller: Menu"):Enable()
 	self:GetWidget("Controller: Chat"):Enable()
 
-	-- enable bars
+	-- Enable bars
+	-- Bars exist within their respective controllers, 
+	-- but handles their own paging and visibilty.
 	self:GetWidget("Bar: Vehicle"):Enable()
 	self:GetWidget("Bar: 1"):Enable()
 	self:GetWidget("Bar: 2"):Enable()
 	self:GetWidget("Bar: 3"):Enable()
 	self:GetWidget("Bar: 4"):Enable()
 	self:GetWidget("Bar: 5"):Enable()
+	self:GetWidget("Bar: Pet"):Enable()
 	--self:GetWidget("Bar: Stance"):Enable()
-	--self:GetWidget("Bar: Pet"):Enable()
 	self:GetWidget("Bar: XP"):Enable()
 	
 	-- enable menus
 	self:GetWidget("Menu: Main"):Enable()
 	self:GetWidget("Menu: Chat"):Enable()
+	
 
 	if Engine:IsBuild("Cata") then
 		--self:GetWidget("Bar: Extra"):Enable()
@@ -316,8 +323,8 @@ Module.OnInit = function(self, event, ...)
 	tinsert(self.bars, self:GetWidget("Bar: 3"):GetFrame())	-- 3
 	tinsert(self.bars, self:GetWidget("Bar: 4"):GetFrame())	-- 4
 	tinsert(self.bars, self:GetWidget("Bar: 5"):GetFrame())	-- 5
-	--tinsert(self.bars, self:GetWidget("Bar: Stance"):GetFrame()) -- 6
-	--tinsert(self.bars, self:GetWidget("Bar: Pet"):GetFrame()) -- 7
+	tinsert(self.bars, self:GetWidget("Bar: Pet"):GetFrame()) -- 7
+	tinsert(self.bars, self:GetWidget("Bar: Stance"):GetFrame()) -- 6
 	if Engine:IsBuild("Cata") then
 		--tinsert(self.bars, self:GetWidget("Bar: Extra"):GetFrame()) --8
 	end
@@ -359,6 +366,13 @@ Module.OnEnable = function(self, event, ...)
 	elseif Engine:IsBuild("WotLK") then
 		BlizzardUI:GetElement("Menu_Panel"):Remove(6, "InterfaceOptionsActionBarsPanel")
 	end
+	
+	-- In theory this shouldn't have any effect, but by removing the menu panels above, 
+	-- we're preventing the blizzard UI from calling it, and for some reason it is 
+	-- required to be called at least once, or the game won't fire off the events 
+	-- that tell the UI that the player has an active pet out. 
+	-- In other words: without it both the pet bar and pet unitframe will fail after a /reload
+	SetActionBarToggles(nil, nil, nil, nil, nil)
 
 	-- enable templates (button events, etc)
 	self:GetWidget("Template: Button"):Enable()

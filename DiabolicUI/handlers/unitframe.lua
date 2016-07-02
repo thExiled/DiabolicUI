@@ -458,6 +458,7 @@ Handler.New = function(self, unit, parent, style_func)
 		object:SetAttribute("alt-type1", "focus")
 	end
 
+	object:HookScript("OnShow", object.UpdateAllElements) 
 	
 	--object:SetAttribute("toggleForVehicle", true)
 	--object:SetAttribute("allowVehicleTarget", true)

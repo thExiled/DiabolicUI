@@ -13,7 +13,6 @@ local tonumber, tostring = tonumber, tostring
 local strjoin, strmatch = string.join, string.match
 local tconcat = table.concat
 
-
 -- WOW API
 local GetBuildInfo = GetBuildInfo
 local GetCurrentResolution = GetCurrentResolution
@@ -68,7 +67,42 @@ local _inlockdown = InCombatLockdown()
 
 -- expansion and patch to game client build translation table
 local game_versions = {
-	["Wrath of the Lich King"] = 9056, ["WotLK"] = 9056,
+	["The Burning Crusade"] = 8606, ["TBC"] = 8606, -- using latest patch
+		["Before the Storm"] = 6180,
+			["2.0.0"] = 6080, -- download content only
+			["2.0.1"] = 6180, -- this is the "real" TBC patch, that came on DVDs, had Lua 5.1.1 and more. 
+			["2.0.3"] = 6299, -- dark portal opening event
+			["2.0.4"] = 6314,
+			["2.0.5"] = 6320,
+			["2.0.6"] = 6337,
+			["2.0.7"] = 6383,
+			["2.0.8"] = 6403,
+			["2.0.9"] = 6403, -- only Chinese localization changes, but never released
+			["2.0.10"] = 6448,
+			["2.0.11"] = 6448, -- the actual release of the Chinese localization changes planned for 2.0.9
+			["2.0.12"] = 6546,
+		["The Black Temple"] = 6692,
+			["2.1.0"] = 6692,
+			["2.1.0a"] = 6729,
+			["2.1.1"] = 6739,
+			["2.1.2"] = 6803,
+			["2.1.3"] = 6898,
+			["2.1.4"] = 6898, -- asian localization stuff again
+		["Voice Chat!"] = 7272,
+			["2.2.0"] = 7272,
+			["2.2.2"] = 7318,
+			["2.2.3"] = 7359,
+		["The Gods of Zul’Aman"] = 7561,
+			["2.3.0"] = 7561,
+			["2.3.2"] = 7741,
+			["2.3.3"] = 7799,
+		["Fury of the Sunwell"] = 8089,
+			["2.4.0"] = 8089,
+			["2.4.1"] = 8125,
+			["2.4.2"] = 8209,
+			["2.4.3"] = 8606,
+	
+	["Wrath of the Lich King"] = 12340, ["WotLK"] = 12340, -- using latest patch
 		["Echoes of Doom"] = 9056,
 			["3.0.2"] = 9056,
 			["3.0.3"] = 9183,
@@ -96,7 +130,7 @@ local game_versions = {
 			["3.3.5"] = 12213,
 			["3.3.5a"] = 12340,
 
-	["Cataclysm"] = 13164, ["Cata"] = 13164,
+	["Cataclysm"] = 15595, ["Cata"] = 15595, -- using latest patch
 		["Cataclysm Systems"] = 13164,
 			["4.0.1"] = 13164,
 			["4.0.1a"] = 13205,
@@ -119,7 +153,7 @@ local game_versions = {
 			["4.3.3"] = 15354,
 			["4.3.4"] = 15595,
 	
-	["Mists of Pandaria"] = 16016, ["MoP"] = 16016,
+	["Mists of Pandaria"] = 18414, ["MoP"] = 18414, -- using latest patch
 			["5.0.4"] = 16016,
 			["5.0.5"] = 16048,
 			["5.0.5a"] = 16057,
@@ -138,7 +172,7 @@ local game_versions = {
 			["5.4.7"] = 18019,
 			["5.4.8"] = 18414,
 
-	["Warlords of Draenor"] = 19034, ["WoD"] = 19034,
+	["Warlords of Draenor"] = 20779, ["WoD"] = 20779, -- using 6.2.3, not latest
 		["The Iron Tide"] = 19034,
 			["6.0.2"] = 19034,
 			["6.0.3"] = 19243,
@@ -159,7 +193,8 @@ local game_versions = {
 			["6.2.4a"] = 21463,
 			["6.2.4a"] = 21463,
 			["6.2.4a"] = 21742,
-	["Legion"] = 21996,
+			
+	["Legion"] = 21996, 
 			["7.0.3"] = 21996
 }
 
@@ -169,7 +204,7 @@ DiabolicUI_DB = {} -- saved variables
 -- one frame is all we need
 local Frame = CreateFrame("Frame", nil, WorldFrame) -- parented to world frame to keep running even if the UI is hidden
 
--- or... actually we need two frames. 
+-- or... actually we need two frames. -_-
 -- This one is for UI positioning, because sometimes (multimonitor setups etc) UIParent won't work.
 local UICenter = CreateFrame("Frame", nil, UIParent)
 UICenter:SetFrameLevel(UIParent:GetFrameLevel())
@@ -185,7 +220,6 @@ UICenter:SetPoint("CENTER", UIParent, "CENTER")
 -- syntax check (A shout-out to Haste for this one!)
 local check = function(self, value, num, ...)
 	assert(type(num) == "number", L["Bad argument #%d to '%s': %s expected, got %s"]:format(2, "Check", "number", type(num)))
---	assert(type(num) == "number", ("Bad argument #%d to '%s': %s expected, got %s"):format(2, "Check", "number", type(num)))
 	for i = 1,select("#", ...) do
 		if type(value) == select(i, ...) then 
 			return 
@@ -664,7 +698,8 @@ Engine.ParseSavedVariables = function(self)
 	
 	-- Merge and/or overwrite current configs with stored settings.
 	-- *doesn't matter that we mess up any links by replacing the tables, 
-	--  because this all happens before any module's OnInit or OnEnable.
+	--  because this all happens before any module's OnInit or OnEnable,
+	--  meaning if the modules do it right, they haven't fetched their config or db yet.
 	for name,data in pairs(DiabolicUI_DB) do
 		if data.profiles and configs[name] and configs[name].profiles then
 			-- add stored realm dbs to our db
@@ -694,7 +729,8 @@ Engine.ParseSavedVariables = function(self)
 	
 	-- Point the saved variables to our configs.
 	-- *This isn't redundant, because there can be new configs here 
-	--  that hasn't previously been saved.
+	--  that hasn't previously been saved either because of me adding a new module, 
+	--	or because it's the first time running the addon.
 	for name,data in pairs(configs) do
 		DiabolicUI_DB[name] = { profiles = configs[name].profiles }
 	end
@@ -822,8 +858,14 @@ local safecall = function(func, ...)
 		for i = 1, numArgs do
 			tbl[i] = select(i, ...) -- give each argument its own entry
 		end
-		-- to avoid multiple calls of the same function, 
+		-- To avoid multiple calls of the same function, 
 		-- we use the actual function as the key.
+		--
+		-- 	Note: 	This isn't guaranteed to work, though, since a function 
+		-- 			can easily be copied when passed, and thus we can still get 
+		-- 			multiple calls to the same function. 
+		-- 			So I should rewrite the whole freaking system to use 
+		--			some kind of unique IDs. Major TODO. -_-
 		queue[func] = tbl 
 	end
 end
@@ -849,11 +891,15 @@ local combat_ends = function(self, event, ...)
 	end
 end
 
+-- Local wrapper function to turn a function into a safecall 
+-- that will be queued to combat end if called while 
+-- the player or the player's pet or minion is in combat.
 local wrap = function(self, func)
 	return function(...)
 		return safecall(func, ...)
 	end
 end
+
 
 
 -------------------------------------------------------------
@@ -954,9 +1000,10 @@ local core_meta = { __index = core_prototype, __tostring = function(t) return ob
 
 -- Handlers & Elements
 -------------------------------------------------------------
--- 	Handlers are parts of the engine that function as libraries.
+-- 	Handlers are the parts of the engine that function as libraries.
 -- 	They are loaded before any modules, and any events or messages 
--- 	are sent to the handlers before the modules.
+-- 	are sent to the handlers before the modules. 
+-- 	This is intentional.
 -------------------------------------------------------------
 
 -- handler element prototypes
@@ -1079,6 +1126,8 @@ Engine.GetBuildFor = function(self, buildOrVersion)
 	return game_versions[buildOrVersion]
 end
 
+-- The one function to rule them all. 
+-- This is how I simply my client version compability checks.
 Engine.IsBuild = function(self, buildOrVersion, exact)
 	local client_build = tonumber(buildOrVersion)
 	if client_build then
@@ -1258,7 +1307,7 @@ end
 Engine.UpdateScale = function(self)
 	local accuracy = 1e4
 	local compare_accuracy = 1e4 -- anything more than 2 decimals will spam reloads on every video options frame opening
-	local pixelperfect_minimum_width = 1920 -- for anything less than this, UI (down)scaling will always be used
+	local pixelperfect_minimum_width = 1600 --1920 -- for anything less than this, UI (down)scaling will always be used
 	local widescreen = 1.6 -- minimum aspect ratio for a screen to be considered widescreen
 
 	local resolution = ({GetScreenResolutions()})[GetCurrentResolution()]

@@ -87,10 +87,12 @@ end
 --	Unit Frames
 ------------------------------------------------------------------------
 
-local killUnitFrame = function(baseName)
+local killUnitFrame = function(baseName, keep_parent)
 	local frame = getFrame(baseName)
 	if frame then
-		kill(frame, false, true)
+		if not keep_parent then
+			kill(frame, false, true)
+		end
 		frame:Hide()
 		frame:ClearAllPoints()
 		frame:SetPoint("BOTTOMLEFT", _G.UIParent, "TOPLEFT", -400, 500)
@@ -241,7 +243,6 @@ local elements = {
 
 	ActionBars = {
 		OnDisable = function(self, ...)
-
 			MainMenuBar:EnableMouse(false)
 			MainMenuBar:UnregisterAllEvents()
 			MainMenuBar:SetAlpha(0)
@@ -275,6 +276,7 @@ local elements = {
 
 			PetActionBarFrame:EnableMouse(false)
 			PetActionBarFrame:UnregisterAllEvents()
+			PetActionBarFrame:SetParent(UIHider)
 			PetActionBarFrame:Hide()
 			PetActionBarFrame:SetAlpha(0)
 
