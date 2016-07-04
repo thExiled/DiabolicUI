@@ -1150,7 +1150,7 @@ Engine.GetAddOnInfo = function(self, index)
 	local name, title, notes, enabled, loadable, reason, security
 	if self:IsBuild("6.0.2") then
 		name, title, notes, loadable, reason, security, newVersion = GetAddOnInfo(index)
-		enabled = GetAddOnEnableState(UnitName("player"), index)
+		enabled = not(GetAddOnEnableState(UnitName("player"), index) == 0) -- not a boolean, messed that one up! o.O
 	else
 		name, title, notes, enabled, loadable, reason, security = GetAddOnInfo(index)
 	end
