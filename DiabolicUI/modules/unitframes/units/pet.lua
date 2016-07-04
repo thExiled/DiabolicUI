@@ -43,7 +43,7 @@ local Style = function(self, unit)
 
 	-- border overlay frame
 	local Border = CreateFrame("Frame", nil, self)
-	Border:SetFrameLevel(self:GetFrameLevel() + 2)
+	Border:SetFrameLevel(self:GetFrameLevel() + 3)
 	Border:SetAllPoints()
 	
 	local BorderNormal = Border:CreateTexture(nil, "BORDER")
@@ -118,12 +118,19 @@ local Style = function(self, unit)
 	PortraitBorderNormalHighlight:SetPoint(unpack(config.portrait.texture_position))
 	PortraitBorderNormalHighlight:SetTexture(config.portrait.textures.highlight)
 	PortraitBorderNormalHighlight:Hide()
+
 	
 	-- Texts
 	-------------------------------------------------------------------
 	local Name = Border:CreateFontString(nil, "OVERLAY")
 	Name:SetFontObject(config.name.font_object)
 	Name:SetPoint(unpack(config.name.position))
+	Name:SetSize(unpack(config.name.size))
+	Name:SetJustifyV("MIDDLE")
+	Name:SetJustifyH("CENTER")
+	Name:SetIndentedWordWrap(false)
+	Name:SetWordWrap(true)
+	Name:SetNonSpaceWrap(false)
 
 
 	self.CastBar = CastBar
@@ -148,9 +155,12 @@ UnitFrameWidget.OnEnable = function(self)
 	local config = self:GetStaticConfig("UnitFrames").visuals.units.player
 	local db = self:GetConfig("UnitFrames") 
 
-	local UnitFrame = UnitFrame:New("pet", Engine:GetFrame(), Style) 
+	self.UnitFrame = UnitFrame:New("pet", Engine:GetFrame(), Style) 
 	
 	-- Disable Blizzard's castbars for pet 
 	self:GetHandler("BlizzardUI"):GetElement("CastBars"):Remove("pet")
 end
 
+UnitFrameWidget.GetFrame = function(self)
+	return self.UnitFrame
+end

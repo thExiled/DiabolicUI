@@ -6,6 +6,7 @@ local UnitExists = UnitExists
 local UnitIsConnected = UnitIsConnected
 local UnitIsVisible = UnitIsVisible
 local UnitGUID = UnitGUID
+local UnitSex = UnitSex
 
 
 local Update = function(self, event, ...)
@@ -22,7 +23,11 @@ local Update = function(self, event, ...)
 		Portrait:Hide()
 	else
 		Portrait:SetUnit(unit)
-		Portrait:SetCamera(0)
+		if UnitSex(unit) == 3 then
+			Portrait:SetCamera(1) -- female humans
+		else
+			Portrait:SetCamera(0)
+		end
 		if not Portrait:IsShown() then
 			Portrait:Show()
 		end
@@ -38,6 +43,8 @@ local Enable = function(self, unit)
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", Update)
 		self:RegisterEvent("UNIT_NAME_UPDATE", Update)
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Update)
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED", Update)
 
 		-- The quest log uses PARTY_MEMBER_{ENABLE,DISABLE} to handle updating of
 		-- party members overlapping quests. This will probably be enough to handle
@@ -61,6 +68,8 @@ local Disable = function(self, unit)
 		self:UnregisterEvent("UNIT_EXITED_VEHICLE", Update)
 		self:UnregisterEvent("UNIT_NAME_UPDATE", Update)
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
+		self:UnregisterEvent("PLAYER_TARGET_CHANGED", Update)
+		self:UnregisterEvent("PLAYER_FOCUS_CHANGED", Update)
 
 		if unit:find("party") then
 			self:UnregisterEvent("PARTY_MEMBER_ENABLE", Update)

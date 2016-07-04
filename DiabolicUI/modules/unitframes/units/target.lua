@@ -167,7 +167,7 @@ local Style = function(self, unit)
 	
 	-- border overlay frame
 	local Border = CreateFrame("Frame", nil, self)
-	Border:SetFrameLevel(self:GetFrameLevel() + 2)
+	Border:SetFrameLevel(self:GetFrameLevel() + 3)
 	Border:SetAllPoints()
 	
 	local BorderNormal = Border:CreateTexture(nil, "BORDER")
@@ -263,6 +263,12 @@ local Style = function(self, unit)
 	local Name = Border:CreateFontString(nil, "OVERLAY")
 	Name:SetFontObject(config.name.font_object)
 	Name:SetPoint(unpack(config.name.position))
+	Name:SetSize(unpack(config.name.size))
+	Name:SetJustifyV("TOP")
+	Name:SetJustifyH("CENTER")
+	Name:SetIndentedWordWrap(false)
+	Name:SetWordWrap(false)
+	Name:SetNonSpaceWrap(false)
 	Name.colorBoss = true
 	
 	local Classification = Border:CreateFontString(nil, "OVERLAY")
@@ -290,9 +296,9 @@ local Style = function(self, unit)
 end
 
 UnitFrameWidget.OnEnable = function(self)
-	local config = self:GetStaticConfig("UnitFrames").visuals.units.target
-	local db = self:GetConfig("UnitFrames") 
-	
-	local Target = UnitFrame:New("target", Engine:GetFrame(), Style)
-	
+	self.UnitFrame = UnitFrame:New("target", Engine:GetFrame(), Style)
+end
+
+UnitFrameWidget.GetFrame = function(self)
+	return self.UnitFrame
 end

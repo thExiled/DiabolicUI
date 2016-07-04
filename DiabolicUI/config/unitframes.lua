@@ -169,7 +169,8 @@ local config = {
 				},
 				name = {
 					font_object = DiabolicUnitFrameLarge,
-					position = { "TOP", 0, 32 }
+					position = { "TOP", 0, 32 },
+					size = { 346 + 80, (select(2, DiabolicUnitFrameLarge:GetFont())) + 2 }
 				},
 				classification = {
 					font_object = DiabolicUnitFrameNormal,
@@ -209,8 +210,80 @@ local config = {
 					}
 				}
 			},
-			tot = {},
-			focus = {},
+			tot = {
+				size = { 148, 35 },
+				position = { "TOP", "UICenter", "TOP", -(346/2 + 120), -(66 - 3) },
+				backdrop = {
+					texture_size = { 256, 64 },
+					texture_position = { "TOPLEFT", -71 + (148-114)/2, 25 -(35-15)/2 },
+					texture = path .. [[textures\DiabolicUI_Target_114x15_Backdrop.tga]]
+				},
+				border = {
+					texture_size = { 256, 64 },
+					texture_position = { "TOPLEFT", -71 + (148-114)/2, 25 -(35-15)/2 },
+					textures = {
+						normal = path .. [[textures\DiabolicUI_Target_114x15_Border.tga]],
+						highlight = path .. [[textures\DiabolicUI_Target_114x15_Highlight.tga]]
+					}
+				},
+				health = {
+					size = { 114, 15 },
+					position = { "BOTTOM", 0, 10 },
+					texture = path .. [[statusbars\DiabolicUI_StatusBar_512x64_Dark_Warcraft.tga]]
+				},
+				name = {
+					font_object = DiabolicUnitFrameSmall,
+					position = { "TOP", 0, 38 },
+					size = { 148 + 40, (select(2, DiabolicUnitFrameSmall:GetFont()))*2 + 2 }
+				}
+			},
+			focus = {
+				size = { 90, 17 + 8 + 70 },
+				position = { "TOPLEFT", "UICenter", "TOPLEFT", 60, -60 },
+				offsets = {
+					{ "nopet", 0, 0 },
+					{ "pet", 90 + 60, 0 }
+				},
+				backdrop = {
+					texture_size = { 256, 64 },
+					texture_position = { "TOPLEFT", -83, 24 -(70 + 8)},
+					texture = path .. [[textures\DiabolicUI_Target_80x15_Backdrop.tga]]
+				},
+				border = {
+					texture_size = { 256, 64 },
+					texture_position = { "TOPLEFT", -83, 24 -(70 + 8)},
+					textures = {
+						normal = path .. [[textures\DiabolicUI_Target_80x15_Border.tga]],
+						highlight = path .. [[textures\DiabolicUI_Target_80x15_Highlight.tga]]
+					}
+				},
+				health = {
+					size = { 82, 9 },
+					position = { "BOTTOM", 0, 7 },
+					texture = path .. [[statusbars\DiabolicUI_StatusBar_512x64_Dark_Warcraft.tga]]
+				},
+				power = { 
+					size = { 82, 3 },
+					position = { "BOTTOM", 0, 3 },
+					texture = path .. [[statusbars\DiabolicUI_StatusBar_512x64_Dark_Warcraft.tga]]
+				},
+				portrait = {
+					size = { 70, 70 },
+					position = { "TOP", 0, 0 },
+					texture_size = { 128, 128 }, 
+					texture_position = { "CENTER", 0, 0 },
+					textures = {
+						backdrop = path .. [[textures\DiabolicUI_Target_80x80_PortraitBackdrop.tga]],
+						border = path .. [[textures\DiabolicUI_Target_80x80_PortraitBorder.tga]],
+						highlight = path .. [[textures\DiabolicUI_Target_80x80_PortraitBorderHighlight.tga]]
+					}
+				},
+				name = {
+					font_object = DiabolicUnitFrameSmall,
+					position = { "BOTTOM", 0, 103 }, -- { "TOP", 0, 28 },
+					size = { 90 + 40, (select(2, DiabolicUnitFrameSmall:GetFont()))*2 + 2 }
+				}
+			},
 			pet = {
 				size = { 90, 17 + 8 + 70 },
 				position = { "TOPLEFT", "UICenter", "TOPLEFT", 60, -60 },
@@ -249,8 +322,9 @@ local config = {
 					}
 				},
 				name = {
-					font_object = DiabolicUnitFrameNormal,
-					position = { "TOP", 0, 28 }
+					font_object = DiabolicUnitFrameSmall,
+					position = { "BOTTOM", 0, 103 }, -- { "TOP", 0, 28 },
+					size = { 90 + 40, (select(2, DiabolicUnitFrameSmall:GetFont()))*2 + 2 }
 				}
 			},
 			party = {},

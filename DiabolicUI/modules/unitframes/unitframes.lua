@@ -47,7 +47,9 @@ Module.OnInit = function(self)
 --	self:GetWidget("Artwork"):Enable()
 	self:GetWidget("Unit: Player"):Enable()
 	self:GetWidget("Unit: Pet"):Enable()
+	self:GetWidget("Unit: Focus"):Enable()
 	self:GetWidget("Unit: Target"):Enable()
+	self:GetWidget("Unit: ToT"):Enable()
 	
 end
 

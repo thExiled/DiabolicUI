@@ -128,11 +128,14 @@ UnitFrameWidget.OnEnable = function(self)
 	local config = self:GetStaticConfig("UnitFrames").visuals.units.player
 	local db = self:GetConfig("UnitFrames") 
 
-	local Left = UnitFrame:New("player", Engine:GetFrame(), LeftOrb) -- health / main
-	local Right = UnitFrame:New("player", Engine:GetFrame(), RightOrb) -- power
+	self.Left = UnitFrame:New("player", Engine:GetFrame(), LeftOrb) -- health / main
+	self.Right = UnitFrame:New("player", Engine:GetFrame(), RightOrb) -- power
 	
-	-- Disable Blizzard's castbars for player and pet 
+	-- Disable Blizzard's castbars for player 
 	self:GetHandler("BlizzardUI"):GetElement("CastBars"):Remove("player")
-	self:GetHandler("BlizzardUI"):GetElement("CastBars"):Remove("pet")
+end
+
+UnitFrameWidget.GetFrame = function(self)
+	return self.Left, self.Right
 end
 

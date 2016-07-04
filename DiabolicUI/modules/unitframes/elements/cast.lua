@@ -193,13 +193,23 @@ local OnUpdate = function(self, elapsed)
 end
 CastTimer:SetScript("OnUpdate", OnUpdate)
 
+local special_events = {
+	UNIT_TARGET = true,
+	PLAYER_FOCUS_CHANGED = true,
+	PLAYER_TARGET_CHANGED = true,
+}
+
 local Update -- so we can call it from within itself
 Update = function(self, event, ...)
 	local arg1 = ...
 	local unit = self.unit
-	if unit ~= arg1 then
+	if not arg1 and not special_events[event] then
 		return
 	end
+	if arg1 and not UnitIsUnit(unit, arg1) then
+		return
+	end
+	
 	local CastBar = self.CastBar
 	local castdata = CastData[CastBar]
 	if event == "UNIT_SPELLCAST_START" then
@@ -417,7 +427,9 @@ Update = function(self, event, ...)
 		end
 		
 	elseif event == "UNIT_TARGET" 
-		or event == "PLAYER_TARGET_CHANGED" then
+	or event == "PLAYER_TARGET_CHANGED" 
+	or event == "PLAYER_FOCUS_CHANGED" then 
+		local unit = self.unit
 		if not UnitExists(unit) then
 			return
 		end
@@ -459,10 +471,9 @@ local Enable = function(self, unit)
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", Update)
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", Update)
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", Update)
-		if unit ~= "player" then
-			self:RegisterEvent("UNIT_TARGET", Update)
-			self:RegisterEvent("PLAYER_TARGET_CHANGED", Update)
-		end
+		self:RegisterEvent("UNIT_TARGET", Update)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Update)
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED", Update)
 	end
 end
 
@@ -482,10 +493,9 @@ local Disable = function(self, unit)
 		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START", Update)
 		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", Update)
 		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", Update)
-		if unit ~= "player" then
-			self:UnregisterEvent("UNIT_TARGET", Update)
-			self:UnregisterEvent("PLAYER_TARGET_CHANGED", Update)
-		end
+		self:UnregisterEvent("UNIT_TARGET", Update)
+		self:UnregisterEvent("PLAYER_TARGET_CHANGED", Update)
+		self:UnregisterEvent("PLAYER_FOCUS_CHANGED", Update)
 	end
 end
 

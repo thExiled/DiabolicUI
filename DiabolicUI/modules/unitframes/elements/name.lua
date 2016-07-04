@@ -45,25 +45,41 @@ local Update = function(self, event, ...)
 	
 end
 
-local Enable = function(self)
+local Enable = function(self, unit)
 	local Name = self.Name
 	if Name then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
-		self:RegisterEvent("UNIT_NAME_UPDATE", Update)
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", Update)
 		self:RegisterEvent("UNIT_ENTERED_VEHICLE", Update)
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", Update)
+		self:RegisterEvent("UNIT_NAME_UPDATE", Update)
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Update)
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED", Update)
+		
+		-- The quest log uses PARTY_MEMBER_{ENABLE,DISABLE} to handle updating of
+		-- party members overlapping quests. This will probably be enough to handle
+		-- model updating.
+		--
+		-- DISABLE isn't used as it fires when we most likely don't have the
+		-- information we want.
+		if unit:find("party") then
+			self:RegisterEvent("PARTY_MEMBER_ENABLE", Update)
+		end
 	end
 end
 
-local Disable = function(self)
+local Disable = function(self, unit)
 	local Name = self.Name
 	if Name then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
-		self:UnregisterEvent("UNIT_NAME_UPDATE", Update)
-		self:UnregisterEvent("PLAYER_TARGET_CHANGED", Update)
 		self:UnregisterEvent("UNIT_ENTERED_VEHICLE", Update)
 		self:UnregisterEvent("UNIT_EXITED_VEHICLE", Update)
+		self:UnregisterEvent("UNIT_NAME_UPDATE", Update)
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
+		self:UnregisterEvent("PLAYER_TARGET_CHANGED", Update)
+		self:UnregisterEvent("PLAYER_FOCUS_CHANGED", Update)
+
+		if unit:find("party") then
+			self:UnregisterEvent("PARTY_MEMBER_ENABLE", Update)
+		end
 	end
 end
 
