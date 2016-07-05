@@ -258,12 +258,20 @@ StatusBar.SetStatusBarColor = function(self, ...)
 end
 
 StatusBar.SetStatusBarTexture = function(self, ...)
-	self.bar:SetTexture(...)
+	if Engine:IsBuild("Legion") and type(select(1, ...)) == "number" then
+		self.bar:SetColorTexture(...)
+	else
+		self.bar:SetTexture(...)
+	end
 	self:Update()
 end
 
 StatusBar.SetSparkTexture = function(self, ...)
-	self.spark:SetTexture(...)
+	if Engine:IsBuild("Legion") and type(select(1, ...)) == "number" then
+		self.spark:SetColorTexture(...)
+	else
+		self.spark:SetTexture(...)
+	end
 end
 
 StatusBar.SetSparkSize = function(self, width, height)

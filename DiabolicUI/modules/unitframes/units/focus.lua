@@ -179,6 +179,7 @@ UnitFrameWidget.OnEnable = function(self)
 		self.Mover:SetSize(.0001, .0001)
 		self.UnitFrame.Place(self.Mover, unpack(config.position))
 		self.Mover:SetAttribute("_onattributechanged", ([[
+			value = tostring(value);
 			if name == "state-pos" then 
 				%s 
 			end 

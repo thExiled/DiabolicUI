@@ -23,7 +23,9 @@ local Update = function(self, event, ...)
 		Portrait:Hide()
 	else
 		Portrait:SetUnit(unit)
-		if UnitSex(unit) == 3 then
+		local gender = UnitSex(unit)
+		local _, race = UnitRace(unit)
+		if gender == 3 and race == "Human" then
 			Portrait:SetCamera(1) -- female humans
 		else
 			Portrait:SetCamera(0)
