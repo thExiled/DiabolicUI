@@ -19,12 +19,19 @@ local config = {
 		dim = false,
 		dim_color = { 0, 0, 0, .5 },
 		button_spacing = 4,
+		button_anchor_wod = {
+			position = "TOP",
+			anchor = "UICenter", 
+			rposition = "TOP",
+			xoffset = 0, -- 0 when TOP, 88 when anchored TOPLEFT 
+			yoffset = -200 -- -260 -293
+		},
 		button_anchor = {
 			position = "TOP",
 			anchor = "UICenter", 
 			rposition = "TOP",
 			xoffset = 0, -- 0 when TOP, 88 when anchored TOPLEFT 
-			yoffset = -260 -- -293
+			yoffset = -240 -- -260 -293
 		},
 		resume_button_anchor = {
 			position = "BOTTOM",

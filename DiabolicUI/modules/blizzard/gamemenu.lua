@@ -28,7 +28,7 @@ Module.UpdateButtonLayout = Module:Wrap(function(self)
 				if previous then
 					button:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -config.button_spacing)
 				else
-					local p = config.button_anchor
+					local p = Engine:IsBuild("WoD") and config.button_anchor_wod or config.button_anchor
 					button:SetPoint(p.position, Engine:GetFrame(), p.rposition, p.xoffset, p.yoffset)
 				end
 				previous = button
@@ -297,6 +297,7 @@ Module.OnInit = function(self)
 			{ content = GameMenuButtonOptions, label = SYSTEMOPTIONS_MENU },
 			{ content = GameMenuButtonUIOptions, label = UIOPTIONS_MENU },
 			{ content = GameMenuButtonKeybindings, label = KEY_BINDINGS },
+			{ content = "GameMenuButtonMoveAnything", label = function() return GameMenuButtonMoveAnything:GetText() end, addon = true }, -- MoveAnything
 			{ content = GameMenuButtonMacros, label = MACROS },
 			{ content = GameMenuButtonAddons, label = ADDONS },
 			{ content = GameMenuButtonRatings, label = RATINGS_MENU },
@@ -319,6 +320,7 @@ Module.OnInit = function(self)
 			{ content = GameMenuButtonUIOptions, label = UIOPTIONS_MENU },
 			{ content = GameMenuButtonMacOptions, label = MAC_OPTIONS },
 			{ content = GameMenuButtonKeybindings, label = KEY_BINDINGS },
+			{ content = "GameMenuButtonMoveAnything", label = function() return GameMenuButtonMoveAnything:GetText() end, addon = true }, -- MoveAnything
 			{ content = GameMenuButtonMacros, label = MACROS },
 			{ content = "GameMenuButtonAddOns", label = function() return GameMenuButtonAddOns:GetText() end, run = Fix_ACP, addon = true }, -- ACP (Addon Control Panel)
 			{ content = GameMenuButtonRatings, label = RATINGS_MENU },
@@ -338,6 +340,7 @@ Module.OnInit = function(self)
 			{ content = GameMenuButtonUIOptions, label = UIOPTIONS_MENU },
 			{ content = GameMenuButtonMacOptions, label = MAC_OPTIONS },
 			{ content = GameMenuButtonKeybindings, label = KEY_BINDINGS },
+			{ content = "GameMenuButtonMoveAnything", label = function() return GameMenuButtonMoveAnything:GetText() end, addon = true }, -- MoveAnything
 			{ content = GameMenuButtonMacros, label = MACROS },
 			{ content = "GameMenuButtonAddOns", label = function() return GameMenuButtonAddOns:GetText() end, run = Fix_ACP, addon = true }, -- ACP (Addon Control Panel)
 			{ content = GameMenuButtonRatings, label = RATINGS_MENU },
@@ -358,6 +361,7 @@ Module.OnInit = function(self)
 			{ content = GameMenuButtonUIOptions, label = UIOPTIONS_MENU },
 			{ content = GameMenuButtonMacOptions, label = MAC_OPTIONS },
 			{ content = GameMenuButtonKeybindings, label = KEY_BINDINGS },
+			{ content = "GameMenuButtonMoveAnything", label = function() return GameMenuButtonMoveAnything:GetText() end, addon = true }, -- MoveAnything
 			{ content = GameMenuButtonMacros, label = MACROS },
 			{ content = "GameMenuButtonAddOns", label = function() return GameMenuButtonAddOns:GetText() end, run = Fix_ACP, addon = true }, -- ACP (Addon Control Panel)
 			{ content = GameMenuButtonRatings, label = RATINGS_MENU },

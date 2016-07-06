@@ -292,6 +292,11 @@ BarWidget.OnEnable = function(self)
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "Update")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "Update")
 	
+	
+	-- Note to self for later: 
+	-- 	ReputationWatchBarStatusBar ( >= WoD)
+	-- 	ReputationWatchBar.StatusBar (Legion > )
+	
 	-- debugging
 	--local test_texture = Overlay:CreateTexture(nil, "OVERLAY")
 	--test_texture:SetTexture(BLANK_TEXTURE)
