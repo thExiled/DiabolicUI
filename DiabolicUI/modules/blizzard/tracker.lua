@@ -13,20 +13,22 @@ local IsAddOnLoaded = IsAddOnLoaded
 -- WatchFrame (prior to WoD)
 ---------------------------------------------------------
 Module.CollapseWatchFrame = function(self)
+	--do return end 
 	if self.WatchFrameMonitor.isUserCollapsed or self.WatchFrameMonitor.isBossCollapsed or self.WatchFrameMonitor.isUserShown then
 		return
 	end
 	WatchFrame.userCollapsed = true
 	WatchFrame_Collapse(WatchFrame)
-	WatchFrame_Update()
+	--WatchFrame_Update() -- causes taint when opening the WorldMap!
 	self.WatchFrameMonitor.isBossCollapsed = true
 end
 
 Module.RestoreWatchFrame = function(self)
+	--do return end
 	if self.WatchFrameMonitor.isBossCollapsed and not self.WatchFrameMonitor.isUserCollapsed then
 		WatchFrame.userCollapsed = nil
 		WatchFrame_Expand(WatchFrame)
-		WatchFrame_Update()
+		--WatchFrame_Update() -- causes taint when leaving combat after having opened the WorldMap in combat
 		self.WatchFrameMonitor.isBossCollapsed = false
 	end
 	self.WatchFrameMonitor.isUserShown = false
@@ -227,7 +229,6 @@ Module.StyleWatchFrame = function(self)
 	-- hook the tracker updates
 	hooksecurefunc("WatchFrame_Update", function() self:UpdateWatchFrameLines() end)
 	
-	
 	-- Auto minimizing when in arena or in a boss fight!
 	self.WatchFrameMonitor = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 	self.WatchFrameMonitor:Hide()
@@ -249,7 +250,6 @@ Module.StyleWatchFrame = function(self)
 	self.WatchFrameMonitor:HookScript("OnHide", function() self:RestoreWatchFrame() end)
 	self.WatchFrameMonitor.CollapseExpandButton:HookScript("OnClick", function() self:UpdateUserCollapsedWatchFrameState() end)
 
-	
 end
 
 
@@ -466,7 +466,7 @@ Module.StyleObjectivesTracker = function(self)
 	for i = 1, 5 do -- arena enemy global is created within an addon, and might not be available
 		tinsert(self.TrackerMonitor.driver, "[@arena"..i..",exists] show")
 	end
-	tinsert(self.TrackerMonitor.driver, "[combat] hide") -- collapse the frame in combat (?)
+	tinsert(self.TrackerMonitor.driver, "[combat] show") -- collapse the frame in combat (?)
 	tinsert(self.TrackerMonitor.driver, "hide")
 	RegisterStateDriver(self.TrackerMonitor, "visibility", tconcat(self.TrackerMonitor.driver, ";"))
 

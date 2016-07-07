@@ -124,12 +124,9 @@ local config = {
 					anchor = "Main", 
 					anchor_point = "TOP",
 					xoffset = 0,
-					yoffset = 60
+					yoffset = 91
 				},
-				-- This should be calculated on the fly from buttonsize and padding down in the bar settings,
-				-- so that the secure environment can update the size (?)
-				size = { buttonsize.triple*num_stance_buttons + padding*(num_stance_buttons-1), buttonsize.triple },
-				size_vehicle = { 0.0001, 0.0001 }
+				size = { 51, 51 }
 			},
 			
 			-- holder for menu buttons
@@ -259,11 +256,22 @@ local config = {
 			},
 			stance = {
 				position = { "BOTTOM", 0, 0 }, -- where the bar is anchored to its controller
-				flyout_direction = "UP",
 				growth = "RIGHT", 
 				padding = padding,
 				buttonsize = buttonsize.triple,
-				bar_size = { buttonsize.triple*num_stance_buttons + padding*(num_stance_buttons-1), buttonsize.triple }
+				bar_size = {
+					[0] = { .0001, .0001 },
+					[1] = { buttonsize.triple, buttonsize.triple },
+					[2] = { buttonsize.triple*(num_stance_buttons-8) + padding*(num_stance_buttons-9), buttonsize.triple },
+					[3] = { buttonsize.triple*(num_stance_buttons-7) + padding*(num_stance_buttons-8), buttonsize.triple },
+					[4] = { buttonsize.triple*(num_stance_buttons-6) + padding*(num_stance_buttons-7), buttonsize.triple },
+					[5] = { buttonsize.triple*(num_stance_buttons-5) + padding*(num_stance_buttons-6), buttonsize.triple },
+					[6] = { buttonsize.triple*(num_stance_buttons-4) + padding*(num_stance_buttons-5), buttonsize.triple },
+					[7] = { buttonsize.triple*(num_stance_buttons-3) + padding*(num_stance_buttons-4), buttonsize.triple },
+					[8] = { buttonsize.triple*(num_stance_buttons-2) + padding*(num_stance_buttons-3), buttonsize.triple },
+					[9] = { buttonsize.triple*(num_stance_buttons-1) + padding*(num_stance_buttons-2), buttonsize.triple },
+					[10] = { buttonsize.triple*num_stance_buttons + padding*(num_stance_buttons-1), buttonsize.triple }
+				}
 			},
 			pet = {
 				position = { "RIGHT", -padding, 0 }, -- where the bar is anchored to its controller
@@ -1188,6 +1196,22 @@ local config = {
 				}
 			}
 
+		},
+		stance = {
+			button = {
+				size = { 51, 51 },
+				position = { "BOTTOM", .5, 0 },
+				texture_size = { 128, 128 },
+				texture_position = { "TOPLEFT", -(64 - 25), (64 - 26) },
+				textures = {
+					normal = path .. [[textures\DiabolicUI_Button_51x51_Normal.tga]],
+					pushed = path .. [[textures\DiabolicUI_Button_51x51_Normal.tga]]
+				}
+			},
+			window = {
+				size = { buttonsize.triple, buttonsize.triple * num_stance_buttons + padding*(num_stance_buttons-1) },
+				position = { "BOTTOM", -.5, 51 + 4 }
+			}
 		},
 		xp = {
 			font_object = DiabolicDialogNormal,

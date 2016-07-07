@@ -1130,8 +1130,13 @@ end
 Button.UpdateBindings = function(self)
 	local key = self:GetKeyBind() or ""
 	local keybind = self.keybind
-	keybind:SetText(key)
-	keybind:Show()
+	if self.type_by_state == "stance" then
+		keybind:SetText("")
+		keybind:Hide()
+	else
+		keybind:SetText(key)
+		keybind:Show()
+	end
 end
 
 Button.GetKeyBind = function(self)
@@ -1651,8 +1656,8 @@ StanceButton.GetActionText = function(self) return select(2,GetShapeshiftFormInf
 StanceButton.GetTexture = function(self) return GetShapeshiftFormInfo(self.id) end
 StanceButton.IsCurrentlyActive = function(self) return select(3,GetShapeshiftFormInfo(self.id)) end
 StanceButton.IsUsable = function(self) 
-	return IsUsableAction(self._state_action)
-	-- return select(4,GetShapeshiftFormInfo(self.id)) 
+	--return IsUsableAction(self._state_action)
+	return select(4,GetShapeshiftFormInfo(self.id)) 
 end
 StanceButton.SetTooltip = function(self) return GameTooltip:SetShapeshift(self.id) end
 
@@ -2027,12 +2032,28 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	local button
 	if buttonType == "pet" then
 		button = setmetatable(CreateFrame("CheckButton", name , header, "PetActionButtonTemplate"), Button_MT)
-	elseif button == "stance" then
-		button = setmetatable(CreateFrame("CheckButton", name , header, "StanceButtonTemplate"), Button_MT)
-	--elseif button == "extra" then
+		button:UnregisterAllEvents()
+		button:SetScript("OnEvent", nil)
+		button:SetScript("OnUpdate", nil)
+		
+	elseif buttonType == "stance" then
+		if Engine:IsBuild("MoP") then
+			button = setmetatable(CreateFrame("CheckButton", name , header, "StanceButtonTemplate"), Button_MT)
+		else
+			button = setmetatable(CreateFrame("CheckButton", name , header, "ShapeshiftButtonTemplate"), Button_MT)
+		end
+		button:UnregisterAllEvents()
+		button:SetScript("OnEvent", nil)
+		
+	--elseif buttonType == "extra" then
 	--	button = setmetatable(CreateFrame("CheckButton", name , header, "ExtraActionButtonTemplate"), Button_MT)
+	--	button:UnregisterAllEvents()
+	--	button:SetScript("OnEvent", nil)
+	
 	else
 		button = setmetatable(CreateFrame("CheckButton", name , header, "SecureActionButtonTemplate, ActionButtonTemplate"), Button_MT)
+		button:RegisterForDrag("LeftButton", "RightButton")
+		button:RegisterForClicks("AnyUp")
 	end
 	
 	button.config = header.config
@@ -2053,21 +2074,15 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	button.action_by_state = button.id -- initial/current action
 	button.type_by_state = buttonType -- store the button type for faster reference
 
-	-- remove everything that the templates might have added, we don't want it
-	button:UnregisterAllEvents()
-	button:SetScript("OnEvent", nil)
-	button:SetScript("OnUpdate", nil)
-
 	button:SetID(id)
+
 	button:SetAttribute("type", buttonType) -- assign the correct button type for the secure templates
 
 	-- TODO: let the user control clicks and locks
-	button:RegisterForDrag("LeftButton", "RightButton")
-	button:RegisterForClicks("AnyUp")
 	button:SetAttribute("buttonlock", true)
 	button:SetAttribute("flyoutDirection", "UP")
 	button.action = 0 -- hack needed for the flyouts to not bug out
-	
+
 	-- Drag N Drop Fuctionality, allow the user to pick up and drop stuff on the buttons! 
 	-- params:
 	-- 		self = the actionbutton frame handle

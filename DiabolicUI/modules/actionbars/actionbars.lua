@@ -299,7 +299,7 @@ Module.OnInit = function(self, event, ...)
 	self:GetWidget("Bar: 4"):Enable()
 	self:GetWidget("Bar: 5"):Enable()
 	self:GetWidget("Bar: Pet"):Enable()
-	--self:GetWidget("Bar: Stance"):Enable()
+	self:GetWidget("Bar: Stance"):Enable()
 	self:GetWidget("Bar: XP"):Enable()
 	
 	-- enable menus
@@ -311,8 +311,11 @@ Module.OnInit = function(self, event, ...)
 		--self:GetWidget("Bar: Extra"):Enable()
 
 		-- skinning (TODO: move to the blizzard skinning module)
-		StreamingIcon:ClearAllPoints()
-		StreamingIcon:SetPoint("CENTER", self:GetWidget("Controller: Main"):GetFrame(), "TOP", 0, 66)
+		--StreamingIcon:ClearAllPoints()
+		--StreamingIcon:SetPoint("CENTER", self:GetWidget("Controller: Main"):GetFrame(), "TOP", 0, 66)
+		local UIHider = CreateFrame("Frame")
+		UIHider:Hide()
+		StreamingIcon:SetParent(UIHider)
 	end
 	
 	-- This is used to reassign the keybinds, 

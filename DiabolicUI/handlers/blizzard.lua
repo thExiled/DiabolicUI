@@ -252,12 +252,14 @@ local elements = {
 			MainMenuBarArtFrame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 			MainMenuBarArtFrame:Hide()
 			MainMenuBarArtFrame:SetAlpha(0)
+			MainMenuBarArtFrame:SetParent(UIHider)
 
 			MainMenuExpBar:EnableMouse(false)
 			MainMenuExpBar:UnregisterAllEvents()
 			MainMenuExpBar:Hide()
 			MainMenuExpBar:SetAlpha(0)
 			MainMenuExpBar:SetScale(0.00001)
+			MainMenuExpBar:SetParent(UIHider)
 			
 			if not Engine:IsBuild("MoP") then
 				BonusActionBarFrame:UnregisterAllEvents()
@@ -273,6 +275,7 @@ local elements = {
 			PossessBarFrame:UnregisterAllEvents()
 			PossessBarFrame:Hide()
 			PossessBarFrame:SetAlpha(0)
+			PossessBarFrame:SetParent(UIHider)
 
 			PetActionBarFrame:EnableMouse(false)
 			PetActionBarFrame:UnregisterAllEvents()

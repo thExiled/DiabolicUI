@@ -685,7 +685,8 @@ MenuWidget.OnEnable = function(self)
 			GameTooltip:Hide()
 			return
 		end
-		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -6, 16)
+--		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -6, 16)
+		GameTooltip_SetDefaultAnchor(GameTooltip, self)
 		GameTooltip:AddLine(L["Bags"])
 		GameTooltip:AddLine(L["<Left-click> to toggle bags."], 0, .7, 0)
 		GameTooltip:AddLine(L["<Right-click> to toggle bag bar."], 0, .7, 0)
@@ -701,7 +702,8 @@ MenuWidget.OnEnable = function(self)
 			GameTooltip:Hide()
 			return
 		end
-		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -6, 16)
+--		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -6, 16)
+		GameTooltip_SetDefaultAnchor(GameTooltip, self)
 		GameTooltip:AddLine(L["Action Bars"])
 		GameTooltip:AddLine(L["<Left-click> to toggle action bar menu."], 0, .7, 0)
 		GameTooltip:Show()
@@ -721,7 +723,8 @@ MenuWidget.OnEnable = function(self)
 			GameTooltip:Hide()
 			return
 		end
-		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -6, 16)
+--		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -6, 16)
+		GameTooltip_SetDefaultAnchor(GameTooltip, self)
 		GameTooltip:AddLine(L["Main Menu"])
 		GameTooltip:AddLine(L["<Left-click> to toggle menu."], 0, .7, 0)
 		GameTooltip:Show()
@@ -760,6 +763,8 @@ MenuWidget.OnEnable = function(self)
 	local Blizz_OpenBackpack = OpenBackpack
 	local Blizz_OpenAllBags = OpenAllBags
 	
+	-- This was at one point reported as tainting the WorldMap, but after testing 
+	-- I concluded that the taint is coming from the tracker module instead.
 	local UpdateOffsets = function()
 		CONTAINER_OFFSET_Y = MicroMenuWindow:GetBottom() + 6 + (BagBarMenuWindow:IsShown() and bagbar_menu_config.bag_offset or 0)
 		CONTAINER_OFFSET_X = UIParent:GetRight() - MicroMenuWindow:GetRight() 
