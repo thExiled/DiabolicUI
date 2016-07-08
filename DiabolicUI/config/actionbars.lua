@@ -11,7 +11,7 @@ local buttonsize = {
 
 -- padding between bars and buttons
 -- going for a single value for everything
-local padding = 4
+local padding, padding_small = 4, 2
 local bar_inset, sidebar_inset = 10, 20 
 local artwork_offscreen = 20 -- how many pixels to move the bottom artwork below the screen edge
 
@@ -59,7 +59,7 @@ local config = {
 			-- intended for other modules to position by as well
 			-- *side holder is always hidden while in a vehicle
 			side = {
-				padding = padding,
+				padding = padding_small,
 				offset = sidebar_inset,
 				position = {
 					-- If the position table contains more tables, 
@@ -96,15 +96,15 @@ local config = {
 					--}
 				},
 				size = {
-					["0"] = { 1/1e3, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["1"] = { sidebar_inset + buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["2"] = { sidebar_inset + buttonsize.triple*2 + padding, buttonsize.triple*num_buttons + padding*(num_buttons-1) }
+					["0"] = { 1/1e3, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["1"] = { sidebar_inset + buttonsize.triple, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["2"] = { sidebar_inset + buttonsize.triple*2 + padding_small, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) }
 				}
 			},
 			
 			-- holder for pet bar
 			pet = {
-				padding = padding,
+				padding = padding_small,
 				position = {
 					point = "RIGHT",
 					anchor = "Side", 
@@ -112,9 +112,9 @@ local config = {
 					xoffset = 0,
 					yoffset = 0
 				},
-				size = { sidebar_inset + buttonsize.triple + padding, buttonsize.triple*num_pet_buttons + padding*(num_pet_buttons-1) },
+				size = { sidebar_inset + buttonsize.triple + padding_small, buttonsize.triple*num_pet_buttons + padding_small*(num_pet_buttons-1) },
 				-- we’re using a different size for vehicles since the quest tracker might be anchored to this
-				size_vehicle = { sidebar_inset, buttonsize.triple*num_pet_buttons + padding*(num_pet_buttons-1) }
+				size_vehicle = { sidebar_inset, buttonsize.triple*num_pet_buttons + padding_small*(num_pet_buttons-1) }
 			},
 			
 			-- holder for stance bar
@@ -219,12 +219,12 @@ local config = {
 				flyout_direction = "UP",
 				growthX = "RIGHT", 
 				growthY = "UP",
-				padding = padding,
+				padding = padding_small,
 				offset = sidebar_inset,
 				bar_size = {
-					["0"] = { 0.0001, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["1"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["2"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) }
+					["0"] = { 0.0001, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["1"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["2"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) }
 				},
 				buttonsize = {
 					["1"] = buttonsize.triple,
@@ -235,11 +235,11 @@ local config = {
 				flyout_direction = "UP",
 				growthX = "RIGHT", 
 				growthY = "UP",
-				padding = padding,
+				padding = padding_small,
 				bar_size = {
-					["0"] = { 0.0001, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["1"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["2"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) }
+					["0"] = { 0.0001, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["1"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["2"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) }
 				},
 				buttonsize = {
 					["1"] = buttonsize.triple,
@@ -257,29 +257,29 @@ local config = {
 			stance = {
 				position = { "BOTTOM", 0, 0 }, -- where the bar is anchored to its controller
 				growth = "RIGHT", 
-				padding = padding,
+				padding = padding_small,
 				buttonsize = buttonsize.triple,
 				bar_size = {
 					[0] = { .0001, .0001 },
 					[1] = { buttonsize.triple, buttonsize.triple },
-					[2] = { buttonsize.triple*(num_stance_buttons-8) + padding*(num_stance_buttons-9), buttonsize.triple },
-					[3] = { buttonsize.triple*(num_stance_buttons-7) + padding*(num_stance_buttons-8), buttonsize.triple },
-					[4] = { buttonsize.triple*(num_stance_buttons-6) + padding*(num_stance_buttons-7), buttonsize.triple },
-					[5] = { buttonsize.triple*(num_stance_buttons-5) + padding*(num_stance_buttons-6), buttonsize.triple },
-					[6] = { buttonsize.triple*(num_stance_buttons-4) + padding*(num_stance_buttons-5), buttonsize.triple },
-					[7] = { buttonsize.triple*(num_stance_buttons-3) + padding*(num_stance_buttons-4), buttonsize.triple },
-					[8] = { buttonsize.triple*(num_stance_buttons-2) + padding*(num_stance_buttons-3), buttonsize.triple },
-					[9] = { buttonsize.triple*(num_stance_buttons-1) + padding*(num_stance_buttons-2), buttonsize.triple },
-					[10] = { buttonsize.triple*num_stance_buttons + padding*(num_stance_buttons-1), buttonsize.triple }
+					[2] = { buttonsize.triple*(num_stance_buttons-8) + padding_small*(num_stance_buttons-9), buttonsize.triple },
+					[3] = { buttonsize.triple*(num_stance_buttons-7) + padding_small*(num_stance_buttons-8), buttonsize.triple },
+					[4] = { buttonsize.triple*(num_stance_buttons-6) + padding_small*(num_stance_buttons-7), buttonsize.triple },
+					[5] = { buttonsize.triple*(num_stance_buttons-5) + padding_small*(num_stance_buttons-6), buttonsize.triple },
+					[6] = { buttonsize.triple*(num_stance_buttons-4) + padding_small*(num_stance_buttons-5), buttonsize.triple },
+					[7] = { buttonsize.triple*(num_stance_buttons-3) + padding_small*(num_stance_buttons-4), buttonsize.triple },
+					[8] = { buttonsize.triple*(num_stance_buttons-2) + padding_small*(num_stance_buttons-3), buttonsize.triple },
+					[9] = { buttonsize.triple*(num_stance_buttons-1) + padding_small*(num_stance_buttons-2), buttonsize.triple },
+					[10] = { buttonsize.triple*num_stance_buttons + padding_small*(num_stance_buttons-1), buttonsize.triple }
 				}
 			},
 			pet = {
-				position = { "RIGHT", -padding, 0 }, -- where the bar is anchored to its controller
+				position = { "RIGHT", -padding_small, 0 }, -- where the bar is anchored to its controller
 				flyout_direction = "LEFT",
 				growth = "DOWN",
-				padding = padding,
+				padding = padding_small,
 				buttonsize = buttonsize.triple,
-				bar_size = { buttonsize.triple, buttonsize.triple*num_pet_buttons + padding*(num_pet_buttons-1) }
+				bar_size = { buttonsize.triple, buttonsize.triple*num_pet_buttons + padding_small*(num_pet_buttons-1) }
 			}
 		}
 	},

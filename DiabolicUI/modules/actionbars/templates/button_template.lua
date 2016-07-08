@@ -1307,6 +1307,14 @@ end
 local overlay_cache = {}
 local num_overlays = 0
 
+local OverlayGlowAnimOutFinished = function(animGroup)
+	local overlay = animGroup:GetParent()
+	local button = overlay:GetParent()
+	overlay:Hide()
+	tinsert(overlay_cache, overlay)
+	button.OverlayGlow = nil
+end
+
 local OverlayGlow_OnHide = function(self)
 	if self.animOut:IsPlaying() then
 		self.animOut:Stop()
@@ -1334,7 +1342,7 @@ Button.ShowOverlayGlow = function(self)
 	else
 		self.OverlayGlow = GetOverlayGlow()
 		local frameWidth, frameHeight = self:GetSize()
-		self.OverlayGlow:SetParent(self)
+		self.OverlayGlow:SetParent(self.border)
 		self.OverlayGlow:ClearAllPoints()
 		--Make the height/width available before the next frame:
 		self.OverlayGlow:SetSize(frameWidth * 1.4, frameHeight * 1.4)
@@ -1356,20 +1364,13 @@ Button.HideOverlayGlow = function(self)
 		end
 	end
 end
-local OverlayGlowAnimOutFinished = function(animGroup)
-	local overlay = animGroup:GetParent()
-	local button = overlay:GetParent()
-	overlay:Hide()
-	tinsert(overlay_cache, overlay)
-	button.OverlayGlow = nil
-end
 
 Button.UpdateOverlayGlow = function(self)
 	local spellId = self:GetSpellId()
 	if spellId and IsSpellOverlayed(spellId) then
-		ShowOverlayGlow(self)
+		self:ShowOverlayGlow()
 	else
-		HideOverlayGlow(self)
+		self:HideOverlayGlow()
 	end
 end
 
@@ -1809,12 +1810,12 @@ ButtonWidget.OnEvent = function(self, event, ...)
 		for button in next, ActiveButtons do
 			local spellId = button:GetSpellId()
 			if spellId and spellId == arg1 then
-				ShowOverlayGlow(button)
+				button:ShowOverlayGlow()
 			else
 				if button.type_by_state == "action" then
 					local actionType, id = GetActionInfo(button.action_by_state)
 					if actionType == "flyout" and FlyoutHasSpell(id, arg1) then
-						ShowOverlayGlow(button)
+						button:ShowOverlayGlow()
 					end
 				end
 			end
@@ -1824,12 +1825,12 @@ ButtonWidget.OnEvent = function(self, event, ...)
 		for button in next, ActiveButtons do
 			local spellId = button:GetSpellId()
 			if spellId and spellId == arg1 then
-				HideOverlayGlow(button)
+				button:HideOverlayGlow()
 			else
 				if button.type_by_state == "action" then
 					local actionType, id = GetActionInfo(button.action_by_state)
 					if actionType == "flyout" and FlyoutHasSpell(id, arg1) then
-						HideOverlayGlow(button)
+						button:HideOverlayGlow()
 					end
 				end
 			end

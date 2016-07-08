@@ -14,7 +14,7 @@ end
 
 local config = {
 	size = { 600, 18 + 4 + 18 }, -- size of the message frame
-	point = { "TOP", UIParent, "TOP", 0, -(136 + 20 + 20)}, -- position of the message frame (D3 position is -136)
+	point = { "TOP", UIParent, "TOP", 0, -(136 + 20 + 20 + 60)}, -- position of the message frame (D3 position is -136)
 
 	-- display- and fade durations of the messages 
 	HZ = 3.0, -- time in seconds between each identical error message

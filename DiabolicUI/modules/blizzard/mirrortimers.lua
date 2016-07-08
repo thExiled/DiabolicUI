@@ -44,7 +44,7 @@ Module.UpdateTimer = function(self, frame)
 	elseif value < min then
 		value = min
 	end
-	timer.bar:GetStatusBarTexture():SetTexCoord(9, (value-min)/(max-min), 0, 1) -- cropping, not shrinking
+	timer.bar:GetStatusBarTexture():SetTexCoord(0, (value-min)/(max-min), 0, 1) -- cropping, not shrinking
 end
 
 -- These aren't secure, no? So it's safe to move whenever?
@@ -84,12 +84,14 @@ Module.Skin = function(self, frame)
 	local config = self.config
 	local timer = self.timers[frame]
 
+	timer.frame:SetFrameLevel(timer.frame:GetFrameLevel() + 5)
 	timer.border:ClearAllPoints()
 	timer.border:SetPoint(unpack(config.texture_position))
 	timer.border:SetSize(unpack(config.texture_size))
 	timer.border:SetTexture(config.texture)
 	timer.msg:SetFontObject(config.font_object)
 	timer.bar:SetStatusBarTexture(config.statusbar_texture)
+	timer.bar:SetFrameLevel(timer.frame:GetFrameLevel() - 5)
 	
 	hooksecurefunc(timer.bar, "SetValue", function(...) self:UpdateTimer(frame) end)
 	hooksecurefunc(timer.bar, "SetMinMaxValues", function(...) self:UpdateTimer(frame) end)

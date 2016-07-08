@@ -134,7 +134,7 @@ local config = {
 	},
 	-- also applies to the new TimerTrackers in ... uh... WoD? MoP? :/
 	mirrortimers = {
-		position = { "TOP", "UIParent", "TOP", 0, -180 }, -- default anchor
+		position = { "TOP", "UIParent", "TOP", 0, -300 }, -- default anchor -180
 		padding = 50, -- padding from one bar to the next
 		font_object = DiabolicTooltipNormal,
 		texture = path .. [[textures\DiabolicUI_Target_195x13_Border.tga]],
