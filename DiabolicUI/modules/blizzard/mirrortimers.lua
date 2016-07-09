@@ -6,16 +6,17 @@ local _G = _G
 
 -- WoW API
 local floor = math.floor
+local unpack = unpack
 local tsort, twipe = table.sort, table.wipe
 local hooksecurefunc = hooksecurefunc
 
 
 local colors = {
-	UNKNOWN = { .7, 0, 0 }, -- fallback for timers and unknowns
-	EXHAUSTION = { 1, .9, 0 },
+	UNKNOWN = { .7, .3, 0 }, -- fallback for timers and unknowns
+	EXHAUSTION = { .7, .3, 0 }, -- 1, .9, 0
 	BREATH = { 0, .5, 1 },
-	DEATH = { 1, .7, 0 },
-	FEIGNDEATH = { 1, .7, 0 }
+	DEATH = { .85, .35, 0 }, -- 1, .7, 0
+	FEIGNDEATH = { .85, .35, 0 } -- 1, .7, 0
 }
 
 
@@ -70,7 +71,7 @@ Module.UpdateAnchors = function(self)
 
 		if #order > 1 then
 			for i = 2, #order do
-				order[i].frame:SetPoint("CENTER", order[i-1], "CENTER", 0, -config.padding)
+				order[i].frame:SetPoint("CENTER", order[i-1].frame, "CENTER", 0, -config.padding)
 			end
 		end
 	end
@@ -115,6 +116,12 @@ Module.MirrorTimer_Show = function(self, timer, value, maxvalue, scale, paused, 
 			timers[frame].type = "mirror"
 			timers[frame].id = i
 			self:Skin(frame)
+		end
+		if frame:IsShown() and timer and frame.timer == timer then
+			local color = colors[frame.timer]
+			if color then
+				timers[frame].bar:SetStatusBarColor(unpack(color))
+			end
 		end
 	end
 	self:UpdateAnchors()
