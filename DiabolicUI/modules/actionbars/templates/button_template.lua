@@ -1038,7 +1038,8 @@ Button.UpdateLayers = function(self)
 	if self.type_by_state == "pet" then
 		checked = self:IsCurrentlyActive() or self:IsAutoRepeat() 
 	else
-		checked = self:GetChecked() == true
+		local get_checked = self:GetChecked()
+		checked = get_checked == true or get_checked == 1
 	end
 	self._checked = checked
 	

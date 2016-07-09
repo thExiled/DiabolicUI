@@ -9,38 +9,57 @@ local tinsert, tconcat, twipe = table.insert, table.concat, table.wipe
 
 -- WoW API
 local GetNumShapeshiftForms = GetNumShapeshiftForms
+local GetShapeshiftForm = GetShapeshiftForm
 local RegisterStateDriver = RegisterStateDriver
 
 local BLANK_TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]
 local NUM_BUTTONS = NUM_SHAPESHIFT_SLOTS or 10
 
+-- Update visible number of buttons, and adjust the bar size to match
 local UpdateStanceButtons = Engine:Wrap(function(self)
 	local buttons = self.buttons or {}
-	local numForms = GetNumShapeshiftForms()
-
-	for i = 1, numForms do
+	local num_forms = GetNumShapeshiftForms()
+	local current_form = GetShapeshiftForm()
+	
+	for i = 1, num_forms do
 		buttons[i]:SetParent(self)
 		buttons[i]:Show()
 		buttons[i]:SetAttribute("statehidden", nil)
 		buttons[i]:UpdateAction()
+		
 	end
 
-	for i = numForms+1, #buttons do
+	for i = num_forms+1, #buttons do
 		buttons[i]:Hide()
 		buttons[i]:SetParent(UIParent)
 		buttons[i]:SetAttribute("statehidden", true)
+		buttons[i]:SetChecked(nil)
 	end
 
-	if numForms == 0 then
+	if num_forms == 0 then
 		self.disabled = true
 	else
 		self.disabled = false
 	end
 	
 	local bar_config = Module.config.structure.bars.stance
-	self:SetSize(unpack(bar_config.bar_size[GetNumShapeshiftForms() or 0]))
+	self:SetSize(unpack(bar_config.bar_size[GetNumShapeshiftForms() or 0]))	
 end)
 
+-- Update the checked state of the buttons
+local UpdateButtonStates = function(self)
+	local buttons = self.buttons or {}
+	local num_forms = GetNumShapeshiftForms()
+	local current_form = GetShapeshiftForm()
+	for i = 1, num_forms do 
+		if current_form == i then
+			buttons[i]:SetChecked(true)
+		else
+			buttons[i]:SetChecked(nil)
+		end
+	end
+	UpdateStanceButtons(self)
+end
 
 BarWidget.OnEnable = function(self)
 	local config = Module.config
@@ -140,7 +159,7 @@ end
 BarWidget.OnEvent = function(self, event, ...)
 	local Bar = self:GetFrame()
 	if Bar then
-		UpdateStanceButtons(Bar)
+		UpdateButtonStates(Bar)
 	end
 end
 
