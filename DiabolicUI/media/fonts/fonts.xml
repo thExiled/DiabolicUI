@@ -169,6 +169,32 @@
 		</Shadow>
 		<FontHeight><AbsValue val="14"/></FontHeight>
 	</Font>
+	
+	<Font name="DiabolicUnitFrameNumberLarge" font="Interface\AddOns\DiabolicUI\media\fonts\Sylfaen.ttf" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset><AbsDimension x="-1.0" y="-1.0"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="28"/></FontHeight>
+	</Font>
+	<Font name="DiabolicUnitFrameNumberNormal" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSansCondensed.ttf" justifyH="LEFT" outline="NORMAL" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset><AbsDimension x="-1.0" y="-1.0"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="12"/></FontHeight>
+	</Font>
+	<Font name="DiabolicUnitFrameNumberSmall" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSansCondensed.ttf" justifyH="LEFT" outline="NORMAL" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset><AbsDimension x="-1.0" y="-1.0"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="10"/></FontHeight>
+	</Font>
+	
 
 	<Font name="DiabolicCastBarNormal" font="Interface\AddOns\DiabolicUI\media\fonts\ExocetBlizzardLight.ttf" justifyH="LEFT" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>

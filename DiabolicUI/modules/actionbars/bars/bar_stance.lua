@@ -15,6 +15,9 @@ local RegisterStateDriver = RegisterStateDriver
 local BLANK_TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]
 local NUM_BUTTONS = NUM_SHAPESHIFT_SLOTS or 10
 
+local UIHider = CreateFrame("Frame")
+UIHider:Hide()
+
 -- Update visible number of buttons, and adjust the bar size to match
 local UpdateStanceButtons = Engine:Wrap(function(self)
 	local buttons = self.buttons or {}
@@ -25,13 +28,12 @@ local UpdateStanceButtons = Engine:Wrap(function(self)
 		buttons[i]:SetParent(self)
 		buttons[i]:Show()
 		buttons[i]:SetAttribute("statehidden", nil)
-		buttons[i]:UpdateAction()
-		
+		buttons[i]:UpdateAction(true) -- force an update, in case it's a new ability (?)
 	end
 
 	for i = num_forms+1, #buttons do
 		buttons[i]:Hide()
-		buttons[i]:SetParent(UIParent)
+		buttons[i]:SetParent(UIHider)
 		buttons[i]:SetAttribute("statehidden", true)
 		buttons[i]:SetChecked(nil)
 	end

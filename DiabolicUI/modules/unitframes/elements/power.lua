@@ -1,6 +1,11 @@
 local _, Engine = ...
 local Handler = Engine:GetHandler("UnitFrame")
 
+-- Lua API
+local tostring, tonumber = tostring, tonumber
+local pairs, unpack = pairs, unpack
+local floor = math.floor
+
 -- WoW API
 local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
@@ -67,7 +72,20 @@ local colors = {
 		{ 0/255, 140/255, 127/255, .7, "smoke" },
 		{ 0/255, 0/255, 0/255, 1, "shade" }
 	}		
-}	
+}
+
+
+local short = function(value)
+	value = tonumber(value)
+	if not value then return "" end
+	if value >= 1e6 then
+		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e3 or value <= -1e3 then
+		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
+	else
+		return tostring(value)
+	end	
+end
 
 local Update
 if Engine:IsBuild("Legion") then
@@ -122,6 +140,42 @@ if Engine:IsBuild("Legion") then
 			Power:SetStatusBarColor(r, g, b)
 		end
 		
+		if Power.Value then
+			if power == 0 or powermax == 0 then
+				Power.Value:SetText("")
+			else
+				if Power.Value.showDeficit then
+					if Power.Value.showPercent then
+						if Power.Value.showMaximum then
+							Power.Value:SetFormattedText("%s / %s - %d%%", short(powermax - power), short(powermax), floor(power/powermax * 100))
+						else
+							Power.Value:SetFormattedText("%s / %d%%", short(powermax - power), floor(power/powermax * 100))
+						end
+					else
+						if Power.Value.showMaximum then
+							Power.Value:SetFormattedText("%s / %s", short(powermax - power), short(powermax))
+						else
+							Power.Value:SetFormattedText("%s / %s", short(powermax - power))
+						end
+					end
+				else
+					if Power.Value.showPercent then
+						if Power.Value.showMaximum then
+							Power.Value:SetFormattedText("%s / %s - %d%%", short(power), short(powermax), floor(power/powermax * 100))
+						else
+							Power.Value:SetFormattedText("%s / %d%%", short(power), floor(power/powermax * 100))
+						end
+					else
+						if Power.Value.showMaximum then
+							Power.Value:SetFormattedText("%s / %s", short(power), short(powermax))
+						else
+							Power.Value:SetFormattedText("%s / %s", short(power))
+						end
+					end
+				end
+			end
+		end
+				
 		if Power.PostUpdate then
 			return Power:PostUpdate()
 		end
@@ -177,6 +231,42 @@ else
 				r, g, b = unpack(color[2])
 			end
 			Power:SetStatusBarColor(r, g, b)
+		end
+		
+		if Power.Value then
+			if power == 0 or powermax == 0 then
+				Power.Value:SetText("")
+			else
+				if Power.Value.showDeficit then
+					if Power.Value.showPercent then
+						if Power.Value.showMaximum then
+							Power.Value:SetFormattedText("%s / %s - %d%%", short(powermax - power), short(powermax), floor(power/powermax * 100))
+						else
+							Power.Value:SetFormattedText("%s / %d%%", short(powermax - power), floor(power/powermax * 100))
+						end
+					else
+						if Power.Value.showMaximum then
+							Power.Value:SetFormattedText("%s / %s", short(powermax - power), short(powermax))
+						else
+							Power.Value:SetFormattedText("%s / %s", short(powermax - power))
+						end
+					end
+				else
+					if Power.Value.showPercent then
+						if Power.Value.showMaximum then
+							Power.Value:SetFormattedText("%s / %s - %d%%", short(power), short(powermax), floor(power/powermax * 100))
+						else
+							Power.Value:SetFormattedText("%s / %d%%", short(power), floor(power/powermax * 100))
+						end
+					else
+						if Power.Value.showMaximum then
+							Power.Value:SetFormattedText("%s / %s", short(power), short(powermax))
+						else
+							Power.Value:SetFormattedText("%s / %s", short(power))
+						end
+					end
+				end
+			end
 		end
 		
 		if Power.PostUpdate then

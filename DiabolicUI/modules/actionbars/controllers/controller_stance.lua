@@ -42,6 +42,7 @@ ControllerWidget.OnEnable = function(self)
 	self.Controller:SetPoint(point, anchor, anchor_point, xoffset, yoffset)
 	self.Controller:SetSize(unpack(control_config.size))
 
+
 	-- Main Button
 	---------------------------------------------
 	local StanceButton = MenuButton:New(self.Controller)
@@ -94,7 +95,6 @@ ControllerWidget.OnEnable = function(self)
 	StanceButton:RegisterForClicks("AnyDown")
 	StanceButton:SetHitRectInsets(0, 0, 0, 0)
 	StanceButton:OnButtonState(StanceButton:GetButtonState())
-	self.StanceButton = StanceButton
 
 	
 	-- Stance Window
@@ -103,19 +103,8 @@ ControllerWidget.OnEnable = function(self)
 	StanceWindow:AttachToButton(StanceButton)
 	StanceWindow:SetPoint(unpack(window_config.position))
 	StanceWindow:SetSize(unpack(window_config.size))
-	--[[
-	StanceWindow:SetBackdrop(micro_menu_config.backdrop)
-	StanceWindow:SetBackdropColor(unpack(micro_menu_config.backdrop_color))
-	StanceWindow:SetBackdropBorderColor(unpack(micro_menu_config.backdrop_border_color))
-	StanceWindow:SetWindowInsets(unpack(micro_menu_config.insets))
-	StanceWindow:SetButtonSize(unpack(micro_menu_config.button.size))
-	StanceWindow:SetButtonAnchor(micro_menu_config.button.anchor)
-	StanceWindow:SetButtonPadding(micro_menu_config.button.padding)
-	StanceWindow:SetButtonGrowthX(micro_menu_config.button.growthX)
-	StanceWindow:SetButtonGrowthY(micro_menu_config.button.growthY)
-	StanceWindow:SetRowSpacing(micro_menu_config.button.spacing)
-	StanceWindow:SetJustify(micro_menu_config.button.justify)
-	]]
+
+	self.StanceButton = StanceButton
 	self.StanceWindow = StanceWindow
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")

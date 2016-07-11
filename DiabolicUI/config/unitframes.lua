@@ -152,6 +152,18 @@ local config = {
 							}
 						}
 					}
+				},
+				texts = {
+					health = {
+						font_object = DiabolicUnitFrameNumberNormal,
+						position = { "TOP", 0, 24 },
+						color = { 229/255, 178/255, 25/255, .9 }
+					},
+					power = {
+						font_object = DiabolicUnitFrameNumberNormal,
+						position = { "TOP", 0, 24 },
+						color = { 229/255, 178/255, 25/255, .9 }
+					}
 				}
 			},
 			target = {
@@ -179,6 +191,18 @@ local config = {
 						normal_double = { "TOP", 0, -50 },
 						boss_single = { "TOP", 0, -72 +12 },
 						boss_double = { "TOP", 0, -72 }
+					}
+				},
+				texts = {
+					health = {
+						font_object = DiabolicUnitFrameNumberNormal,
+						position = { "RIGHT", -6, 0 },
+						color = { 240/255, 240/255, 240/255, .9 }
+					},
+					power = {
+						font_object = DiabolicUnitFrameNumberNormal,
+						position = { "RIGHT", -6, 0 },
+						color = { 229/255, 178/255, 25/255, .9 }
 					}
 				},
 				textures = {

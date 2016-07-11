@@ -13,9 +13,8 @@ local IsAddOnLoaded = IsAddOnLoaded
 -- WatchFrame (prior to WoD)
 ---------------------------------------------------------
 Module.CollapseWatchFrame = function(self)
-	-- This appears to be tainting the WorldMapBlobFrame in Cata, 
-	-- but not in WotLK. So We skip it until I can write a better handler for it.
-	if Engine:IsBuild("Cata") then
+	-- This appears to be tainting the WorldMapBlobFrame in all versions(?)
+	if Engine:IsBuild("WotLK") then
 		return
 	end 
 	if self.WatchFrameMonitor.isUserCollapsed or self.WatchFrameMonitor.isBossCollapsed or self.WatchFrameMonitor.isUserShown then
@@ -28,9 +27,8 @@ Module.CollapseWatchFrame = function(self)
 end
 
 Module.RestoreWatchFrame = function(self)
-	-- This too appears to be tainting the WorldMapBlobFrame in Cata, 
-	-- but not in WotLK. So We skip it until I can write a better handler for it.
-	if Engine:IsBuild("Cata") then
+	-- This too appears to be tainting the WorldMapBlobFrame in versions(?) 
+	if Engine:IsBuild("WotLK") then
 		return
 	end 
 	if self.WatchFrameMonitor.isBossCollapsed and not self.WatchFrameMonitor.isUserCollapsed then

@@ -232,7 +232,28 @@ local Style = function(self, unit)
 	Health:SetPoint(unpack(config.health.position))
 	Health:SetStatusBarTexture(config.health.texture)
 	Health.frequent = 1/120
+	
+	local HealthValueHolder = CreateFrame("Frame", nil, Health:GetScaffold())
+	HealthValueHolder:SetAllPoints()
+	HealthValueHolder:SetFrameLevel(Border:GetFrameLevel() + 1)
+	
+	Health.Value = HealthValueHolder:CreateFontString(nil, "OVERLAY")
+	Health.Value:SetFontObject(config.texts.health.font_object)
+	Health.Value:SetPoint(unpack(config.texts.health.position))
+	Health.Value:SetTextColor(unpack(config.texts.health.color))
+	Health.Value.showPercent = true
+	Health.Value.showDeficit = false
+	Health.Value.showMaximum = false
 
+	Health.PostUpdate = function(self)
+		local min, max = self:GetMinMaxValues()
+		local value = self:GetValue()
+		if UnitAffectingCombat("player") then
+			self.Value:Show()
+		else
+			self.Value:Hide()
+		end
+	end
 	
 	-- Power
 	-------------------------------------------------------------------

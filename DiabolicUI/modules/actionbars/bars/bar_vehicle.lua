@@ -191,15 +191,142 @@ BarWidget.OnEnable = function(self)
 	Bar:SetPoint("BOTTOM")
 	Bar:UpdateStyle()
 	
-	self:SpawnExitButton()
+	self:SpawnVehicleExitButton()
+	
+	if Engine:IsBuild(19678) then -- added in patch 6.1
+		self:SpawnTaxiExitButton()
+	end
 
 	self.Bar = Bar
 end
 
-BarWidget.SpawnExitButton = function(self)
+BarWidget.UpdateTaxiBarVisibility = Engine:Wrap(function(self, event, ...)
+	if UnitOnTaxi("player") then
+		self.TaxiBar:Show()
+		self.TaxiExitButton:Enable()
+	else
+		self.TaxiBar:Hide()
+	end
+end)
+
+BarWidget.SpawnTaxiExitButton = function(self)
+	local config = Module.config
+	
+	local TaxiBar = CreateFrame("Frame", nil, Module:GetWidget("Controller: Main"):GetFrame())
+	TaxiBar:SetFrameStrata("MEDIUM") -- get it above the extrabutton and draenor zone ability 
+	TaxiBar:SetAllPoints()
+	
+	local TaxiExitButton = CreateFrame("CheckButton", "EngineTaxiExitButton", TaxiBar, "SecureActionButtonTemplate")
+	TaxiExitButton:SetSize(unpack(config.visuals.custom.exit.size))
+	TaxiExitButton:SetPoint(unpack(config.visuals.custom.exit.position))
+
+	TaxiExitButton.Normal = TaxiExitButton:CreateTexture(nil, "BORDER")
+	TaxiExitButton.Normal:SetSize(unpack(config.visuals.custom.exit.texture_size))
+	TaxiExitButton.Normal:SetPoint(unpack(config.visuals.custom.exit.texture_position))
+	TaxiExitButton.Normal:SetTexture(config.visuals.custom.exit.textures.normal)
+
+	TaxiExitButton.Highlight = TaxiExitButton:CreateTexture(nil, "BORDER")
+	TaxiExitButton.Highlight:Hide()
+	TaxiExitButton.Highlight:SetSize(unpack(config.visuals.custom.exit.texture_size))
+	TaxiExitButton.Highlight:SetPoint(unpack(config.visuals.custom.exit.texture_position))
+	TaxiExitButton.Highlight:SetTexture(config.visuals.custom.exit.textures.highlight)
+
+	TaxiExitButton.Pushed = TaxiExitButton:CreateTexture(nil, "BORDER")
+	TaxiExitButton.Pushed:Hide()
+	TaxiExitButton.Pushed:SetSize(unpack(config.visuals.custom.exit.texture_size))
+	TaxiExitButton.Pushed:SetPoint(unpack(config.visuals.custom.exit.texture_position))
+	TaxiExitButton.Pushed:SetTexture(config.visuals.custom.exit.textures.pushed)
+
+	TaxiExitButton.Disabled = TaxiExitButton:CreateTexture(nil, "BORDER")
+	TaxiExitButton.Disabled:Hide()
+	TaxiExitButton.Disabled:SetSize(unpack(config.visuals.custom.exit.texture_size))
+	TaxiExitButton.Disabled:SetPoint(unpack(config.visuals.custom.exit.texture_position))
+	TaxiExitButton.Disabled:SetTexture(config.visuals.custom.exit.textures.disabled)
+
+	TaxiExitButton:SetScript("OnMouseDown", function(self) 
+		self.isDown = true 
+		self:UpdateLayers()
+	end)
+
+	TaxiExitButton:SetScript("OnMouseUp", function(self) 
+		self.isDown = false
+		self:UpdateLayers()
+	end)
+
+	TaxiExitButton:SetScript("OnShow", function(self) 
+		self.isDown = false
+		self:UpdateLayers()
+	end)
+
+	TaxiExitButton:SetScript("OnHide", function(self) 
+		self.isDown = false
+		self:UpdateLayers()
+	end)
+
+	TaxiExitButton.UpdateLayers = function(self)
+		if self.isDown then
+			if self:IsMouseOver() then
+				self.Pushed:Show()
+				self.Highlight:Hide()
+			else
+				self.Highlight:Show()
+				self.Pushed:Hide()
+			end
+			self.Normal:Hide()
+		else
+			if self:IsMouseOver() then
+				self.Highlight:Show()
+				self.Normal:Hide()
+			else
+				self.Normal:Show()
+				self.Highlight:Hide()
+			end
+			self.Pushed:Hide()
+		end
+	end
+	
+	TaxiExitButton:SetScript("OnEnter", function(self)
+		if UnitOnTaxi("player") then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(TAXI_CANCEL, 1, 1, 1)
+			GameTooltip:AddLine(TAXI_CANCEL_DESCRIPTION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
+			GameTooltip:Show()
+		end
+		self:UpdateLayers()
+	end)
+	
+	TaxiExitButton:SetScript("OnLeave", function(self) 
+		GameTooltip:Hide()
+		self:UpdateLayers() 
+	end)
+
+	TaxiExitButton:SetScript("OnClick", function(self, button)
+		if UnitOnTaxi("player") then
+			TaxiRequestEarlyLanding()
+		end
+		self:UpdateLayers() 
+	end)
+
+			
+	self.TaxiBar = TaxiBar
+	self.TaxiExitButton = TaxiExitButton
+
+	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "UpdateTaxiBarVisibility")
+	self:RegisterEvent("UPDATE_MULTI_CAST_ACTIONBAR", "UpdateTaxiBarVisibility")
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateTaxiBarVisibility")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateTaxiBarVisibility")
+	self:RegisterEvent("VEHICLE_UPDATE", "UpdateTaxiBarVisibility")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateTaxiBarVisibility")
+	
+	RegisterStateDriver(TaxiExitButton, "visibility", "[target=vehicle,exists,canexitvehicle] hide; show")
+		
+end
+
+BarWidget.SpawnVehicleExitButton = function(self)
 	local config = Module.config
 
 	local VehicleExitButton = CreateFrame("CheckButton", "EngineVehicleExitButton", Module:GetWidget("Controller: Main"):GetFrame(), "SecureActionButtonTemplate")
+	VehicleExitButton:SetFrameStrata("MEDIUM") -- get it above the extrabutton and draenor zone ability 
 	VehicleExitButton:SetSize(unpack(config.visuals.custom.exit.size))
 	VehicleExitButton:SetPoint(unpack(config.visuals.custom.exit.position))
 

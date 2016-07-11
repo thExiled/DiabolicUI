@@ -1,11 +1,12 @@
 local _, Engine = ...
+local L = Engine:GetLocale()
 
 -- This module requires a "HIGH" priority, 
 -- as other modules like the questtracker and the unitframes
 -- hook themselves into its frames!
 local Module = Engine:NewModule("ActionBars", "HIGH")
-
 Module.Template = {} -- table to hold templates for buttons and bars
+
 
 -- Lua API
 local ipairs, select, unpack = ipairs, select, unpack
@@ -308,11 +309,9 @@ Module.OnInit = function(self, event, ...)
 	
 
 	if Engine:IsBuild("Cata") then
-		--self:GetWidget("Bar: Extra"):Enable()
+		self:GetWidget("Bar: Extra"):Enable()
 
 		-- skinning (TODO: move to the blizzard skinning module)
-		--StreamingIcon:ClearAllPoints()
-		--StreamingIcon:SetPoint("CENTER", self:GetWidget("Controller: Main"):GetFrame(), "TOP", 0, 66)
 		local UIHider = CreateFrame("Frame")
 		UIHider:Hide()
 		StreamingIcon:SetParent(UIHider)
@@ -345,6 +344,39 @@ Module.OnInit = function(self, event, ...)
 	self:RegisterEvent("DISABLE_XP_GAIN", "UpdateArtwork")
 	self:RegisterEvent("ENABLE_XP_GAIN", "UpdateArtwork")
 	self:RegisterEvent("PLAYER_UPDATE_RESTING", "UpdateArtwork")
+	
+	if not Engine:IsBuild("Cata") then
+
+		-- faking a CVar here for WotLK clients
+		local value, defaultValue, serverStoredAccountWide, serverStoredPerCharacter = GetCVarInfo("ActionButtonUseKeyDown")
+		if value == nil and defaultValue == nil and serverStoredAccountWide == nil and serverStoredPerCharacter == nil then
+			RegisterCVar("ActionButtonUseKeyDown", false)
+			hooksecurefunc("SetCVar", function(name, value) 
+				if name == "ActionButtonUseKeyDown" then
+					self:GetWidget("Template: Button"):OnEvent("CVAR_UPDATE", "ACTION_BUTTON_USE_KEY_DOWN", value)
+					self.db.cast_on_down = GetCVarBool("ActionButtonUseKeyDown") and 1 or 0 -- store the change 
+				end
+			end)
+			
+			-- set the newly created CVar to our stored setting
+			SetCVar("ActionButtonUseKeyDown", self.db.cast_on_down == 1 and "1" or "0")
+		end
+		
+		-- add the button to the same menu as it's found in from Cata and up
+		local name = "InterfaceOptionsCombatPanelActionButtonUseKeyDown"
+		if not _G[name] then
+			-- we're mimicking what blizzard do to create the button in Cata and higher here
+			local button = CreateFrame("CheckButton", "$parentActionButtonUseKeyDown", InterfaceOptionsCombatPanel, "InterfaceOptionsCheckButtonTemplate")
+			button:SetPoint("TOPLEFT", button:GetParent():GetName().."SelfCastKeyDropDown", "BOTTOMLEFT", 14, -24)
+			button.type = CONTROLTYPE_CHECKBOX
+			button.cvar = "ActionButtonUseKeyDown"
+			BlizzardOptionsPanel_RegisterControl(button, button:GetParent())
+			
+			_G["ACTION_BUTTON_USE_KEY_DOWN"] = L["Cast action keybinds on key down"] -- creating a global variable
+			CombatPanelOptions.ActionButtonUseKeyDown = { text = "ACTION_BUTTON_USE_KEY_DOWN" } -- adding the missing entry to blizzard's setup
+		end
+		
+	end
 	
 end
 

@@ -123,7 +123,7 @@ local colors = {
 	usable = { 1, 1, 1 }, -- normal icons
 	unusable = { .3, .3, .3 }, -- used when icons can't be desaturated
 	unusable_overlay = { 73/255, 28/255, 9/255, .7 }, -- used as an overlay to desaturated icons to darken them 
-	out_of_range = { .8, .1, .1 }, -- out of range  -- .8, .1, .1
+	out_of_range = { .8, 0, 0 }, -- out of range  -- .8, .1, .1
 	out_of_mana = { .3, .3, .7 }, -- out of mana -- .5, .5, 1
 
 	stack_text = { 1, 1, 1, 1 },
@@ -1905,6 +1905,15 @@ ButtonWidget.OnEvent = function(self, event, ...)
 				button:UpdateUsable()
 			end
 		end 
+	elseif event == "CVAR_UPDATE" and (arg1 == "ACTION_BUTTON_USE_KEY_DOWN" or arg1 == "LOCK_ACTIONBAR_TEXT") then
+		local cast_on_down = GetCVarBool("ActionButtonUseKeyDown")
+		for button in next, ButtonRegistry do
+			if cast_on_down then
+				button:RegisterForClicks("AnyDown")
+			else
+				button:RegisterForClicks("AnyUp")
+			end
+		end
 	end
 end
 
@@ -1967,6 +1976,7 @@ ButtonWidget.LoadEvents = function(self)
 	self:RegisterEvent("PLAYER_CONTROL_GAINED", "OnEvent")
 	self:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED", "OnEvent")
 
+	self:RegisterEvent("CVAR_UPDATE", "OnEvent") -- cast on up/down
 
   -- for items, as we want the count and similar updated!
 	self:RegisterEvent("BAG_UPDATE", "OnEvent")
@@ -2055,7 +2065,13 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	else
 		button = setmetatable(CreateFrame("CheckButton", name , header, "SecureActionButtonTemplate, ActionButtonTemplate"), Button_MT)
 		button:RegisterForDrag("LeftButton", "RightButton")
-		button:RegisterForClicks("AnyUp")
+		
+		local cast_on_down = GetCVarBool("ActionButtonUseKeyDown")
+		if cast_on_down then
+			button:RegisterForClicks("AnyDown")
+		else
+			button:RegisterForClicks("AnyUp")
+		end
 	end
 	
 	button.config = header.config

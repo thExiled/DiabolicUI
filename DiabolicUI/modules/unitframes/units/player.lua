@@ -40,6 +40,23 @@ local LeftOrb = function(self, unit)
 
 	Health.frequent = 1/120
 
+	Health.Value = Health:GetOverlay():CreateFontString(nil, "OVERLAY")
+	Health.Value:SetFontObject(config.texts.health.font_object)
+	Health.Value:SetPoint(unpack(config.texts.health.position))
+	Health.Value:SetTextColor(unpack(config.texts.health.color))
+	Health.Value.showPercent = false
+	Health.Value.showDeficit = false
+	Health.Value.showMaximum = true
+	
+	Health.PostUpdate = function(self)
+		local min, max = self:GetMinMaxValues()
+		local value = self:GetValue()
+		if UnitAffectingCombat("player") then
+			self.Value:Show()
+		else
+			self.Value:Hide()
+		end
+	end
 	
 	-- CastBar
 	-------------------------------------------------------------------
@@ -118,7 +135,25 @@ local RightOrb = function(self, unit)
 	Power:SetSparkFlashSize(unpack(orb_config.spark.flash_size))
 	Power:SetSparkFlashTexture(orb_config.spark.flash_texture)
 
+	Power.Value = Power:GetOverlay():CreateFontString(nil, "OVERLAY")
+	Power.Value:SetFontObject(config.texts.power.font_object)
+	Power.Value:SetPoint(unpack(config.texts.power.position))
+	Power.Value:SetTextColor(unpack(config.texts.power.color))
+	Power.Value.showPercent = false
+	Power.Value.showDeficit = false
+	Power.Value.showMaximum = true
+	
 	Power.frequent = 1/120
+	
+	Power.PostUpdate = function(self)
+		local min, max = self:GetMinMaxValues()
+		local value = self:GetValue()
+		if UnitAffectingCombat("player") then
+			self.Value:Show()
+		else
+			self.Value:Hide()
+		end
+	end
 	
 	self.Power = Power
 	

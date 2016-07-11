@@ -21,6 +21,10 @@ local xpoffset_before, xpsize, xpoffset_after = 2, 7, 2
 -- skull stuff
 local skulloffset = 78
 
+-- artwork offsets (angel + demon)
+local angel_offset = 128 + 64
+local demon_offset = 128 + 64 + 4 
+
 -- some locals for easier reference
 local num_buttons = NUM_ACTIONBAR_BUTTONS or 12
 local num_pet_buttons = NUM_PET_ACTION_SLOTS or 10
@@ -288,12 +292,12 @@ local config = {
 			["1"] = {
 				left = {
 					size = { 256, 256 },
-					position = { "BOTTOM", -( (buttonsize.single*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", -( (buttonsize.single*num_buttons + padding*(num_buttons-1))/2 + angel_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Demon.tga]]
 				},
 				right = {
 					size = { 256, 256 },
-					position = { "BOTTOM", ( (buttonsize.single*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", ( (buttonsize.single*num_buttons + padding*(num_buttons-1))/2 + demon_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Angel.tga]]
 				},
 				center = {
@@ -320,12 +324,12 @@ local config = {
 			["2"] = {
 				left = {
 					size = { 256, 256 },
-					position = { "BOTTOM", -( (buttonsize.double*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", -( (buttonsize.double*num_buttons + padding*(num_buttons-1))/2 + angel_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Demon.tga]]
 				},
 				right = {
 					size = { 256, 256 },
-					position = { "BOTTOM", ( (buttonsize.double*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", ( (buttonsize.double*num_buttons + padding*(num_buttons-1))/2 + demon_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Angel.tga]]
 				},
 				center = {
@@ -352,12 +356,12 @@ local config = {
 			["3"] = {
 				left = {
 					size = { 256, 256 },
-					position = { "BOTTOM", -( (buttonsize.triple*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", -( (buttonsize.triple*num_buttons + padding*(num_buttons-1))/2 + angel_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Demon.tga]]
 				},
 				right = {
 					size = { 256, 256 },
-					position = { "BOTTOM", ( (buttonsize.triple*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", ( (buttonsize.triple*num_buttons + padding*(num_buttons-1))/2 + demon_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Angel.tga]]
 				},
 				center = {
@@ -384,12 +388,12 @@ local config = {
 			["vehicle"] = {
 				left = {
 					size = { 256, 256 },
-					position = { "BOTTOM", -( (buttonsize.vehicle*num_vehicle_buttons + padding*(num_vehicle_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", -( (buttonsize.vehicle*num_vehicle_buttons + padding*(num_vehicle_buttons-1))/2 + angel_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Demon.tga]]
 				},
 				right = {
 					size = { 256, 256 },
-					position = { "BOTTOM", ( (buttonsize.vehicle*num_vehicle_buttons + padding*(num_vehicle_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", ( (buttonsize.vehicle*num_vehicle_buttons + padding*(num_vehicle_buttons-1))/2 + demon_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Angel.tga]]
 				},
 				center = {
@@ -869,7 +873,8 @@ local config = {
 		custom = {
 			exit = {
 				size = { 36, 36 },
-				position = { "TOPRIGHT", 164 + 36, 87 + 36 },
+				position = { "BOTTOMRIGHT", 200, 156 },
+				--position = { "TOPRIGHT", 164 + 36, 87 + 36 },
 				texture_size = { 64, 64 },
 				texture_position = { "CENTER", 0, 0 },
 				textures = {
@@ -877,6 +882,25 @@ local config = {
 					highlight = path .. [[textures\DiabolicUI_ExitButton_37x37_Highlight.tga]],
 					pushed = path .. [[textures\DiabolicUI_ExitButton_37x37_Pushed.tga]],
 					disabled = path .. [[textures\DiabolicUI_ExitButton_37x37_Disabled.tga]]
+				}
+			},
+			extra = {
+				size = { 38, 38 },
+				position = { "BOTTOMRIGHT", 250, 155 },
+				position_vehicle = { "BOTTOMRIGHT", 200, 155 },
+				icon = {
+					texcoords = { 5/64, 59/64, 5/64, 59/64 },
+					size = { 38, 38 },
+					position = { "CENTER", 0, 0 },
+					position_pushed = { "CENTER", 0, -2 }
+				},
+				border = {
+					size = { 64, 64 },
+					position = { "CENTER", 0, 0 },
+					textures = {
+						normal = path .. [[textures\DiabolicUI_Button_37x37_Normal.tga]],
+						highlight = path .. [[textures\DiabolicUI_Button_37x37_Highlight.tga]]
+					}
 				}
 			}
 		},
@@ -1253,6 +1277,7 @@ local config = {
 local db = {
 	num_bars = 1, -- UnitLevel("player") < 80 and 1 or 2, -- number of main/bottom bars (1-3)
 	num_side_bars = 0, -- number of side bars (0-2)
+	cast_on_down = 0 -- this setting is only used for WotLK
 }
 
 Engine:NewStaticConfig("ActionBars", config)
