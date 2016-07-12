@@ -1,7 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 
+<Script file='aura.lua'/>
 <Script file='cast.lua'/>
 <Script file='classification.lua'/>
+<Script file='combatfeedback.lua'/>
 <Script file='combopoints.lua'/>
 <Script file='happiness.lua'/>
 <Script file='health.lua'/>
@@ -9,5 +11,6 @@
 <Script file='portraits.lua'/>
 <Script file='power.lua'/>
 <Script file='runes.lua'/>
+<Script file='threat.lua'/>
 
 </Ui>

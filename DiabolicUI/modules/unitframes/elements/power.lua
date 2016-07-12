@@ -277,51 +277,55 @@ end
 
 local Enable = function(self)
 	local Power = self.Power
-	if Power.frequent then
-	
-	else
-		if Engine:IsBuild("Cata") then
-			self:RegisterEvent("UNIT_POWER", Update)
-			self:RegisterEvent("UNIT_MAXPOWER", Update)
+	if Power then
+		if Power.frequent then
+		
 		else
-			self:RegisterEvent("UNIT_MANA", Update)
-			self:RegisterEvent("UNIT_RAGE", Update)
-			self:RegisterEvent("UNIT_FOCUS", Update)
-			self:RegisterEvent("UNIT_ENERGY", Update)
-			self:RegisterEvent("UNIT_RUNIC_POWER", Update)
-			self:RegisterEvent("UNIT_MAXMANA", Update)
-			self:RegisterEvent("UNIT_MAXRAGE", Update)
-			self:RegisterEvent("UNIT_MAXFOCUS", Update)
-			self:RegisterEvent("UNIT_MAXENERGY", Update)
-			self:RegisterEvent("UNIT_DISPLAYPOWER", Update)
-			self:RegisterEvent("UNIT_MAXRUNIC_POWER", Update)
+			if Engine:IsBuild("Cata") then
+				self:RegisterEvent("UNIT_POWER", Update)
+				self:RegisterEvent("UNIT_MAXPOWER", Update)
+			else
+				self:RegisterEvent("UNIT_MANA", Update)
+				self:RegisterEvent("UNIT_RAGE", Update)
+				self:RegisterEvent("UNIT_FOCUS", Update)
+				self:RegisterEvent("UNIT_ENERGY", Update)
+				self:RegisterEvent("UNIT_RUNIC_POWER", Update)
+				self:RegisterEvent("UNIT_MAXMANA", Update)
+				self:RegisterEvent("UNIT_MAXRAGE", Update)
+				self:RegisterEvent("UNIT_MAXFOCUS", Update)
+				self:RegisterEvent("UNIT_MAXENERGY", Update)
+				self:RegisterEvent("UNIT_DISPLAYPOWER", Update)
+				self:RegisterEvent("UNIT_MAXRUNIC_POWER", Update)
+			end
+			self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
 		end
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
 	end
 end
 
 local Disable = function(self)
 	local Power = self.Power
-	if Power.frequent then
-	
-	else
-		if Engine:IsBuild("Cata") then
-			self:UnregisterEvent("UNIT_POWER", Update)
-			self:UnregisterEvent("UNIT_MAXPOWER", Update)
+	if Power then
+		if Power.frequent then
+		
 		else
-			self:UnregisterEvent("UNIT_MANA", Update)
-			self:UnregisterEvent("UNIT_RAGE", Update)
-			self:UnregisterEvent("UNIT_FOCUS", Update)
-			self:UnregisterEvent("UNIT_ENERGY", Update)
-			self:UnregisterEvent("UNIT_RUNIC_POWER", Update)
-			self:UnregisterEvent("UNIT_MAXMANA", Update)
-			self:UnregisterEvent("UNIT_MAXRAGE", Update)
-			self:UnregisterEvent("UNIT_MAXFOCUS", Update)
-			self:UnregisterEvent("UNIT_MAXENERGY", Update)
-			self:UnregisterEvent("UNIT_DISPLAYPOWER", Update)
-			self:UnregisterEvent("UNIT_MAXRUNIC_POWER", Update)
+			if Engine:IsBuild("Cata") then
+				self:UnregisterEvent("UNIT_POWER", Update)
+				self:UnregisterEvent("UNIT_MAXPOWER", Update)
+			else
+				self:UnregisterEvent("UNIT_MANA", Update)
+				self:UnregisterEvent("UNIT_RAGE", Update)
+				self:UnregisterEvent("UNIT_FOCUS", Update)
+				self:UnregisterEvent("UNIT_ENERGY", Update)
+				self:UnregisterEvent("UNIT_RUNIC_POWER", Update)
+				self:UnregisterEvent("UNIT_MAXMANA", Update)
+				self:UnregisterEvent("UNIT_MAXRAGE", Update)
+				self:UnregisterEvent("UNIT_MAXFOCUS", Update)
+				self:UnregisterEvent("UNIT_MAXENERGY", Update)
+				self:UnregisterEvent("UNIT_DISPLAYPOWER", Update)
+				self:UnregisterEvent("UNIT_MAXRUNIC_POWER", Update)
+			end
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
 		end
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
 	end
 end
 

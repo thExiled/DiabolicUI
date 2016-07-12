@@ -216,19 +216,23 @@ local config = {
 						border = {
 							standard_single = {
 								normal = path .. [[textures\DiabolicUI_Target_305x15_Border.tga]],
-								highlight = path .. [[textures\DiabolicUI_Target_305x15_BorderHighlight.tga]]
+								highlight = path .. [[textures\DiabolicUI_Target_305x15_BorderHighlight.tga]],
+								threat = path .. [[textures\DiabolicUI_Target_305x15_Glow.tga]]
 							},
 							standard_double = {
 								normal = path .. [[textures\DiabolicUI_Target_305x15_Border2Bars.tga]],
-								highlight = path .. [[textures\DiabolicUI_Target_305x15_Border2BarsHighlight.tga]]
+								highlight = path .. [[textures\DiabolicUI_Target_305x15_Border2BarsHighlight.tga]],
+								threat = path .. [[textures\DiabolicUI_Target_305x15_Glow2Bars.tga]]
 							},
 							boss_single = {
 								normal = path .. [[textures\DiabolicUI_Target_305x15_BorderBoss.tga]],
-								highlight = path .. [[textures\DiabolicUI_Target_305x15_BorderBossHighlight.tga]]
+								highlight = path .. [[textures\DiabolicUI_Target_305x15_BorderBossHighlight.tga]],
+								threat = path .. [[textures\DiabolicUI_Target_305x15_GlowBoss.tga]]
 							},
 							boss_double = {
 								normal = path .. [[textures\DiabolicUI_Target_305x15_BorderBoss2Bars.tga]],
-								highlight = path .. [[textures\DiabolicUI_Target_305x15_BorderBoss2BarsHighlight.tga]]
+								highlight = path .. [[textures\DiabolicUI_Target_305x15_BorderBoss2BarsHighlight.tga]],
+								threat = path .. [[textures\DiabolicUI_Target_305x15_GlowBoss2Bars.tga]]
 							}
 						}
 					}
@@ -247,7 +251,8 @@ local config = {
 					texture_position = { "TOPLEFT", -71 + (148-114)/2, 25 -(35-15)/2 },
 					textures = {
 						normal = path .. [[textures\DiabolicUI_Target_114x15_Border.tga]],
-						highlight = path .. [[textures\DiabolicUI_Target_114x15_Highlight.tga]]
+						highlight = path .. [[textures\DiabolicUI_Target_114x15_Highlight.tga]],
+						threat = path .. [[textures\DiabolicUI_Target_114x15_Glow.tga]]
 					}
 				},
 				health = {
@@ -278,7 +283,8 @@ local config = {
 					texture_position = { "TOPLEFT", -83, 24 -(70 + 8)},
 					textures = {
 						normal = path .. [[textures\DiabolicUI_Target_80x15_Border.tga]],
-						highlight = path .. [[textures\DiabolicUI_Target_80x15_Highlight.tga]]
+						highlight = path .. [[textures\DiabolicUI_Target_80x15_Highlight.tga]],
+						threat = path .. [[textures\DiabolicUI_Target_80x15_Glow.tga]]
 					}
 				},
 				health = {
@@ -299,7 +305,8 @@ local config = {
 					textures = {
 						backdrop = path .. [[textures\DiabolicUI_Target_80x80_PortraitBackdrop.tga]],
 						border = path .. [[textures\DiabolicUI_Target_80x80_PortraitBorder.tga]],
-						highlight = path .. [[textures\DiabolicUI_Target_80x80_PortraitBorderHighlight.tga]]
+						highlight = path .. [[textures\DiabolicUI_Target_80x80_PortraitBorderHighlight.tga]],
+						threat = path .. [[textures\DiabolicUI_Target_80x80_PortraitGlow.tga]]
 					}
 				},
 				name = {
@@ -321,7 +328,8 @@ local config = {
 					texture_position = { "TOPLEFT", -83, 24 -(70 + 8)},
 					textures = {
 						normal = path .. [[textures\DiabolicUI_Target_80x15_Border.tga]],
-						highlight = path .. [[textures\DiabolicUI_Target_80x15_Highlight.tga]]
+						highlight = path .. [[textures\DiabolicUI_Target_80x15_Highlight.tga]],
+						threat = path .. [[textures\DiabolicUI_Target_80x15_Glow.tga]]
 					}
 				},
 				health = {
@@ -342,7 +350,8 @@ local config = {
 					textures = {
 						backdrop = path .. [[textures\DiabolicUI_Target_80x80_PortraitBackdrop.tga]],
 						border = path .. [[textures\DiabolicUI_Target_80x80_PortraitBorder.tga]],
-						highlight = path .. [[textures\DiabolicUI_Target_80x80_PortraitBorderHighlight.tga]]
+						highlight = path .. [[textures\DiabolicUI_Target_80x80_PortraitBorderHighlight.tga]],
+						threat = path .. [[textures\DiabolicUI_Target_80x80_PortraitGlow.tga]]
 					}
 				},
 				name = {

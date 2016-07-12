@@ -256,25 +256,29 @@ end
 	
 local Enable = function(self)
 	local Health = self.Health
-	if Health.frequent then
-	else
-		self:RegisterEvent("UNIT_HEALTH", Update)
-		self:RegisterEvent("UNIT_MAXHEALTH", Update)
-		self:RegisterEvent("UNIT_HAPPINESS", Update)
-		self:RegisterEvent("UNIT_FACTION", Update)
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
+	if Health then
+		if Health.frequent then
+		else
+			self:RegisterEvent("UNIT_HEALTH", Update)
+			self:RegisterEvent("UNIT_MAXHEALTH", Update)
+			self:RegisterEvent("UNIT_HAPPINESS", Update)
+			self:RegisterEvent("UNIT_FACTION", Update)
+			self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
+		end
 	end
 end
 
 local Disable = function(self)
 	local Health = self.Health
-	if Health.frequent then
-	else
-		self:UnregisterEvent("UNIT_HEALTH", Update)
-		self:UnregisterEvent("UNIT_MAXHEALTH", Update)
-		self:UnregisterEvent("UNIT_HAPPINESS", Update)
-		self:UnregisterEvent("UNIT_FACTION", Update)
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
+	if Health then 
+		if Health.frequent then
+		else
+			self:UnregisterEvent("UNIT_HEALTH", Update)
+			self:UnregisterEvent("UNIT_MAXHEALTH", Update)
+			self:UnregisterEvent("UNIT_HAPPINESS", Update)
+			self:UnregisterEvent("UNIT_FACTION", Update)
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
+		end
 	end
 end
 

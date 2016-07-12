@@ -15,6 +15,8 @@ local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 
 
+-- Utility Functions
+--------------------------------------------------------------------------
 local getBackdropName = function(haspower)
 	return "Backdrop" .. (haspower and "Power" or "")
 end
@@ -23,12 +25,17 @@ local getBorderName = function(isboss, haspower, ishighlight)
 	return "Border" .. (isboss and "Boss" or "Normal") .. (haspower and "Power" or "") .. (ishighlight and "Highlight" or "")
 end
 
+local getThreatName = function(isboss, haspower)
+	return "Threat" .. (isboss and "Boss" or "Normal") .. (haspower and "Power" or "")
+end
+
 local compare = function(a,b,c,d,e,f)
 	if d == nil and e == nil and f == nil then
 		return 
 	end
 	return (a == d) and (b == e) and (c == f)
 end
+
 
 -- reposition the unit classification when needed
 local Classification_PostUpdate = function(self, unit)
@@ -90,7 +97,9 @@ local SetLayer = function(self, isboss, haspower, ishighlight)
 	local cache = self.layers
 	local border_name = getBorderName(isboss, haspower, ishighlight)
 	local backdrop_name = getBackdropName(haspower)
-
+	local threat_name = getThreatName(isboss, haspower)
+	
+	-- display the correct border texture
 	cache.border[border_name]:Show()
 	for id,layer in pairs(cache.border) do
 		if id ~= border_name then
@@ -98,12 +107,24 @@ local SetLayer = function(self, isboss, haspower, ishighlight)
 		end
 	end
 	
+	-- display the correct backdrop texture
 	cache.backdrop[backdrop_name]:Show()
 	for id,layer in pairs(cache.backdrop) do
 		if id ~= backdrop_name then
 			layer:Hide()
 		end
 	end
+	
+	-- display the correct threat texture
+	--  *This does not affect the visibility of the main threat object, 
+	--   it only handles the visibility of the separate sub-textures.
+	cache.threat[threat_name]:Show()
+	for id,layer in pairs(cache.threat) do
+		if id ~= threat_name then
+			layer:Hide()
+		end
+	end
+	
 end
 
 local UpdateLayers = function(self)
@@ -153,7 +174,6 @@ local Style = function(self, unit)
 
 	-- Artwork
 	-------------------------------------------------------------------
-	self.layers = { backdrop = {}, border = {} } -- cache for faster toggling
 
 	local Backdrop = self:CreateTexture(nil, "BACKGROUND")
 	Backdrop:SetSize(unpack(config.textures.size))
@@ -200,7 +220,6 @@ local Style = function(self, unit)
 	BorderBossHighlight:SetPoint(unpack(config.textures.position))
 	BorderBossHighlight:SetTexture(config.textures.layers.border.boss_single.highlight)
 
-
 	local BorderBossPower = Border:CreateTexture(nil, "BORDER")
 	BorderBossPower:SetSize(unpack(config.textures.size))
 	BorderBossPower:SetPoint(unpack(config.textures.position))
@@ -210,18 +229,6 @@ local Style = function(self, unit)
 	BorderBossPowerHighlight:SetSize(unpack(config.textures.size))
 	BorderBossPowerHighlight:SetPoint(unpack(config.textures.position))
 	BorderBossPowerHighlight:SetTexture(config.textures.layers.border.boss_double.highlight)
-
-	self.layers.backdrop.Backdrop = Backdrop
-	self.layers.backdrop.BackdropPower = BackdropPower
-
-	self.layers.border.BorderNormal = BorderNormal
-	self.layers.border.BorderNormalHighlight = BorderNormalHighlight
-	self.layers.border.BorderNormalPower = BorderNormalPower
-	self.layers.border.BorderNormalPowerHighlight = BorderNormalPowerHighlight
-	self.layers.border.BorderBoss = BorderBoss
-	self.layers.border.BorderBossHighlight = BorderBossHighlight
-	self.layers.border.BorderBossPower = BorderBossPower
-	self.layers.border.BorderBossPowerHighlight = BorderBossPowerHighlight
 
 
 	-- Health
@@ -279,6 +286,38 @@ local Style = function(self, unit)
 	CastBar:DisableSmoothing(true)
 	
 
+	-- Threat
+	-------------------------------------------------------------------
+	local Threat = CreateFrame("Frame", nil, self)
+	Threat:SetFrameLevel(self:GetFrameLevel())
+	Threat:SetAllPoints()
+	Threat:Hide()
+	
+	local ThreatNormal = Threat:CreateTexture(nil, "BACKGROUND")
+	ThreatNormal:Hide()
+	ThreatNormal:SetSize(unpack(config.textures.size))
+	ThreatNormal:SetPoint(unpack(config.textures.position))
+	ThreatNormal:SetTexture(config.textures.layers.border.standard_single.threat)
+	
+	local ThreatNormalPower = Threat:CreateTexture(nil, "BACKGROUND")
+	ThreatNormalPower:Hide()
+	ThreatNormalPower:SetSize(unpack(config.textures.size))
+	ThreatNormalPower:SetPoint(unpack(config.textures.position))
+	ThreatNormalPower:SetTexture(config.textures.layers.border.standard_double.threat)
+
+	local ThreatBoss = Threat:CreateTexture(nil, "BACKGROUND")
+	ThreatBoss:Hide()
+	ThreatBoss:SetSize(unpack(config.textures.size))
+	ThreatBoss:SetPoint(unpack(config.textures.position))
+	ThreatBoss:SetTexture(config.textures.layers.border.boss_single.threat)
+
+	local ThreatBossPower = Threat:CreateTexture(nil, "BACKGROUND")
+	ThreatBossPower:Hide()
+	ThreatBossPower:SetSize(unpack(config.textures.size))
+	ThreatBossPower:SetPoint(unpack(config.textures.position))
+	ThreatBossPower:SetTexture(config.textures.layers.border.boss_double.threat)
+
+
 	-- Texts
 	-------------------------------------------------------------------
 	local Name = Border:CreateFontString(nil, "OVERLAY")
@@ -297,7 +336,28 @@ local Style = function(self, unit)
 	Classification:SetPoint(unpack(config.classification.position.normal_single))
 	Classification.position = config.classification.position -- should contain all 4 positions
 
-	
+
+	-- Put everything into our layer cache
+	---------------------------------------------------------------------
+	self.layers = { backdrop = {}, border = {}, threat = {} } -- cache for faster toggling
+
+	self.layers.backdrop.Backdrop = Backdrop
+	self.layers.backdrop.BackdropPower = BackdropPower
+
+	self.layers.border.BorderNormal = BorderNormal
+	self.layers.border.BorderNormalHighlight = BorderNormalHighlight
+	self.layers.border.BorderNormalPower = BorderNormalPower
+	self.layers.border.BorderNormalPowerHighlight = BorderNormalPowerHighlight
+	self.layers.border.BorderBoss = BorderBoss
+	self.layers.border.BorderBossHighlight = BorderBossHighlight
+	self.layers.border.BorderBossPower = BorderBossPower
+	self.layers.border.BorderBossPowerHighlight = BorderBossPowerHighlight
+
+	self.layers.threat.ThreatNormal = ThreatNormal
+	self.layers.threat.ThreatNormalPower = ThreatNormalPower
+	self.layers.threat.ThreatBoss = ThreatBoss
+	self.layers.threat.ThreatBossPower = ThreatBossPower
+
 	self.CastBar = CastBar
 	self.Classification = Classification
 	self.Classification.PostUpdate = Classification_PostUpdate
@@ -305,7 +365,12 @@ local Style = function(self, unit)
 	self.Name = Name
 	self.Power = Power
 	self.Power.PostUpdate = function() Update(self) end
-
+	self.Threat = Threat
+	self.Threat.SetVertexColor = function(_, ...) 
+		for i,v in pairs(self.layers.threat) do
+			v:SetVertexColor(...)
+		end
+	end
 
 	self:HookScript("OnEnter", UpdateLayers)
 	self:HookScript("OnLeave", UpdateLayers)
