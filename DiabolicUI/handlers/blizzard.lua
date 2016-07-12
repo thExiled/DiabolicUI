@@ -464,8 +464,6 @@ local elements = {
 			MinimapZoomOut:SetParent(UIHider)
 			MinimapZoneTextButton:SetParent(UIHider)
 			
-			QueueStatusMinimapButtonBorder
-			
 			if Engine:IsBuild("Legion") then
 				-- Legion stuff coming here. 
 			end
