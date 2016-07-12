@@ -2,13 +2,16 @@
 
 <Script file='altpower.lua'/>
 <Script file='buffs.lua'/>
+<Script file='durability.lua'/>
 <Script file='fonts.lua'/>
 <Script file='gamemenu.lua'/>
+<Script file='ghostframe.lua'/>
 <Script file='levelup.lua'/>
 <Script file='mirrortimers.lua'/>
 <Script file='popups.lua'/>
 <Script file='tooltips.lua'/>
 <Script file='totembar.lua'/>
 <Script file='tracker.lua'/>
+<Script file='vehicleseat.lua'/>
 
 </Ui>

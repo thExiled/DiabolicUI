@@ -2,17 +2,14 @@ local ADDON, Engine = ...
 local path = ([[Interface\AddOns\%s\media\]]):format(ADDON)
 
 -- The styles listed here are meant to skin
--- Blizzard elements we can't replace, like the gamemenu.
-
+-- Blizzard elements we can't replace, like the gamemenu,
+-- ...or Blizzard elements we can't be arsed to replace, like the rest. 
 local config = {
-	-- In WotLK certain actions like an addon opening the character paperdoll in combat will cause taint.
-	-- I tried using a clickbutton, but that doesn't really work because of the way blizzard has written their microbuttons.
-	-- 
-	-- So the only "safe" way is really to reskin the actual micromenu buttons. 
-	-- Which is a way that sucks, because it can cause a lot of incompabilities with other addons. 
-	-- But what can you do, really? :/
-	micromenu = {
-		
+	altpower = {
+		position = { "CENTER", "UIParent", "CENTER", 0, -180 }
+	},
+	durability = {
+		position = { "CENTER", "UIParent", "CENTER", 190, 0 }
 	},
 	gamemenu = {
 		capture_mouse = false,
@@ -99,14 +96,21 @@ local config = {
 			
 		}
 	},
+	ghostframe = {
+		position = { "CENTER", "UIParent", "CENTER", 0, -50 }
+	},
 	levelup = {
 		position = { "TOP", 0, -250 }
 	},
-	totembar = {
-		position = { "BOTTOM", "Main", "TOP", 0, 60 }
-	},
-	altpower = {
-		position = { "CENTER", "UIParent", "CENTER", 0, -180 }
+	-- also applies to the new TimerTrackers in ... uh... WoD? MoP? :/
+	mirrortimers = {
+		position = { "TOP", "UIParent", "TOP", 0, -300 }, -- default anchor -180
+		padding = 50, -- padding from one bar to the next
+		font_object = DiabolicTooltipNormal,
+		texture = path .. [[textures\DiabolicUI_Target_195x13_Border.tga]],
+		texture_size = { 512, 64 },
+		texture_position = { "TOP", 0, 25 },
+		statusbar_texture = path .. [[statusbars\DiabolicUI_StatusBar_512x64_Dark_Warcraft.tga]]
 	},
 	tooltips = {
 		position = { "BOTTOMRIGHT", -(30 + 8), 20 + 55 + 20 }, -- relative to UICenter
@@ -132,15 +136,11 @@ local config = {
 			texture = path .. [[statusbars\DiabolicUI_StatusBar_512x64_Dark_Warcraft.tga]]
 		}
 	},
-	-- also applies to the new TimerTrackers in ... uh... WoD? MoP? :/
-	mirrortimers = {
-		position = { "TOP", "UIParent", "TOP", 0, -300 }, -- default anchor -180
-		padding = 50, -- padding from one bar to the next
-		font_object = DiabolicTooltipNormal,
-		texture = path .. [[textures\DiabolicUI_Target_195x13_Border.tga]],
-		texture_size = { 512, 64 },
-		texture_position = { "TOP", 0, 25 },
-		statusbar_texture = path .. [[statusbars\DiabolicUI_StatusBar_512x64_Dark_Warcraft.tga]]
+	totembar = {
+		position = { "BOTTOM", "Main", "TOP", 0, 60 }
+	},
+	vehicleseat = {
+		position = { "CENTER", "UIParent", "CENTER", -224, 0 }
 	}
 }
 

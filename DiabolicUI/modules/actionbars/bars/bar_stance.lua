@@ -24,8 +24,19 @@ local UpdateStanceButtons = Engine:Wrap(function(self)
 	local num_forms = GetNumShapeshiftForms()
 	local current_form = GetShapeshiftForm()
 	
+	local need_update
+	local num_shown = 0
+	for i = 1, #buttons do
+		if buttons[i]:IsShown() then
+			num_shown = num_shown + 1
+		end
+	end
+	if num_shown ~= num_forms then
+		need_update = true
+	end
+	
 	for i = 1, num_forms do
-		buttons[i]:SetParent(self)
+		--buttons[i]:SetParent(self)
 		buttons[i]:Show()
 		buttons[i]:SetAttribute("statehidden", nil)
 		buttons[i]:UpdateAction(true) -- force an update, in case it's a new ability (?)
@@ -33,7 +44,7 @@ local UpdateStanceButtons = Engine:Wrap(function(self)
 
 	for i = num_forms+1, #buttons do
 		buttons[i]:Hide()
-		buttons[i]:SetParent(UIHider)
+		--buttons[i]:SetParent(UIHider)
 		buttons[i]:SetAttribute("statehidden", true)
 		buttons[i]:SetChecked(nil)
 	end
@@ -44,8 +55,10 @@ local UpdateStanceButtons = Engine:Wrap(function(self)
 		self.disabled = false
 	end
 	
-	local bar_config = Module.config.structure.bars.stance
-	self:SetSize(unpack(bar_config.bar_size[GetNumShapeshiftForms() or 0]))	
+	if need_update then
+		local bar_config = Module.config.structure.bars.stance
+		self:SetSize(unpack(bar_config.bar_size[GetNumShapeshiftForms() or 0]))	
+	end
 end)
 
 -- Update the checked state of the buttons
@@ -118,14 +131,18 @@ BarWidget.OnEnable = function(self)
 	
 	--------------------------------------------------------------------
 	-- Visibility Drivers
+	-- 	*Do we need it? The controller handles visibility anyway,
+	-- 	 and it uses the secure autohiding.
 	--------------------------------------------------------------------
-	Bar:SetAttribute("_onstate-vis", [[
+	
+	--[[
+	Bar:SetAttribute("_onstate-vis", [=[
 		if newstate == "hide" then
 			self:Hide();
 		elseif newstate == "show" then
 			self:Show();
 		end
-	]])
+	]=])
 
 	local driver = {}
 	if Engine:IsBuild("MoP") then -- also applies to WoD and (possibly) Legion
@@ -144,6 +161,7 @@ BarWidget.OnEnable = function(self)
 	-- Give the secure environment access to the current visibility macro, 
 	-- so it can check for the correct visibility when user enabling the bar!
 	Bar:SetAttribute("visibility-driver", visibility_driver)
+	]]
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "OnEvent")
