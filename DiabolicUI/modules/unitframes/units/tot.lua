@@ -32,7 +32,7 @@ local Style = function(self, unit)
 
 	-- Artwork
 	-------------------------------------------------------------------
-	local Backdrop = self:CreateTexture(nil, "BACKGROUND")
+	local Backdrop = self:CreateTexture(nil, "BORDER")
 	Backdrop:SetSize(unpack(config.backdrop.texture_size))
 	Backdrop:SetPoint(unpack(config.backdrop.texture_position))
 	Backdrop:SetTexture(config.backdrop.texture)

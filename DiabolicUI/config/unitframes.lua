@@ -187,8 +187,8 @@ local config = {
 				classification = {
 					font_object = DiabolicUnitFrameNormal,
 					position = {
-						normal_single = { "TOP", 0, -50 +12 },
-						normal_double = { "TOP", 0, -50 },
+						normal_single = { "TOP", 0, -56 +12 },
+						normal_double = { "TOP", 0, -56 },
 						boss_single = { "TOP", 0, -72 +12 },
 						boss_double = { "TOP", 0, -72 }
 					}

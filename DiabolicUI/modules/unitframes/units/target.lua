@@ -14,6 +14,10 @@ local UnitPowerType = UnitPowerType
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 
+local PlayerIsRogue = select(2, UnitClass("player")) == "ROGUE" -- to check for rogue anticipation
+
+local MAX_COMBO_POINTS = MAX_COMBO_POINTS or 5
+
 
 -- Utility Functions
 --------------------------------------------------------------------------
@@ -49,7 +53,7 @@ local Classification_PostUpdate = function(self, unit)
 
 	local haspower = not(power == 0 or powermax == 0)
 	local isboss = UnitClassification(unit) == "worldboss"
-	
+
 	local hadpower = self.haspower
 	local wasboss = self.isboss
 	
@@ -125,6 +129,31 @@ local SetLayer = function(self, isboss, haspower, ishighlight)
 		end
 	end
 	
+	-- Update combo- and anticipation point position
+	local ComboPoints = self.ComboPoints
+	if isboss then
+		if haspower then
+			ComboPoints:SetScale((2/3))
+			ComboPoints:SetPoint("CENTER", (ComboPoints:GetWidth()/2 + 14)/(2/3), -26/(2/3)) -- perfect with power
+		else
+			ComboPoints:SetScale(.75)
+			ComboPoints:SetPoint("CENTER", (ComboPoints:GetWidth()/2 + 20)/.75, -2/.75) -- perfect without
+		end
+	else 
+		ComboPoints:SetScale(.75)
+		--ComboPoints:SetScale(1)
+		if haspower then
+			ComboPoints:SetPoint("CENTER", 0, -24/.75) -- perfect with power
+		else
+			ComboPoints:SetPoint("CENTER", 0, -6/.75) -- perfect without
+		end
+		if ComboPoints.Anticipation then
+			ComboPoints.Anticipation:ClearAllPoints()
+			ComboPoints.Anticipation:SetPoint("TOP", ComboPoints, "BOTTOM", 0, 0) 
+		end
+	end
+	
+	
 end
 
 local UpdateLayers = function(self)
@@ -185,7 +214,6 @@ local Style = function(self, unit)
 	BackdropPower:SetPoint(unpack(config.textures.position))
 	BackdropPower:SetTexture(config.textures.layers.backdrop.double)
 	
-	-- border overlay frame
 	local Border = CreateFrame("Frame", nil, self)
 	Border:SetFrameLevel(self:GetFrameLevel() + 3)
 	Border:SetAllPoints()
@@ -234,7 +262,6 @@ local Style = function(self, unit)
 	-- Health
 	-------------------------------------------------------------------
 	local Health = StatusBar:New(self)
-	--local Health = CreateFrame("StatusBar", nil, self)
 	Health:SetSize(unpack(config.health.size))
 	Health:SetPoint(unpack(config.health.position))
 	Health:SetStatusBarTexture(config.health.texture)
@@ -262,15 +289,106 @@ local Style = function(self, unit)
 		end
 	end
 	
+	
 	-- Power
 	-------------------------------------------------------------------
 	local Power = StatusBar:New(self)
-	--local Power = CreateFrame("StatusBar", nil, self)
 	Power:SetSize(unpack(config.power.size))
 	Power:SetPoint(unpack(config.power.position))
 	Power:SetStatusBarTexture(config.power.texture)
 	Power.frequent = 1/120
 	
+
+	-- ComboPoints
+	-- *TODO: Add the settings to the config file. Can't be arsed now. 
+	-------------------------------------------------------------------
+	local ComboPoints = CreateFrame("Frame", nil, Border)
+	local cw, ch, cp = 28, 10, 2
+	local combo_r = .6
+	local combo_g = .15 
+	local combo_b = .025
+	local combo_r_last = .9686274509803922 
+	local combo_g_last = .674509803921568 
+	local combo_b_last = .1450980392156863
+	
+	ComboPoints:SetSize(cw*MAX_COMBO_POINTS + cp*(MAX_COMBO_POINTS-1), ch)
+	ComboPoints:SetPoint("CENTER", 0, -22) -- perfect with power
+	--ComboPoints:SetPoint("CENTER", 0, -2) -- perfect without
+	
+	for i = 1, MAX_COMBO_POINTS do
+		local ComboPoint = CreateFrame("Frame", nil, ComboPoints)
+		ComboPoint:Hide()
+		ComboPoint:SetSize(cw, ch)
+		ComboPoint:SetPoint("BOTTOMLEFT", (cw + cp)*(i-1), 0)
+		ComboPoint:SetBackdrop({
+			bgFile = [[Interface\ChatFrame\ChatFrameBackground]],
+			edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
+			tile = false,
+			edgeSize = 8,
+			insets = { 
+				left = 2.5,
+				right = 1.5,
+				top = 2.5,
+				bottom = 1.5
+			}
+		})
+		local r, g, b
+		if i == 1 then
+			r, g, b = combo_r, combo_g, combo_b
+		elseif i == MAX_COMBO_POINTS then
+			r, g, b = combo_r_last, combo_g_last, combo_b_last
+		else
+			-- Grrrrraaaaaadient!
+			r = combo_r + ((combo_r_last-combo_r)/(MAX_COMBO_POINTS - 2))*(i - 1)
+			g = combo_g + ((combo_g_last-combo_g)/(MAX_COMBO_POINTS - 2))*(i - 1)
+			b = combo_b + ((combo_b_last-combo_b)/(MAX_COMBO_POINTS - 2))*(i - 1)
+		end
+		ComboPoint:SetBackdropColor(r, g, b, 1)
+		ComboPoint:SetBackdropBorderColor(0, 0, 0, 1)
+		
+		ComboPoints[i] = ComboPoint
+	end
+	self.ComboPoints = ComboPoints
+	
+	
+	-- Rogue Anticipation
+	if PlayerIsRogue and Engine:IsBuild("5.0.4") then
+		local Anticipation = CreateFrame("Frame", nil, ComboPoints)
+		local cw, ch, cp = 24, 8, 2
+		local anticipation_r = 0.4
+		local anticipation_g = 0.05
+		local anticipation_b = 0.15
+		
+		Anticipation:SetSize(cw*MAX_COMBO_POINTS + cp*(MAX_COMBO_POINTS-1), ch)
+		Anticipation:SetPoint("TOP", ComboPoints, "BOTTOM", 0, 0) 
+		
+		for i = 1, MAX_COMBO_POINTS do
+			local AnticipationPoint = CreateFrame("Frame", nil, Anticipation)
+			AnticipationPoint:Hide()
+			AnticipationPoint:SetSize(cw, ch)
+			AnticipationPoint:SetPoint("BOTTOMLEFT", (cw + cp)*(i-1), 0)
+			AnticipationPoint:SetBackdrop({
+				bgFile = [[Interface\ChatFrame\ChatFrameBackground]],
+				edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
+				tile = false,
+				edgeSize = 8,
+				insets = { 
+					left = 2.5,
+					right = 1.5,
+					top = 2.5,
+					bottom = 1.5
+				}
+			})
+			AnticipationPoint:SetBackdropColor(anticipation_r, anticipation_g, anticipation_b, 1)
+			AnticipationPoint:SetBackdropBorderColor(0, 0, 0, 1)
+			
+			Anticipation[i] = AnticipationPoint
+		end
+		
+		ComboPoints.Anticipation = Anticipation
+	end
+	
+
 
 	-- CastBar
 	-------------------------------------------------------------------
