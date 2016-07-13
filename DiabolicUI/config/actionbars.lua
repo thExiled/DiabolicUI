@@ -141,7 +141,7 @@ local config = {
 					anchor = "UICenter", 
 					anchor_point = "BOTTOMRIGHT",
 					xoffset = -20,
-					yoffset = 20
+					yoffset = 20 + 10
 				},
 				size = { 61*3 + 10*2, 55 }
 			},
@@ -153,7 +153,7 @@ local config = {
 					anchor = "UICenter", 
 					anchor_point = "BOTTOMLEFT",
 					xoffset = 20,
-					yoffset = 20
+					yoffset = 20 + 10
 				},
 				size = { 61*2 + 10*2, 55 }
 			},
@@ -1028,6 +1028,10 @@ local config = {
 					},
 					backdrop_color = { 0, 0, 0, .75 },
 					backdrop_border_color = { 1, 1, 1, 1 },
+					performance = {
+						font_object = DiabolicDialogSmallGray,
+						position = { "BOTTOMRIGHT", -6, -20  } -- relative to the micromenu's menubutton
+					}
 				},
 				barmenu = {
 					size = { 390, 620 },

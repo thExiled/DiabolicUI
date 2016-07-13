@@ -113,7 +113,7 @@ local config = {
 		statusbar_texture = path .. [[statusbars\DiabolicUI_StatusBar_512x64_Dark_Warcraft.tga]]
 	},
 	tooltips = {
-		position = { "BOTTOMRIGHT", -(30 + 8), 20 + 55 + 20 }, -- relative to UICenter
+		position = { "BOTTOMRIGHT", -(30 + 8), 20 + 55 + 20 + 10 }, -- relative to UICenter
 		offsets = { 8, 8, 8, 10 },
 		backdrop = {
 			bgFile = [[Interface\ChatFrame\ChatFrameBackground]],

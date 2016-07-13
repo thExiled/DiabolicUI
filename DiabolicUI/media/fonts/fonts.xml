@@ -231,6 +231,14 @@
 		</Shadow>
 		<FontHeight><AbsValue val="12"/></FontHeight>
 	</Font>
+	<Font name="DiabolicDialogSmallGray" font="Interface\AddOns\DiabolicUI\media\fonts\DejaVuSans.ttf" justifyH="LEFT" virtual="true">
+		<Color r="0.541176470588" g="0.541176470588" b="0.541176470588"/>
+		<Shadow>
+			<Offset><AbsDimension x="-0.75" y="-0.75"/></Offset>
+			<Color r="0" g="0" b="0" a="0.75"/>
+		</Shadow>
+		<FontHeight><AbsValue val="10"/></FontHeight>
+	</Font>
 	<Font name="DiabolicDialogNumberLarge" font="Interface\AddOns\DiabolicUI\media\fonts\Sylfaen.ttf" justifyH="LEFT" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 		<Shadow>

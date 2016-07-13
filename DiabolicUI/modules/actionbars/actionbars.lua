@@ -365,15 +365,20 @@ Module.OnInit = function(self, event, ...)
 		-- add the button to the same menu as it's found in from Cata and up
 		local name = "InterfaceOptionsCombatPanelActionButtonUseKeyDown"
 		if not _G[name] then
-			-- we're mimicking what blizzard do to create the button in Cata and higher here
+			-- We're mimicking what blizzard do to create the button in Cata and higher here
+			-- We can't directly add it to their system, though, because the menu is secure and that would taint it 
 			local button = CreateFrame("CheckButton", "$parentActionButtonUseKeyDown", InterfaceOptionsCombatPanel, "InterfaceOptionsCheckButtonTemplate")
 			button:SetPoint("TOPLEFT", button:GetParent():GetName().."SelfCastKeyDropDown", "BOTTOMLEFT", 14, -24)
-			button.type = CONTROLTYPE_CHECKBOX
-			button.cvar = "ActionButtonUseKeyDown"
-			BlizzardOptionsPanel_RegisterControl(button, button:GetParent())
-			
-			_G["ACTION_BUTTON_USE_KEY_DOWN"] = L["Cast action keybinds on key down"] -- creating a global variable
-			CombatPanelOptions.ActionButtonUseKeyDown = { text = "ACTION_BUTTON_USE_KEY_DOWN" } -- adding the missing entry to blizzard's setup
+			button:SetChecked(GetCVarBool("ActionButtonUseKeyDown"))
+			button:SetScript("OnClick", function() 
+				if button:GetChecked() then
+					SetCVar("ActionButtonUseKeyDown", "1")
+				else
+					SetCVar("ActionButtonUseKeyDown", "0")
+				end
+				self:GetWidget("Template: Button"):OnEvent("CVAR_UPDATE", "ACTION_BUTTON_USE_KEY_DOWN", GetCVar("ActionButtonUseKeyDown"))
+			end)
+			_G[button:GetName() .. "Text"]:SetText(L["Cast action keybinds on key down"])
 		end
 		
 	end

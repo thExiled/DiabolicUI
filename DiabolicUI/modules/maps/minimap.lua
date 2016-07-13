@@ -13,10 +13,8 @@ local unpack = unpack
 local GetCursorPosition = GetCursorPosition
 local GetDifficultyInfo = GetDifficultyInfo
 local GetGameTime = GetGameTime
-local GetFramerate = GetFramerate
 local GetInstanceInfo = GetInstanceInfo
 local GetMinimapZoneText = GetMinimapZoneText
-local GetNetStats = GetNetStats
 local GetPlayerMapPosition = GetPlayerMapPosition
 local GetSubZoneText = GetSubZoneText
 local GetZonePVPInfo = GetZonePVPInfo
@@ -47,15 +45,11 @@ local COMBAT_ZONE = COMBAT_ZONE
 local TIMEMANAGER_AM = TIMEMANAGER_AM
 local TIMEMANAGER_PM = TIMEMANAGER_PM
 
--- Performance
-local MILLISECONDS_ABBR = MILLISECONDS_ABBR
-local FPS_ABBR = FPS_ABBR
-
+-- Coordinates
 local coord_string = "%02d, %02d" -- "%.1f %.1f"
 local coordinate_string = "%.1f"
 local time_string = "%s %s"
 local time12, time24 = "%d.%02d%s", "%02d.%02d"
-local performance_string = "%d%s - %d%s"
 
 local getTimeData = function(self)
 	local h, m
@@ -81,15 +75,13 @@ local getTimeData = function(self)
 	end
 end
 
-local coord_hz, time_hz, performance_hz = .1, 1, 1
+local coord_hz, time_hz = .1, 1
 local OnUpdate = function(self, elapsed)
 	self.elapsed_time = (self.elapsed_time or 0) + elapsed
 	self.elapsed_coords = (self.elapsed_coords or 0) + elapsed
-	self.elapsed_performance = (self.elapsed_performance or 0) + elapsed
 	
 	if self.elapsed_time > time_hz then 
 		self.time:SetFormattedText(time_string:format(self.data.difficulty, format(getTimeData(self.db))))
-		-- self.time:SetFormattedText(time_string:format(self.data.difficulty, format(getTimeData(self.db))))
 		self.elapsed_time = 0
 	end
 
@@ -97,29 +89,12 @@ local OnUpdate = function(self, elapsed)
 		local x, y = GetPlayerMapPosition("player")
 
 		if ((x == 0) and (y == 0)) or not x or not y then
-			-- self.coordinates.x:SetAlpha(0)
-			-- self.coordinates.y:SetAlpha(0)
 			self.coordinates:SetAlpha(0)
 		else
-			-- self.coordinates.x:SetAlpha(1)
-			-- self.coordinates.x:SetFormattedText(coordinate_string:format(x*100))
-
-			-- self.coordinates.y:SetAlpha(1)
-			-- self.coordinates.y:SetFormattedText(coordinate_string:format(y*100))
 			self.coordinates:SetAlpha(1)
 			self.coordinates:SetFormattedText(coord_string:format(x*100, y*100))
 		end
 		self.elapsed_coords = 0
-	end
-	
-	if self.elapsed_performance > performance_hz then
-		local _, _, chat_latency, cast_latency = GetNetStats()
-		local fps = floor(GetFramerate())
-		if not cast_latency or cast_latency == 0 then
-			cast_latency = chat_latency
-		end
-		self.performance:SetFormattedText(performance_string, cast_latency, MILLISECONDS_ABBR, fps, FPS_ABBR)
-		self.elapsed_performance = 0
 	end
 end
 
@@ -475,9 +450,9 @@ Module.OnInit = function(self)
 	self.frame.widgets.time:SetFontObject(GameFontNormalLarge)
 	self.frame.widgets.time:SetDrawLayer("ARTWORK", 0)
 
-	self.frame.widgets.performance = self.frame.scaffold.border:CreateFontString()
-	self.frame.widgets.performance:SetFontObject(GameFontNormalLarge)
-	self.frame.widgets.performance:SetDrawLayer("ARTWORK", 0)
+	--self.frame.widgets.performance = self.frame.scaffold.border:CreateFontString()
+	--self.frame.widgets.performance:SetFontObject(GameFontNormalLarge)
+	--self.frame.widgets.performance:SetDrawLayer("ARTWORK", 0)
 
 	self.frame.widgets.coordinates = self.frame.scaffold.border:CreateFontString()
 	self.frame.widgets.coordinates:SetFontObject(GameFontNormalSmall)
@@ -493,7 +468,7 @@ Module.OnInit = function(self)
 	frame.db = self.db
 	frame.data = self.data
 	frame.coordinates = self.frame.widgets.coordinates
-	frame.performance = self.frame.widgets.performance
+	--frame.performance = self.frame.widgets.performance
 	frame.time = self.frame.widgets.time
 	
 	frame:SetScript("OnUpdate", OnUpdate)
@@ -646,11 +621,11 @@ Module.OnEnable = function(self)
 	SetPoint(self.frame.widgets.time, unpack(config.text.time.point)) 
 
 	-- game performance
-	self.frame.widgets.performance:SetFont(config.text.performance.font.path, config.text.performance.font.size, config.text.performance.font.style)
-	self.frame.widgets.performance:SetShadowOffset(unpack(config.text.performance.font.shadow_offset))
-	self.frame.widgets.performance:SetShadowColor(unpack(config.text.performance.font.shadow_color))
-	self.frame.widgets.performance:SetTextColor(unpack(config.text.colors.dark))
-	SetPoint(self.frame.widgets.performance, unpack(config.text.performance.point)) 
+	--self.frame.widgets.performance:SetFont(config.text.performance.font.path, config.text.performance.font.size, config.text.performance.font.style)
+	--self.frame.widgets.performance:SetShadowOffset(unpack(config.text.performance.font.shadow_offset))
+	--self.frame.widgets.performance:SetShadowColor(unpack(config.text.performance.font.shadow_color))
+	--self.frame.widgets.performance:SetTextColor(unpack(config.text.colors.dark))
+	--SetPoint(self.frame.widgets.performance, unpack(config.text.performance.point)) 
 
 	-- map coordinates
 	self.frame.widgets.coordinates:SetFont(config.text.coordinates.font.path, config.text.coordinates.font.size, config.text.coordinates.font.style)

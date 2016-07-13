@@ -9,6 +9,8 @@ local floor = math.floor
 
 -- WoW API
 local CreateFrame = CreateFrame
+local GetFramerate = GetFramerate
+local GetNetStats = GetNetStats
 local UnitFactionGroup = UnitFactionGroup
 
 local UIHider = CreateFrame("Frame")
@@ -766,6 +768,9 @@ MenuWidget.OnEnable = function(self)
 	-- This was at one point reported as tainting the WorldMap, but after testing 
 	-- I concluded that the taint is coming from the tracker module instead.
 	local UpdateOffsets = function()
+		if InCombatLockdown() then
+			return
+		end
 		CONTAINER_OFFSET_Y = MicroMenuWindow:GetBottom() + 6 + (BagBarMenuWindow:IsShown() and bagbar_menu_config.bag_offset or 0)
 		CONTAINER_OFFSET_X = UIParent:GetRight() - MicroMenuWindow:GetRight() 
 	end
@@ -873,6 +878,36 @@ MenuWidget.OnEnable = function(self)
 		self:GetFrameRef("otherwindow1"):Hide();
 		self:GetFrameRef("otherwindow2"):Hide();
 	]])
+
+
+	-- Texts
+	---------------------------------------------
+	local Performance = MicroMenuButton:CreateFontString()
+	Performance:SetDrawLayer("ARTWORK")
+	Performance:SetFontObject(micro_menu_config.performance.font_object)
+	Performance:SetPoint(unpack(micro_menu_config.performance.position))
+	
+	MicroMenuButton.Performance = Performance
+	
+	local performance_string = "%d%s - %d%s"
+	local performance_hz = 1
+	local MILLISECONDS_ABBR = MILLISECONDS_ABBR
+	local FPS_ABBR = FPS_ABBR
+	
+	local floor = math.floor
+	
+	MicroMenuButton:SetScript("OnUpdate", function(self, elapsed) 
+		self.elapsed = (self.elapsed or 0) + elapsed
+		if self.elapsed > performance_hz then
+			local _, _, chat_latency, cast_latency = GetNetStats()
+			local fps = floor(GetFramerate())
+			if not cast_latency or cast_latency == 0 then
+				cast_latency = chat_latency
+			end
+			self.Performance:SetFormattedText(performance_string, cast_latency, MILLISECONDS_ABBR, fps, FPS_ABBR)
+			self.elapsed = 0
+		end
+	end)
 
 
 end
