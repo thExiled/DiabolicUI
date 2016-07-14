@@ -186,7 +186,10 @@ Module.OnInit = function(self, event, ...)
 
 	-- hook buttonframe side changes to our custom inputbox icons
 	hooksecurefunc("FCF_SetButtonSide", function(chatFrame, buttonSide, forceUpdate)
-		_G[chatFrame:GetName().."EditBoxIcon"]:UpdateSide(chatFrame.buttonSide or buttonSide or "left")
+		local EditBoxIcon = _G[chatFrame:GetName().."EditBoxIcon"]
+		if EditBoxIcon then
+			EditBoxIcon:UpdateSide(chatFrame.buttonSide or buttonSide or "left")
+		end
 	end)
 	
 	_G["ChatFrameMenuButton"]:Hide()
