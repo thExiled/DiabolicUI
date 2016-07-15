@@ -31,7 +31,6 @@ local StaticPopupDialogs = StaticPopupDialogs
 
 -- Engine Locals
 local events = {} -- event registry
-local build = {} -- build-specific functionality
 local timers = {} -- timer registry
 local configs = {} -- config registry saved between sessions
 local static_configs = {} -- static configurations set by the modules

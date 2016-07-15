@@ -145,10 +145,10 @@ local UnregisterEvent = UnitFrame_MT.__index.UnregisterEvent
 local UnregisterAllEvents = UnitFrame_MT.__index.UnregisterAllEvents
 
 UnitFrame.OnEvent = function(self, event, ...)
-	if not Events[self] or not Events[self][event] then
+	if (not self:IsShown()) or (not Events[self]) or (not Events[self][event]) then
 		return
 	end
-	
+
 	local events = Events[self][event]
 
 	for i = 1, #events do
@@ -363,21 +363,11 @@ UnitFrame.OnLeave = function(self)
 	GameTooltip:Hide()
 end
 
-UnitFrame.UpdateAll = function(self)
-end
-
 UnitFrame.OnAttributeChanged = function(self, name, value)
 	if name == "unit" then
 		self.unit = value
 		self:UpdateAllElements()
 	end
---		if self.unit and self.unit == value then
---			return
---		else
-
---			
---		end
---	end
 end
 
 
@@ -457,15 +447,32 @@ Handler.New = function(self, unit, parent, style_func)
 	else
 		object:SetAttribute("alt-type1", "focus")
 	end
-
-	object:HookScript("OnShow", object.UpdateAllElements) 
 	
-	--object:SetAttribute("toggleForVehicle", true)
-	--object:SetAttribute("allowVehicleTarget", true)
+	-- These units won't get events fired for themselves,
+	-- so we need to manually force their updates, 
+	-- or stuff like their names will very often be wrong.
+	if (unit:match("%w+target")) or (unit:match("(boss)%d?$") == "boss") then
+		-- We're not making this an object method, 
+		-- nor storing any of the values on the object, 
+		-- because we don't want the user to have access to it.
+		local timer = 0
+		local OnUpdate = function(self, elapsed)
+			if not self.unit then
+				return
+			end
+			timer = timer + elapsed
+			if timer >= .5 then
+				self:UpdateAllElements()
+				timer = 0
+			end
+		end
+		object:SetScript("OnUpdate", OnUpdate)
+	end
 
-	-- apply handlers we don't really want the user to change
 	object:SetScript("OnEvent", UnitFrame.OnEvent)
 	object:SetScript("OnAttributeChanged", UnitFrame.OnAttributeChanged)
+
+	object:HookScript("OnShow", object.UpdateAllElements) 
 
 	RegisterUnitWatch(object)
 
@@ -507,9 +514,5 @@ Handler.RegisterElement = function(self, element, enable, disable, update)
 	}
 end
 
--- register events and start updates here
 Handler.OnEnable = function(self)
---	self.frame = CreateFrame("Frame", nil, Engine:GetFrame())
---	self.frame:SetScript("OnEvent", OnEvent)
---	self.frame:SetScript("OnUpdate", OnUpdate)
 end

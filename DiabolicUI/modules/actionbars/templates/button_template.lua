@@ -1399,15 +1399,21 @@ Button.HideOverlayGlow = function(self)
 end
 
 Button.UpdateOverlayGlow = function(self)
-	local spellId = self:GetSpellId()
-	if spellId and IsSpellOverlayed(spellId) then
-		self:ShowOverlayGlow()
-	else
-		self:HideOverlayGlow()
+	if self.OverlayGlow then
+		local spellId = self:GetSpellId()
+		if spellId and (IsSpellOverlayed and IsSpellOverlayed(spellId)) then
+			self:ShowOverlayGlow()
+		else
+			self:HideOverlayGlow()
+		end
 	end
 end
 
 Button.UpdateFlyout = function(self)
+	if not self.FlyoutBorder or not self.FlyoutBorderShadow then
+		return
+	end
+
 	self.FlyoutBorder:Hide()
 	self.FlyoutBorderShadow:Hide()
 
@@ -1567,7 +1573,9 @@ Button.GetLossOfControlCooldown = function(self) return 0, 0 end
 ActionButton.HasAction               = function(self) return HasAction(self.action_by_state) end
 ActionButton.GetActionText           = function(self) return GetActionText(self.action_by_state) end
 ActionButton.GetTexture              = function(self) return GetActionTexture(self.action_by_state) end
-ActionButton.GetCharges              = function(self) return GetActionCharges(self.action_by_state) end
+ActionButton.GetCharges              = function(self) 
+	return (Engine:IsBuild("MoP") and GetActionCharges(self.action_by_state))
+end
 ActionButton.GetCount                = function(self) return GetActionCount(self.action_by_state) end
 ActionButton.GetCooldown             = function(self) return GetActionCooldown(self.action_by_state) end
 ActionButton.IsAttack                = function(self) return IsAttackAction(self.action_by_state) end
@@ -1575,7 +1583,11 @@ ActionButton.IsEquipped              = function(self) return IsEquippedAction(se
 ActionButton.IsCurrentlyActive       = function(self) return IsCurrentAction(self.action_by_state) end
 ActionButton.IsAutoRepeat            = function(self) return IsAutoRepeatAction(self.action_by_state) end
 ActionButton.IsUsable                = function(self) return IsUsableAction(self.action_by_state) end
-ActionButton.IsConsumableOrStackable = function(self) return IsConsumableAction(self.action_by_state) or IsStackableAction(self.action_by_state) or (not IsItemAction(self.action_by_state) and GetActionCount(self.action_by_state) > 0) end
+ActionButton.IsConsumableOrStackable = function(self) 
+	return IsConsumableAction(self.action_by_state) 
+		or IsStackableAction(self.action_by_state) 
+		or (Engine:IsBuild("MoP") and (not IsItemAction(self.action_by_state) and GetActionCount(self.action_by_state) > 0))
+end
 ActionButton.IsUnitInRange           = function(self, unit) return IsActionInRange(self.action_by_state, unit) end
 ActionButton.SetTooltip              = function(self) return GameTooltip:SetAction(self.action_by_state) end
 ActionButton.GetSpellId              = function(self)
