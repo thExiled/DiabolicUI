@@ -6,10 +6,10 @@ local path = ([[Interface\AddOns\%s\media\]]):format(ADDON)
 -- ...or Blizzard elements we can't be arsed to replace, like the rest. 
 local config = {
 	altpower = {
-		position = { "CENTER", "UIParent", "CENTER", 0, -180 }
+		position = { "CENTER", "UICenter", "CENTER", 0, -120 }
 	},
 	durability = {
-		position = { "CENTER", "UIParent", "CENTER", 190, 0 }
+		position = { "CENTER", "UICenter", "CENTER", 190, 0 }
 	},
 	gamemenu = {
 		capture_mouse = false,

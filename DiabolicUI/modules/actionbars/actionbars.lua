@@ -215,6 +215,7 @@ Module.GrabKeybinds = Module:Wrap(function(self)
 			local controller = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 			controller:SetAttribute("_onstate-petbattle", [[
 				if newstate == "petbattle" then
+					print("grabbing keys"); 
 					for i = 1,6 do
 						local our_button, blizz_button = ("CLICK EngineBar1Button%d:LeftButton"):format(i), ("ACTIONBUTTON%d"):format(i)
 
@@ -227,6 +228,12 @@ Module.GrabKeybinds = Module:Wrap(function(self)
 							local key = select(k, GetBindingKey(our_button)) -- retrieve the binding key from our own primary bar
 							self:SetBinding(true, key, blizz_button) -- assign that key to the default bar
 						end
+						
+						-- do the same for the default UIs bindings
+						for k=1,select("#", GetBindingKey(blizz_button)) do
+							local key = select(k, GetBindingKey(blizz_button))
+							self:SetBinding(true, key, blizz_button)
+						end	
 					end
 				else
 					-- Return the key bindings to whatever buttons they were

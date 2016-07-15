@@ -934,6 +934,15 @@ Button.Update = function(self)
 	
 	self:UpdateBindings()
 	self:UpdateLayers()
+	self:UpdateCount()
+	self:UpdateOverlayGlow()
+	self:UpdateFlyout()
+	
+	-- UpdateLayers also does this... redundant?
+	if GameTooltip:GetOwner() == self then
+		UpdateTooltip(self)
+	end
+	
 end
 
 -- Updates the current action of the button
@@ -1304,6 +1313,29 @@ end
 Button.IsFlashing = function(self)
 	return self.flashing == 1
 end
+
+Button.UpdateCount = function(self)
+	if not self:HasAction() then
+		self.stack:SetText("")
+		return
+	end
+	if self:IsConsumableOrStackable() then
+		local count = self:GetCount()
+		if count > (self.maxDisplayCount or 9999) then
+			self.stack:SetText("*")
+		else
+			self.stack:SetText(count)
+		end
+	else
+		local charges, maxCharges, chargeStart, chargeDuration = self:GetCharges()
+		if charges and maxCharges and maxCharges > 0 then
+			self.stack:SetText(charges)
+		else
+			self.stack:SetText("")
+		end
+	end
+end
+
 
 local overlay_cache = {}
 local num_overlays = 0
@@ -1845,9 +1877,9 @@ ButtonWidget.OnEvent = function(self, event, ...)
 		end
 	
 	elseif event == "SPELL_UPDATE_CHARGES" then
-		-- for button in next, ActiveButtons do
-			-- button:UpdateCount()
-		-- end
+		for button in next, ActiveButtons do
+			button:UpdateCount()
+		end
 	
 	elseif event == "UPDATE_SUMMONPETS_ACTION" then
 		for button in next, ActiveButtons do

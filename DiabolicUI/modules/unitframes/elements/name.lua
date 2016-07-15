@@ -20,12 +20,6 @@ end
 
 local Update = function(self, event, ...)
 	local unit = self.unit
-	if event == "UNIT_NAME_UPDATE" then
-		local arg1 = ...
-		if arg1 ~= unit then
-			return
-		end
-	end
 
 	local Name = self.Name
 	local name = UnitName(unit)
@@ -43,6 +37,9 @@ local Update = function(self, event, ...)
 	Name:SetText(name)
 	Name:SetTextColor(r, g, b)
 	
+	if Name.PostUpdate then
+		return Name:PostUpdate()
+	end
 end
 
 local Enable = function(self, unit)
@@ -55,12 +52,6 @@ local Enable = function(self, unit)
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", Update)
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED", Update)
 		
-		-- The quest log uses PARTY_MEMBER_{ENABLE,DISABLE} to handle updating of
-		-- party members overlapping quests. This will probably be enough to handle
-		-- model updating.
-		--
-		-- DISABLE isn't used as it fires when we most likely don't have the
-		-- information we want.
 		if unit:find("party") then
 			self:RegisterEvent("PARTY_MEMBER_ENABLE", Update)
 		end
