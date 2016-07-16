@@ -10,9 +10,13 @@ local Update = function(self, event, unit)
 		return
 	end
 
-	local Threat = self.Threat
-	
 	local unit = unit or self.unit
+	if not unit or not UnitExists(unit) then
+		return
+	end
+	
+	local Threat = self.Threat
+
 	local status = UnitThreatSituation(unit)
 
 	local r, g, b

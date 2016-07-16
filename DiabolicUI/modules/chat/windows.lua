@@ -241,6 +241,11 @@ Module.StyleFrame = function(self, frame)
 	_G[name.."TabHighlightMiddle"]:SetTexture("")
 	_G[name.."TabHighlightRight"]:SetTexture("")
 
+	if _G[name.."TabConversationIcon"] then
+		_G[name.."TabConversationIcon"]:SetTexture("")
+		_G[name.."TabConversationIcon"]:SetAlpha(0)
+	end
+
 	_G[name.."Tab"]:SetAlpha(1)
 	_G[name.."Tab"].SetAlpha = UIFrameFadeRemoveFrame
 

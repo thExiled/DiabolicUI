@@ -215,7 +215,6 @@ Module.GrabKeybinds = Module:Wrap(function(self)
 			local controller = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 			controller:SetAttribute("_onstate-petbattle", [[
 				if newstate == "petbattle" then
-					print("grabbing keys"); 
 					for i = 1,6 do
 						local our_button, blizz_button = ("CLICK EngineBar1Button%d:LeftButton"):format(i), ("ACTIONBUTTON%d"):format(i)
 
