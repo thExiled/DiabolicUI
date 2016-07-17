@@ -41,10 +41,19 @@ L["Bad argument #%d to '%s': The name '%s' is reserved for a handler!"] = true
 L["Bad argument #%d to '%s': A module named '%s' already exists!"] = true
 L["Bad argument #%d to '%s': The load priority '%s' is invalid! Valid priorities are: %s"] = true
 L["Attention!"] = true
-L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated.|n|nFix this issue now?"] = true
-L["UI scaling is activated and needs to be disabled, otherwise you'll get fuzzy borders or pixelated graphics.|n|nFix this issue now?"] = true
-L["UI scaling was turned off but needs to be enabled, otherwise you'll get fuzzy borders or pixelated graphics.|n|nFix this issue now?"] = true
-L["Your resolution is too low for this UI, but the UI scale can still be adjusted to make it fit.|n|nFix this issue now?"] = true
+L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated. If you choose to ignore it, you won't be asked about this issue again.|n|nFix this issue now?"] = true
+L["UI scaling is activated and needs to be disabled, otherwise you'll might get fuzzy borders or pixelated graphics. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"] = true
+L["UI scaling was turned off but needs to be enabled, otherwise you'll might get fuzzy borders or pixelated graphics. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"] = true
+L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"] = true
+L["Your resolution is too low for this UI, but the UI scale can still be adjusted to make it fit. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"] = true
+L["Accept"] = true
+L["Cancel"] = true
+L["Ignore"] = true
+L["You can re-enable the auto scaling by typing |cff448800/diabolic autoscale|r in the chat at any time."] = true
+L["Auto scaling of the UI has been enabled."] = true
+L["Auto scaling of the UI has been disabled."] = true
+L["Reload Needed"] = true
+L["The user interface has to be reloaded for the changes to be applied.|n|nDo you wish to do this now?"] = true
 L["The Engine can't be tampered with!"] = true
 
 -- Blizzard Handler
@@ -93,3 +102,12 @@ L["You should rest at an Inn."] = true
 
 -- added to the interface options menu in WotLK
 L["Cast action keybinds on key down"] = true
+
+-- chat module
+L["Chat Setup"] = true
+L["Would you like to automatically have the main chat window sized and positioned to match Diablo III, or would you like to manually handle this yourself?|n|nIf you choose to manually position things yourself, you won't be asked about this issue again."] = true
+L["Auto"] = true
+L["Manual"] = true
+L["You can re-enable the auto positioning by typing |cff448800/diabolic autoposition|r in the chat at any time."] = true
+L["Auto positioning of chat windows has been enabled."] = true
+L["Auto positioning of chat windows has been disabled."] = true

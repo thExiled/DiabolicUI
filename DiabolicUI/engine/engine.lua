@@ -1303,6 +1303,25 @@ Engine.GetFrame = function(self)
 	return UICenter
 end
 
+Engine.ReloadUI = function(self)
+	local PopUpMessage = self:GetHandler("PopUpMessage")
+	if not PopUpMessage:GetPopUp("ENGINE_GENERAL_RELOADUI") then
+		PopUpMessage:RegisterPopUp("ENGINE_GENERAL_RELOADUI", {
+			title = L["Reload Needed"],
+			text = L["The user interface has to be reloaded for the changes to be applied.|n|nDo you wish to do this now?"],
+			button1 = L["Accept"],
+			button2 = L["Cancel"],
+			OnAccept = function() ReloadUI() end,
+			OnCancel = function() end,
+			timeout = 0,
+			exclusive = 1,
+			whileDead = 1,
+			hideOnEscape = false
+		})
+	end
+	PopUpMessage:ShowPopUp("ENGINE_GENERAL_RELOADUI", self:GetStaticConfig("UI").popup) 
+end
+
 Engine.UpdateScale = function(self)
 	local accuracy = 1e4
 	local compare_accuracy = 1e4 -- anything more than 2 decimals will spam reloads on every video options frame opening
@@ -1342,6 +1361,14 @@ Engine.UpdateScale = function(self)
 		self:Wrap(function() UICenter:SetSize(UIParent:GetSize()) end)()
 	end
 
+	-- If the user previously has been queried, 
+	-- and chosen to handle the UI scale themself, 
+	-- then we simply and silenty exit this.
+	local db = self:GetConfig("UI")
+	if db.hasbeenqueried and not db.autoscale then
+		return
+	end
+	
 	local highres_wide_scale = round(768/screen_height, accuracy)
 	local lowres_wide_scale = round(768/1080, accuracy)
 	local lowres_box_scale = round(768/1200, accuracy)
@@ -1350,9 +1377,9 @@ Engine.UpdateScale = function(self)
 	if not PopUpMessage:GetPopUp("ENGINE_UISCALE_RELOAD_NEEDED") then
 		PopUpMessage:RegisterPopUp("ENGINE_UISCALE_RELOAD_NEEDED", {
 			title = L["Attention!"],
-			text = L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated.|n|nFix this issue now?"],
-			button1 = ACCEPT,
-			button2 = CANCEL,
+			text = L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated. If you choose to ignore it, you won't be asked about this issue again.|n|nFix this issue now?"],
+			button1 = L["Accept"],
+			button2 = L["Ignore"],
 			OnAccept = function()
 				-- In WoD all cvars became protected in combat, 
 				-- so to be safe and not sorry we're using our 
@@ -1411,12 +1438,28 @@ Engine.UpdateScale = function(self)
 						end
 					end
 					
+					local db = Engine:GetConfig("UI")
+					db.autoscale = true
+					db.hasbeenqueried = true
+					
 					-- From a graphic point of view it would have been sufficient
 					-- to simply reload the graphics engine with RestartGx(), 
 					-- but since changing the uiScale cvar can taint the worldmap
 					-- it's safer with a complete reload here. 
 					ReloadUI()
 				end)()
+			end,
+			OnCancel = function()
+				print(L["You can re-enable the auto scaling by typing |cff448800/diabolic autoscale|r in the chat at any time."])
+				local db = Engine:GetConfig("UI")
+				if db.hasbeenqueried then
+					db.autoscale = false
+					
+					Engine:ReloadUI()
+				else
+					db.autoscale = false
+					db.hasbeenqueried = true
+				end
 			end,
 			timeout = 0,
 			exclusive = 1,
@@ -1438,13 +1481,13 @@ Engine.UpdateScale = function(self)
 			-- In Cataclysm the scaling system changed, 
 			-- and it's sufficient to simply turn off uiscaling for pixel perfection here.
 			if using_scale == 1 then
-				popup.text = L["UI scaling is activated and needs to be disabled, otherwise you'll get fuzzy borders or pixelated graphics.|n|nFix this issue now?"]
+				popup.text = L["UI scaling is activated and needs to be disabled, otherwise you'll might get fuzzy borders or pixelated graphics. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"]
 				fix = true
 			end
 		else
 			-- Even in Cataclysm we still need scaling for tiny resolutions, though.
 			if using_scale ~= 1 then
-				popup.text = L["UI scaling was turned off but needs to be enabled, otherwise you'll get fuzzy borders or pixelated graphics.|n|nFix this issue now?"]
+				popup.text = L["UI scaling was turned off but needs to be enabled, otherwise you'll might get fuzzy borders or pixelated graphics. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"]
 				fix = true
 			end
 			local current_scale = round(tonumber(GetCVar("uiScale")), accuracy)
@@ -1460,9 +1503,9 @@ Engine.UpdateScale = function(self)
 			end
 			if not compare(current_scale, correct_scale, compare_accuracy) then
 				if screen_width >= pixelperfect_minimum_width then
-					popup.text = L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated.|n|nFix this issue now?"]
+					popup.text = L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"]
 				else
-					popup.text = L["Your resolution is too low for this UI, but the UI scale can still be adjusted to make it fit.|n|nFix this issue now?"]
+					popup.text = L["Your resolution is too low for this UI, but the UI scale can still be adjusted to make it fit. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"]
 				end
 				fix = true
 			end
@@ -1470,7 +1513,7 @@ Engine.UpdateScale = function(self)
 	else
 		-- Prior to Cataclysm we needed uiscaling at all times for pixel perfection
 		if using_scale ~= 1 then
-			popup.text = L["UI scaling was turned off but needs to be enabled, otherwise you'll get fuzzy borders or pixelated graphics.|n|nFix this issue now?"]
+			popup.text = L["UI scaling was turned off but needs to be enabled, otherwise you'll get fuzzy borders or pixelated graphics.|n|nFix this issue now?"] .. L["|n|nIf you choose to ignore it, you won't be asked about this issue again."]
 			fix = true
 		end
 		local current_scale = round(tonumber(GetCVar("uiScale")), accuracy)
@@ -1486,9 +1529,9 @@ Engine.UpdateScale = function(self)
 		end
 		if not compare(current_scale, correct_scale, compare_accuracy) then
 			if screen_width >= pixelperfect_minimum_width then
-				popup.text = L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated.|n|nFix this issue now?"]
+				popup.text = L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated.|n|nFix this issue now?"] .. L["|n|nIf you choose to ignore it, you won't be asked about this issue again."]
 			else
-				popup.text = L["Your resolution is too low for this UI, but the UI scale can still be adjusted to make it fit.|n|nFix this issue now?"]
+				popup.text = L["Your resolution is too low for this UI, but the UI scale can still be adjusted to make it fit.|n|nFix this issue now?"] .. L["|n|nIf you choose to ignore it, you won't be asked about this issue again."]
 			end
 			fix = true
 		end
@@ -1502,6 +1545,33 @@ Engine.UpdateScale = function(self)
 		-- to shield the Handlers from the stylesheets instead. 
 		PopUpMessage:ShowPopUp("ENGINE_UISCALE_RELOAD_NEEDED", self:GetStaticConfig("UI").popup) 
 	end
+	
+	if db.autoscale and db.hasbeenqueried then
+		self:KillBlizzard()
+	end
+end
+
+do
+	local only_once
+	Engine.KillBlizzard = wrap(Engine, function(self)
+		if only_once then 
+			return
+		end
+		
+		-- Killing the UI scale checkbox and slider will prevent blizzards' UI 
+		-- from slightly modifying the stored scale everytime we enter the video options. 
+		-- If we don't do this, the user will either get spammed with reload requests, 
+		-- or the scale will eventually become slightly wrong, and the graphics slightly fuzzy.
+		if self:IsBuild("Cata") then
+			self:GetHandler("BlizzardUI"):GetElement("Menu_Option"):Remove(true, "Advanced_UIScaleSlider")
+			self:GetHandler("BlizzardUI"):GetElement("Menu_Option"):Remove(true, "Advanced_UseUIScale")
+		elseif self:IsBuild("WotLK") then
+			self:GetHandler("BlizzardUI"):GetElement("Menu_Option"):Remove(true, "VideoOptionsResolutionPanelUseUIScale")
+			self:GetHandler("BlizzardUI"):GetElement("Menu_Option"):Remove(true, "VideoOptionsResolutionPanelUIScaleSlider")
+		end
+		
+		only_once = true
+	end)
 end
 
 -- called when the addon is fully loaded
@@ -1519,6 +1589,12 @@ Engine.Init = function(self, event, ...)
 		RegisterStateDriver(UICenter, "visibility", "[petbattle]hide;show")
 	end
 
+	-- initialize all handlers here
+	for name, handler in pairs(handlers) do
+		handler:Enable()
+	end
+	
+	-- register UI scaling events
 	self:RegisterEvent("UI_SCALE_CHANGED", "UpdateScale")
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED", "UpdateScale")
 	if VideoOptionsFrameApply then
@@ -1528,24 +1604,38 @@ Engine.Init = function(self, event, ...)
 		VideoOptionsFrameOkay:HookScript("OnClick", function() Engine:UpdateScale() end)
 	end
 
-	-- initialize all handlers here
-	for name, handler in pairs(handlers) do
-		handler:Enable()
-	end
-
+	-- initial UI scale update
 	self:UpdateScale()
 	
-	-- Killing the UI scale checkbox and slider will prevent blizzards' UI 
-	-- from slightly modifying the stored scale everytime we enter the video options. 
-	-- If we don't do this, the user will either get spammed with reload requests, 
-	-- or the scale will eventually become slightly wrong, and the graphics slightly fuzzy.
-	if self:IsBuild("Cata") then
-		self:GetHandler("BlizzardUI"):GetElement("Menu_Option"):Remove(true, "Advanced_UIScaleSlider")
-		self:GetHandler("BlizzardUI"):GetElement("Menu_Option"):Remove(true, "Advanced_UseUIScale")
-	elseif self:IsBuild("WotLK") then
-		self:GetHandler("BlizzardUI"):GetElement("Menu_Option"):Remove(true, "VideoOptionsResolutionPanelUseUIScale")
-		self:GetHandler("BlizzardUI"):GetElement("Menu_Option"):Remove(true, "VideoOptionsResolutionPanelUIScaleSlider")
-	end
+	-- add the chat command to toggle auto scaling of the UI
+	local ChatCommand = self:GetHandler("ChatCommand")
+	ChatCommand:Register("autoscale", function() 
+		local db = self:GetConfig("UI")
+		db.autoscale = not db.autoscale
+		if db.autoscale then
+			print(L["Auto scaling of the UI has been enabled."])
+		else
+			print(L["Auto scaling of the UI has been disabled."])
+		end
+		self:UpdateScale()
+	end)
+	
+	-- Add a command to reset setups to their default state.
+	-- TODO: Make it possible for the modules to add 
+	-- 		 these functions in themselves.
+	ChatCommand:Register("resetsetup", function()
+		-- UI scale
+		local db = self:GetConfig("UI")
+		db.hasbeenqueried = false
+		db.autoscale = true
+		self:UpdateScale()
+		
+		-- chat window autoposition
+		db = self:GetConfig("ChatWindows")
+		db.hasbeenqueried = false
+		db.autoposition = true
+		self:GetModule("ChatWindows"):PositionChatFrames()
+	end)
 
 	-- initialize all modules
 	for i = 1, #priority_index do

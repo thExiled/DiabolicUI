@@ -660,7 +660,7 @@ Handler.UpdateLayout = function(self)
 	if #order > 0 then
 		tsort(order)
 	end
-	local previous
+	local first, previous
 	for i, active_id in ipairs(order) do	
 		local popup_frame = active_popups[active_id]
 		if previous then
@@ -669,8 +669,22 @@ Handler.UpdateLayout = function(self)
 		else
 			popup_frame:ClearAllPoints()
 			popup_frame:SetPoint("TOP", Engine:GetFrame(), "TOP", 0, -200)
+			first = popup_frame
 		end
+		previous = popup_frame
 	end	
+	
+	-- re-align the vertical layout for multiple frames
+	if first and previous then
+		local top = first:GetTop()
+		local bottom = previous:GetBottom()
+		local available = Engine:GetFrame():GetHeight()
+		
+		first:ClearAllPoints()
+		first:SetPoint("TOP", Engine:GetFrame(), "TOP", 0, -(available - (top-bottom))/3)
+		
+	end
+	
 	self.order = order
 end
 

@@ -3,6 +3,8 @@ local path = ([[Interface\AddOns\%s\media\]]):format(ADDON)
 
 -- This is a general config meant to streamline 
 -- the look of UI elements used by multiple modules.
+--
+-- This is also where we store the default user settings for UI scaling!
 -- 
 -- Example (shows a popup with the style created here):
 -- 		local PopUpMessage = Engine:GetHandler("PopUpMessage") -- get the popup handler
@@ -99,7 +101,7 @@ local config = {
 	},
 	popup = {
 		minwidth = 420,
-		maxwidth = 687,
+		maxwidth = 687 + 40,
 		padding = 5,
 		insets = { 6, 6, 6, 6 }, -- left, right, top, bottom
 		backdrop = {
@@ -222,4 +224,10 @@ local config = {
 	}
 }
 
+local db = {
+	autoscale = true, -- whether or not to automatically scale the UI
+	hasbeenqueried = false -- whether or not the user has been asked about the previous
+}
+
 Engine:NewStaticConfig("UI", config)
+Engine:NewConfig("UI", db)
