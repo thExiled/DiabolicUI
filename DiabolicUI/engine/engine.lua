@@ -1513,7 +1513,7 @@ Engine.UpdateScale = function(self)
 	else
 		-- Prior to Cataclysm we needed uiscaling at all times for pixel perfection
 		if using_scale ~= 1 then
-			popup.text = L["UI scaling was turned off but needs to be enabled, otherwise you'll get fuzzy borders or pixelated graphics.|n|nFix this issue now?"] .. L["|n|nIf you choose to ignore it, you won't be asked about this issue again."]
+			popup.text = L["UI scaling was turned off but needs to be enabled, otherwise you'll might get fuzzy borders or pixelated graphics. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"]
 			fix = true
 		end
 		local current_scale = round(tonumber(GetCVar("uiScale")), accuracy)
@@ -1529,9 +1529,9 @@ Engine.UpdateScale = function(self)
 		end
 		if not compare(current_scale, correct_scale, compare_accuracy) then
 			if screen_width >= pixelperfect_minimum_width then
-				popup.text = L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated.|n|nFix this issue now?"] .. L["|n|nIf you choose to ignore it, you won't be asked about this issue again."]
+				popup.text = L["The UI scale is wrong, so the graphics might appear fuzzy or pixelated. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"]
 			else
-				popup.text = L["Your resolution is too low for this UI, but the UI scale can still be adjusted to make it fit.|n|nFix this issue now?"] .. L["|n|nIf you choose to ignore it, you won't be asked about this issue again."]
+				popup.text = L["Your resolution is too low for this UI, but the UI scale can still be adjusted to make it fit. If you choose to ignore it and handle the UI scaling yourself, you won't be asked about this issue again.|n|nFix this issue now?"]
 			end
 			fix = true
 		end
