@@ -1,11 +1,12 @@
 local _, Engine = ...
+local L = Engine:GetLocale()
 
 -- This module requires a "HIGH" priority, 
 -- as other modules like the questtracker and the unitframes
 -- hook themselves into its frames!
 local Module = Engine:NewModule("ActionBars", "HIGH")
-
 Module.Template = {} -- table to hold templates for buttons and bars
+
 
 -- Lua API
 local ipairs, select, unpack = ipairs, select, unpack
@@ -226,6 +227,12 @@ Module.GrabKeybinds = Module:Wrap(function(self)
 							local key = select(k, GetBindingKey(our_button)) -- retrieve the binding key from our own primary bar
 							self:SetBinding(true, key, blizz_button) -- assign that key to the default bar
 						end
+						
+						-- do the same for the default UIs bindings
+						for k=1,select("#", GetBindingKey(blizz_button)) do
+							local key = select(k, GetBindingKey(blizz_button))
+							self:SetBinding(true, key, blizz_button)
+						end	
 					end
 				else
 					-- Return the key bindings to whatever buttons they were
@@ -299,7 +306,7 @@ Module.OnInit = function(self, event, ...)
 	self:GetWidget("Bar: 4"):Enable()
 	self:GetWidget("Bar: 5"):Enable()
 	self:GetWidget("Bar: Pet"):Enable()
-	--self:GetWidget("Bar: Stance"):Enable()
+	self:GetWidget("Bar: Stance"):Enable()
 	self:GetWidget("Bar: XP"):Enable()
 	
 	-- enable menus
@@ -308,11 +315,12 @@ Module.OnInit = function(self, event, ...)
 	
 
 	if Engine:IsBuild("Cata") then
-		--self:GetWidget("Bar: Extra"):Enable()
+		self:GetWidget("Bar: Extra"):Enable()
 
 		-- skinning (TODO: move to the blizzard skinning module)
-		StreamingIcon:ClearAllPoints()
-		StreamingIcon:SetPoint("CENTER", self:GetWidget("Controller: Main"):GetFrame(), "TOP", 0, 66)
+		local UIHider = CreateFrame("Frame")
+		UIHider:Hide()
+		StreamingIcon:SetParent(UIHider)
 	end
 	
 	-- This is used to reassign the keybinds, 
@@ -342,6 +350,44 @@ Module.OnInit = function(self, event, ...)
 	self:RegisterEvent("DISABLE_XP_GAIN", "UpdateArtwork")
 	self:RegisterEvent("ENABLE_XP_GAIN", "UpdateArtwork")
 	self:RegisterEvent("PLAYER_UPDATE_RESTING", "UpdateArtwork")
+	
+	if not Engine:IsBuild("Cata") then
+
+		-- faking a CVar here for WotLK clients
+		local value, defaultValue, serverStoredAccountWide, serverStoredPerCharacter = GetCVarInfo("ActionButtonUseKeyDown")
+		if value == nil and defaultValue == nil and serverStoredAccountWide == nil and serverStoredPerCharacter == nil then
+			RegisterCVar("ActionButtonUseKeyDown", false)
+			hooksecurefunc("SetCVar", function(name, value) 
+				if name == "ActionButtonUseKeyDown" then
+					self:GetWidget("Template: Button"):OnEvent("CVAR_UPDATE", "ACTION_BUTTON_USE_KEY_DOWN", value)
+					self.db.cast_on_down = GetCVarBool("ActionButtonUseKeyDown") and 1 or 0 -- store the change 
+				end
+			end)
+			
+			-- set the newly created CVar to our stored setting
+			SetCVar("ActionButtonUseKeyDown", self.db.cast_on_down == 1 and "1" or "0")
+		end
+		
+		-- add the button to the same menu as it's found in from Cata and up
+		local name = "InterfaceOptionsCombatPanelActionButtonUseKeyDown"
+		if not _G[name] then
+			-- We're mimicking what blizzard do to create the button in Cata and higher here
+			-- We can't directly add it to their system, though, because the menu is secure and that would taint it 
+			local button = CreateFrame("CheckButton", "$parentActionButtonUseKeyDown", InterfaceOptionsCombatPanel, "InterfaceOptionsCheckButtonTemplate")
+			button:SetPoint("TOPLEFT", button:GetParent():GetName().."SelfCastKeyDropDown", "BOTTOMLEFT", 14, -24)
+			button:SetChecked(GetCVarBool("ActionButtonUseKeyDown"))
+			button:SetScript("OnClick", function() 
+				if button:GetChecked() then
+					SetCVar("ActionButtonUseKeyDown", "1")
+				else
+					SetCVar("ActionButtonUseKeyDown", "0")
+				end
+				self:GetWidget("Template: Button"):OnEvent("CVAR_UPDATE", "ACTION_BUTTON_USE_KEY_DOWN", GetCVar("ActionButtonUseKeyDown"))
+			end)
+			_G[button:GetName() .. "Text"]:SetText(L["Cast action keybinds on key down"])
+		end
+		
+	end
 	
 end
 

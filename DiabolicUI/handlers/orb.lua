@@ -359,6 +359,13 @@ end
 Orb.GetObjectType = function(self) return "Orb" end
 Orb.IsObjectType = function(self, type) return type == "Orb" end
 
+-- proxy method to return the orbs's actual frame
+Orb.GetScaffold = function(self) return self.scaffold end
+
+-- proxy method to return the orbs's overlay frame, for adding texts, icons etc
+Orb.GetOverlay = function(self) return self.overlay end
+
+
 Handler.OnEnable = function(self)
 
 end

@@ -116,8 +116,8 @@ local config = {
 		tab = {
 			
 		},
---		clamps = { -40, -40, -40, -220 },
---		position = { "BOTTOMLEFT", UICenter, "BOTTOMLEFT", 0, 0 },
+		--clamps = { -40, -40, -40, -220 },
+		--position = { "BOTTOMLEFT", UICenter, "BOTTOMLEFT", 0, 0 },
 	},
 	filters = {
 	},
@@ -130,6 +130,8 @@ local config = {
 -- default user settings
 local db = {
 	windows = {
+		autoposition = true, -- whether or not to autoposition the default chat frame 
+		hasbeenqueried = false -- whether the user has been asked about the previous
 	},
 	filters = {
 	},

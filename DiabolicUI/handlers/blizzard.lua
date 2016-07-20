@@ -252,12 +252,14 @@ local elements = {
 			MainMenuBarArtFrame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 			MainMenuBarArtFrame:Hide()
 			MainMenuBarArtFrame:SetAlpha(0)
+			MainMenuBarArtFrame:SetParent(UIHider)
 
 			MainMenuExpBar:EnableMouse(false)
 			MainMenuExpBar:UnregisterAllEvents()
 			MainMenuExpBar:Hide()
 			MainMenuExpBar:SetAlpha(0)
 			MainMenuExpBar:SetScale(0.00001)
+			MainMenuExpBar:SetParent(UIHider)
 			
 			if not Engine:IsBuild("MoP") then
 				BonusActionBarFrame:UnregisterAllEvents()
@@ -273,6 +275,7 @@ local elements = {
 			PossessBarFrame:UnregisterAllEvents()
 			PossessBarFrame:Hide()
 			PossessBarFrame:SetAlpha(0)
+			PossessBarFrame:SetParent(UIHider)
 
 			PetActionBarFrame:EnableMouse(false)
 			PetActionBarFrame:UnregisterAllEvents()
@@ -463,17 +466,21 @@ local elements = {
 			
 			if Engine:IsBuild("Legion") then
 				-- Legion stuff coming here. 
-			elseif Engine:IsBuild("WoD") then
+			end
+			if Engine:IsBuild("WoD") then
 				-- ugly hack to keep the keybind functioning
 				GarrisonLandingPageMinimapButton:SetParent(UIHider)
 				GarrisonLandingPageMinimapButton:UnregisterAllEvents()
 				GarrisonLandingPageMinimapButton:Show()
 				GarrisonLandingPageMinimapButton.Hide = GarrisonLandingPageMinimapButton.Show
-			elseif Engine:IsBuild("5.0.4") then
+			end
+			if Engine:IsBuild("5.0.4") then
 				QueueStatusMinimapButtonBorder:SetParent(UIHider)
-			elseif Engine:IsBuild("4.0.6") then
+			end
+			if Engine:IsBuild("4.0.6") then
 				GuildInstanceDifficulty:SetParent(UIHider)
-			elseif Engine:IsBuild("3.3.0") then
+			end
+			if Engine:IsBuild("3.3.0") then
 				MiniMapInstanceDifficulty:SetParent(UIHider)
 			end
 						

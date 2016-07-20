@@ -75,11 +75,11 @@ Bar.NewButton = function(self, button_type, button_id)
 	return Button
 end
 
-BarWidget.New = function(self, id, parent)
+BarWidget.New = function(self, id, parent, template)
 	-- the visibility layer is used for user controlled toggling of bars
 	local Visibility = CreateFrame("Frame", nil, parent, "SecureHandlerStateTemplate")
 	Visibility:SetAllPoints()
-
+	
 	local Bar = setmetatable(CreateFrame("Frame", nil, Visibility, "SecureHandlerStateTemplate"), Bar_MT)
 	Bar.id = id or 0
 	Bar.buttons = {}

@@ -6,16 +6,17 @@ local _G = _G
 
 -- WoW API
 local floor = math.floor
+local unpack = unpack
 local tsort, twipe = table.sort, table.wipe
 local hooksecurefunc = hooksecurefunc
 
 
 local colors = {
-	UNKNOWN = { .7, 0, 0 }, -- fallback for timers and unknowns
-	EXHAUSTION = { 1, .9, 0 },
+	UNKNOWN = { .7, .3, 0 }, -- fallback for timers and unknowns
+	EXHAUSTION = { .7, .3, 0 }, -- 1, .9, 0
 	BREATH = { 0, .5, 1 },
-	DEATH = { 1, .7, 0 },
-	FEIGNDEATH = { 1, .7, 0 }
+	DEATH = { .85, .35, 0 }, -- 1, .7, 0
+	FEIGNDEATH = { .85, .35, 0 } -- 1, .7, 0
 }
 
 
@@ -44,7 +45,7 @@ Module.UpdateTimer = function(self, frame)
 	elseif value < min then
 		value = min
 	end
-	timer.bar:GetStatusBarTexture():SetTexCoord(9, (value-min)/(max-min), 0, 1) -- cropping, not shrinking
+	timer.bar:GetStatusBarTexture():SetTexCoord(0, (value-min)/(max-min), 0, 1) -- cropping, not shrinking
 end
 
 -- These aren't secure, no? So it's safe to move whenever?
@@ -70,7 +71,7 @@ Module.UpdateAnchors = function(self)
 
 		if #order > 1 then
 			for i = 2, #order do
-				order[i].frame:SetPoint("CENTER", order[i-1], "CENTER", 0, -config.padding)
+				order[i].frame:SetPoint("CENTER", order[i-1].frame, "CENTER", 0, -config.padding)
 			end
 		end
 	end
@@ -84,12 +85,14 @@ Module.Skin = function(self, frame)
 	local config = self.config
 	local timer = self.timers[frame]
 
+	timer.frame:SetFrameLevel(timer.frame:GetFrameLevel() + 5)
 	timer.border:ClearAllPoints()
 	timer.border:SetPoint(unpack(config.texture_position))
 	timer.border:SetSize(unpack(config.texture_size))
 	timer.border:SetTexture(config.texture)
 	timer.msg:SetFontObject(config.font_object)
 	timer.bar:SetStatusBarTexture(config.statusbar_texture)
+	timer.bar:SetFrameLevel(timer.frame:GetFrameLevel() - 5)
 	
 	hooksecurefunc(timer.bar, "SetValue", function(...) self:UpdateTimer(frame) end)
 	hooksecurefunc(timer.bar, "SetMinMaxValues", function(...) self:UpdateTimer(frame) end)
@@ -113,6 +116,12 @@ Module.MirrorTimer_Show = function(self, timer, value, maxvalue, scale, paused, 
 			timers[frame].type = "mirror"
 			timers[frame].id = i
 			self:Skin(frame)
+		end
+		if frame:IsShown() and timer and frame.timer == timer then
+			local color = colors[frame.timer]
+			if color then
+				timers[frame].bar:SetStatusBarColor(unpack(color))
+			end
 		end
 	end
 	self:UpdateAnchors()

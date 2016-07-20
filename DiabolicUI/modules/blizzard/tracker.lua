@@ -10,47 +10,32 @@ local hooksecurefunc = hooksecurefunc
 local IsAddOnLoaded = IsAddOnLoaded
 
 
--- WatchFrame (prior to WoD)
----------------------------------------------------------
-Module.CollapseWatchFrame = function(self)
-	if self.WatchFrameMonitor.isUserCollapsed or self.WatchFrameMonitor.isBossCollapsed or self.WatchFrameMonitor.isUserShown then
-		return
-	end
-	WatchFrame.userCollapsed = true
-	WatchFrame_Collapse(WatchFrame)
-	WatchFrame_Update()
-	self.WatchFrameMonitor.isBossCollapsed = true
-end
+--[[
+	
+	After excessive testing, I can conclude that the following taint occurs when the WatchFrame 
+	has been autohidden by combat and we're moving from one zone or subzone to another and 
+	attempt to open the WorldMap.
 
-Module.RestoreWatchFrame = function(self)
-	if self.WatchFrameMonitor.isBossCollapsed and not self.WatchFrameMonitor.isUserCollapsed then
-		WatchFrame.userCollapsed = nil
-		WatchFrame_Expand(WatchFrame)
-		WatchFrame_Update()
-		self.WatchFrameMonitor.isBossCollapsed = false
-	end
-	self.WatchFrameMonitor.isUserShown = false
-end
+	Probably triggered by our insecure code being responsible for hiding WatchFrameLines, 
+	which is a frame the POI button system is using. 
+		
+		7/13 12:41:42.960  An action was blocked in combat because of taint from DiabolicUI - WorldMapBlobFrame:Show()
+		7/13 12:41:42.960      Interface\FrameXML\WorldMapFrame.lua:1458 WorldMapFrame_DisplayQuests()
+		7/13 12:41:42.960      Interface\FrameXML\WorldMapFrame.lua:1521 WorldMapFrame_UpdateMap()
+		7/13 12:41:42.960      Interface\FrameXML\WorldMapFrame.lua:175
+		7/13 12:41:42.960      SetMapToCurrentZone()
+		7/13 12:41:42.960      Interface\FrameXML\WorldMapFrame.lua:142
+		7/13 12:41:42.960      WorldMapFrame:Show()
+		7/13 12:41:42.960      Interface\FrameXML\UIParent.lua:1580 <unnamed>:SetUIPanel()
+		7/13 12:41:42.960      Interface\FrameXML\UIParent.lua:1401 <unnamed>:ShowUIPanel()
+		7/13 12:41:42.960      Interface\FrameXML\UIParent.lua:1311
+		7/13 12:41:42.960      <unnamed>:SetAttribute()
+		7/13 12:41:42.960      Interface\FrameXML\UIParent.lua:1974 ShowUIPanel()
+		7/13 12:41:42.960      Interface\FrameXML\UIParent.lua:1958 ToggleFrame()
+		7/13 12:41:42.960      TOGGLEWORLDMAP:1
 
-Module.UpdateUserCollapsedWatchFrameState = function(self)
-	self.WatchFrameMonitor.isUserCollapsed = self.WatchFrameMonitor.TrackerFrame.collapsed 
-	if self.WatchFrameMonitor.isUserCollapsed then
-		if self.WatchFrameMonitor:IsShown() then
-			self.WatchFrameMonitor.isBossCollapsed = true -- if a boss exists, restore the boss collapsed state
-		else
-			self.WatchFrameMonitor.isBossCollapsed = false -- if no boss is present, remove the boss collapsed state
-		end
-		self.WatchFrameMonitor.isUserShown = false -- remove the user forced state
-	else
-		if self.WatchFrameMonitor:IsShown() then
-			if self.WatchFrameMonitor.isBossCollapsed then
-				self.WatchFrameMonitor.isUserShown = true -- if a boss exists, and the tracker was previously boss collapsed, set the user forced state
-			end
-		else
-			self.WatchFrameMonitor.isUserShown = false -- remove the user forced state if the user expanded the tracker with no boss present
-		end
-	end
-end
+]]
+
 
 Module.UpdateWatchFrameTitle = function(self) 
 	local config = self.config
@@ -165,6 +150,7 @@ Module.StyleWatchFrame = function(self)
 	-- ...this doesn't taint?
 	-- 	*if it does, we have a problem. Because actions like shapeshifting 
 	-- 	 while engaged in combat will re-anchor the WatchFrame, and mess things up!
+	-- Verified: No Taint
 	hooksecurefunc(WatchFrame, "SetPoint", function(_,_,parent)
 		if parent ~= WatchFrameHolder then
 			WatchFrame:ClearAllPoints()
@@ -173,7 +159,7 @@ Module.StyleWatchFrame = function(self)
 			WatchFrame:SetPoint("BOTTOM", WatchFrameHolder, "BOTTOM")
 		end
 	end)
-	
+
 	-- style the expandcollapse button
 	local CollapseExpandButton = WatchFrameCollapseExpandButton
 	CollapseExpandButton:SetSize(unpack(config.togglebutton.size))
@@ -213,7 +199,7 @@ Module.StyleWatchFrame = function(self)
 	Title:SetJustifyH("LEFT") -- not going to let this be optional
 	Title:SetFontObject(config.title.font_object)
 	self.Title = Title
-	
+
 	-- We make the blizzard title transparent, but leave it alive.
 	-- We need it for right click functionality, and for the tracker to actually work!
 	WatchFrameTitle:SetAlpha(0)
@@ -224,31 +210,9 @@ Module.StyleWatchFrame = function(self)
 	hooksecurefunc(WatchFrameTitle, "SetText", function() self:UpdateWatchFrameTitle() end)
 	hooksecurefunc(WatchFrameTitle, "SetFormattedText", function() self:UpdateWatchFrameTitle() end)
 
+
 	-- hook the tracker updates
 	hooksecurefunc("WatchFrame_Update", function() self:UpdateWatchFrameLines() end)
-	
-	
-	-- Auto minimizing when in arena or in a boss fight!
-	self.WatchFrameMonitor = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-	self.WatchFrameMonitor:Hide()
-	self.WatchFrameMonitor.TrackerFrame = WatchFrame
-	self.WatchFrameMonitor.CollapseExpandButton = CollapseExpandButton
-	self.WatchFrameMonitor.driver = {}
-
-	for i = 1, MAX_BOSS_FRAMES do
-		tinsert(self.WatchFrameMonitor.driver, "[@boss"..i..",exists] show")
-	end
-	for i = 1, 5 do -- arena enemy global is created within an addon, and might not be available
-		tinsert(self.WatchFrameMonitor.driver, "[@arena"..i..",exists] show")
-	end
-	tinsert(self.WatchFrameMonitor.driver, "[combat] show") -- collapse the frame in combat (?)
-	tinsert(self.WatchFrameMonitor.driver, "hide")
-	RegisterStateDriver(self.WatchFrameMonitor, "visibility", tconcat(self.WatchFrameMonitor.driver, ";"))
-
-	self.WatchFrameMonitor:HookScript("OnShow", function() self:CollapseWatchFrame() end)
-	self.WatchFrameMonitor:HookScript("OnHide", function() self:RestoreWatchFrame() end)
-	self.WatchFrameMonitor.CollapseExpandButton:HookScript("OnClick", function() self:UpdateUserCollapsedWatchFrameState() end)
-
 	
 end
 
@@ -256,44 +220,6 @@ end
 
 -- ObjectiveTracker (WoD and higher)
 ---------------------------------------------------------
-Module.CollapseTracker = function(self)
-	if self.TrackerMonitor.isUserCollapsed or self.TrackerMonitor.isBossCollapsed or self.TrackerMonitor.isUserShown then
-		return
-	end
-	ObjectiveTracker_Collapse()
-	ObjectiveTracker_Update()
-	self.TrackerMonitor.isBossCollapsed = true
-end
-
-Module.RestoreTracker = function(self)
-	if self.TrackerMonitor.isBossCollapsed and not self.TrackerMonitor.isUserCollapsed then
-		ObjectiveTracker_Expand()
-		ObjectiveTracker_Update()
-		self.TrackerMonitor.isBossCollapsed = false
-	end
-	self.TrackerMonitor.isUserShown = false
-end
-
-Module.UpdateUserCollapsedTrackerState = function(self)
-	self.TrackerMonitor.isUserCollapsed = self.TrackerMonitor.TrackerFrame.collapsed 
-	if self.TrackerMonitor.isUserCollapsed then
-		if self.TrackerMonitor:IsShown() then
-			self.TrackerMonitor.isBossCollapsed = true -- if a boss exists, restore the boss collapsed state
-		else
-			self.TrackerMonitor.isBossCollapsed = false -- if no boss is present, remove the boss collapsed state
-		end
-		self.TrackerMonitor.isUserShown = false -- remove the user forced state
-	else
-		if self.TrackerMonitor:IsShown() then
-			if self.TrackerMonitor.isBossCollapsed then
-				self.TrackerMonitor.isUserShown = true -- if a boss exists, and the tracker was previously boss collapsed, set the user forced state
-			end
-		else
-			self.TrackerMonitor.isUserShown = false -- remove the user forced state if the user expanded the tracker with no boss present
-		end
-	end
-end
-
 Module.UpdateTrackerTitle = function(self)
 	local config = self.config
 	local Title = self.Title
@@ -453,27 +379,6 @@ Module.StyleObjectivesTracker = function(self)
 		MinimizeButton:GetHighlightTexture():SetTexCoord(MinimizeButton:GetPushedTexture():GetTexCoord())
 	end)
 		
-	-- Auto minimizing when in arena or in a boss fight!
-	self.TrackerMonitor = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-	self.TrackerMonitor:Hide()
-	self.TrackerMonitor.TrackerFrame = TrackerFrame
-	self.TrackerMonitor.MinimizeButton = MinimizeButton
-	self.TrackerMonitor.driver = {}
-
-	for i = 1, MAX_BOSS_FRAMES do
-		tinsert(self.TrackerMonitor.driver, "[@boss"..i..",exists] show")
-	end
-	for i = 1, 5 do -- arena enemy global is created within an addon, and might not be available
-		tinsert(self.TrackerMonitor.driver, "[@arena"..i..",exists] show")
-	end
-	tinsert(self.TrackerMonitor.driver, "[combat] hide") -- collapse the frame in combat (?)
-	tinsert(self.TrackerMonitor.driver, "hide")
-	RegisterStateDriver(self.TrackerMonitor, "visibility", tconcat(self.TrackerMonitor.driver, ";"))
-
-	self.TrackerMonitor:HookScript("OnShow", function() self:CollapseTracker() end)
-	self.TrackerMonitor:HookScript("OnHide", function() self:RestoreTracker() end)
-	self.TrackerMonitor.MinimizeButton:HookScript("OnClick", function() self:UpdateUserCollapsedTrackerState() end)
-			
 end
 
 Module.ObjectivesTrackerLoaded = function(self, event, addon)

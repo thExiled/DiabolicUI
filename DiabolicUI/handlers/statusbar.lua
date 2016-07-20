@@ -2,6 +2,7 @@ local _, Engine = ...
 local Handler = Engine:NewHandler("StatusBar")
 
 -- Lua API
+local math_max = math.max
 local setmetatable = setmetatable
 
 -- WoW API
@@ -28,14 +29,15 @@ StatusBar.Update = function(self, elapsed)
 		bar:Hide()
 	else
 		local new_size
-		local mult = max > min and (value-min)/(max-min) or min
+		local mult = max > min and ((value-min)/(max-min)) or min
 		if max > min then
 			new_size = mult * ((orientation == "RIGHT" or orientation == "LEFT") and width or height)
 		else
 			new_size = 0
+			mult = 0.0001
 		end
-		local display_size = new_size == 0 and 0.0001 or new_size -- heights can't be 0 in Legion
-
+		local display_size = math_max(new_size, 0.0001) -- sizes can't be 0 in Legion
+		
 		if orientation == "RIGHT" then
 			bar:SetTexCoord(0, mult, 0, 1)
 			bar:ClearAllPoints()

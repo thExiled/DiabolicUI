@@ -120,6 +120,38 @@ local Style = function(self, unit)
 	PortraitBorderNormalHighlight:Hide()
 
 	
+	-- Threat
+	-------------------------------------------------------------------
+	local Threat = {}
+	
+	Threat.Border = self:CreateTexture(nil, "BACKGROUND")
+	Threat.Border:Hide()
+	Threat.Border:SetSize(unpack(config.border.texture_size))
+	Threat.Border:SetPoint(unpack(config.border.texture_position))
+	Threat.Border:SetTexture(config.border.textures.threat)
+
+	Threat.Portrait = Portrait:CreateTexture(nil, "BACKGROUND")
+	Threat.Portrait:Hide()
+	Threat.Portrait:SetSize(unpack(config.portrait.texture_size))
+	Threat.Portrait:SetPoint(unpack(config.portrait.texture_position))
+	Threat.Portrait:SetTexture(config.portrait.textures.threat)
+	
+	Threat.Hide = function(self)
+		self.Border:Hide()
+		self.Portrait:Hide()
+	end
+
+	Threat.Show = function(self)
+		self.Border:Show()
+		self.Portrait:Show()
+	end
+	
+	Threat.SetVertexColor = function(self, ...)
+		self.Border:SetVertexColor(...)
+		self.Portrait:SetVertexColor(...)
+	end
+
+
 	-- Texts
 	-------------------------------------------------------------------
 	local Name = Border:CreateFontString(nil, "OVERLAY")
@@ -138,6 +170,7 @@ local Style = function(self, unit)
 	self.Name = Name
 	self.Portrait = Portrait
 	self.Power = Power
+	self.Threat = Threat
 
 	self.BorderNormal = BorderNormal
 	self.BorderNormalHighlight = BorderNormalHighlight

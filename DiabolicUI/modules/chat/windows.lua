@@ -1,5 +1,6 @@
 local Addon, Engine = ...
 local Module = Engine:NewModule("ChatWindows")
+local L = Engine:GetLocale()
 
 -- Lua API
 local _G = _G
@@ -186,7 +187,10 @@ Module.OnInit = function(self, event, ...)
 
 	-- hook buttonframe side changes to our custom inputbox icons
 	hooksecurefunc("FCF_SetButtonSide", function(chatFrame, buttonSide, forceUpdate)
-		_G[chatFrame:GetName().."EditBoxIcon"]:UpdateSide(chatFrame.buttonSide or buttonSide or "left")
+		local EditBoxIcon = _G[chatFrame:GetName().."EditBoxIcon"]
+		if EditBoxIcon then
+			EditBoxIcon:UpdateSide(chatFrame.buttonSide or buttonSide or "left")
+		end
 	end)
 	
 	_G["ChatFrameMenuButton"]:Hide()
@@ -214,9 +218,10 @@ Module.StyleFrame = function(self, frame)
 
 	-- Window
 	------------------------------
---	frame:SetClampRectInsets(0, 0, 0, 0)
---	frame:SetHitRectInsets(0, 0, 0, 0)
---	frame:SetClampedToScreen(false)
+	frame:SetFading(config.fade)
+	frame:SetTimeVisible(config.time_visible)
+	frame:SetIndentedWordWrap(true)
+	frame:SetClampRectInsets(unpack(config.clamps))
 	frame:SetMinResize(unpack(config.minimum_size))
 	
 	for i,v in pairs(CHAT_FRAME_TEXTURES) do
@@ -237,6 +242,11 @@ Module.StyleFrame = function(self, frame)
 	_G[name.."TabHighlightLeft"]:SetTexture("")
 	_G[name.."TabHighlightMiddle"]:SetTexture("")
 	_G[name.."TabHighlightRight"]:SetTexture("")
+
+	if _G[name.."TabConversationIcon"] then
+		_G[name.."TabConversationIcon"]:SetTexture("")
+		_G[name.."TabConversationIcon"]:SetAlpha(0)
+	end
 
 	_G[name.."Tab"]:SetAlpha(1)
 	_G[name.."Tab"].SetAlpha = UIFrameFadeRemoveFrame
@@ -588,37 +598,65 @@ Module.PositionChatFrames = function(self)
 	local db = self.db
 
 	local ChatFrame = ChatFrame1
-	
 	ChatFrame:SetFading(config.fade)
 	ChatFrame:SetTimeVisible(config.time_visible)
 	ChatFrame:SetIndentedWordWrap(true)
 	ChatFrame:SetClampRectInsets(unpack(config.clamps))
 	ChatFrame:SetMinResize(unpack(config.minimum_size))
-	ChatFrame:SetSize(unpack(config.size))
-	ChatFrame:ClearAllPoints()
-	SetPoint(ChatFrame, unpack(config.position))
 	
---	if width > 1600 then
-		-- 1920x1080
---		ChatFrame1:SetClampRectInsets(-40, -40, -40, -220)
---		ChatFrame1:ClearAllPoints()
---		ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 0)
---		ChatFrame1:SetMinResize(440, 120)
---		ChatFrame1:SetSize(440,120)
---	else
-		-- 1280x800
---		ChatFrame1:SetClampRectInsets(-40, -40, -40, -210)
---		ChatFrame1:ClearAllPoints()
---		ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 0)
---		ChatFrame1:SetMinResize(320,120)
---		ChatFrame1:SetSize(320,120)
---	end
+	if not db.hasbeenqueried then
+		local PopUpMessage = self:GetHandler("PopUpMessage")
+		if not PopUpMessage:GetPopUp("ENGINE_AUTO_SETUP_CHAT") then
+			PopUpMessage:RegisterPopUp("ENGINE_AUTO_SETUP_CHAT", {
+				title = L["Chat Setup"],
+				text = L["Would you like to automatically have the main chat window sized and positioned to match Diablo III, or would you like to manually handle this yourself?|n|nIf you choose to manually position things yourself, you won't be asked about this issue again."],
+				button1 = L["Auto"],
+				button2 = L["Manual"],
+				OnAccept = function()
+					db.autoposition = true
+					db.hasbeenqueried = true
+				end,
+				OnCancel = function()
+					db.autoposition = false
+					print(L["You can re-enable the auto positioning by typing |cff448800/diabolic autoposition|r in the chat at any time."])
+					db.hasbeenqueried = true
+				end,
+				timeout = 0,
+				exclusive = 1,
+				whileDead = 1,
+				hideOnEscape = false
+			})
+		end
+		PopUpMessage:ShowPopUp("ENGINE_AUTO_SETUP_CHAT", self:GetStaticConfig("UI").popup) 
+	end
+	
+	if db.autoposition then
+		ChatFrame:SetSize(unpack(config.size))
+		ChatFrame:ClearAllPoints()
+		SetPoint(ChatFrame, unpack(config.position))
+		
+		--	if width > 1600 then
+				-- 1920x1080
+		--		ChatFrame1:SetClampRectInsets(-40, -40, -40, -220)
+		--		ChatFrame1:ClearAllPoints()
+		--		ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 0)
+		--		ChatFrame1:SetMinResize(440, 120)
+		--		ChatFrame1:SetSize(440,120)
+		--	else
+				-- 1280x800
+		--		ChatFrame1:SetClampRectInsets(-40, -40, -40, -210)
+		--		ChatFrame1:ClearAllPoints()
+		--		ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 0)
+		--		ChatFrame1:SetMinResize(320,120)
+		--		ChatFrame1:SetSize(320,120)
+		--	end
 
-	FCF_SetLocked(ChatFrame1, true)
-	FCF_SavePositionAndDimensions(ChatFrame1, true)
+		FCF_SetLocked(ChatFrame1, true)
+		FCF_SavePositionAndDimensions(ChatFrame1, true)
 
-	if ChatFrame1:IsMovable() then
-		ChatFrame1:SetUserPlaced(true)
+		if ChatFrame1:IsMovable() then
+			ChatFrame1:SetUserPlaced(true)
+		end
 	end
 	
 end
@@ -640,6 +678,17 @@ Module.OnEnable = function(self, event, ...)
 
 --	GameMenuFrame:HookScript("OnShow", function() self:PositionChatFrames() end)
 --	GameMenuFrame:HookScript("OnHide", function() self:PositionChatFrames() end)
+	
+	-- Register the chat command to re-enable autopositioning
+	self:GetHandler("ChatCommand"):Register("autoposition", function() 
+		self.db.autoposition = not self.db.autoposition
+		if self.db.autoposition then
+			print(L["Auto positioning of chat windows has been enabled."])
+		else
+			print(L["Auto positioning of chat windows has been disabled."])
+		end
+		self:PositionChatFrames() 
+	end)
 
 	self:PositionChatFrames()
 end

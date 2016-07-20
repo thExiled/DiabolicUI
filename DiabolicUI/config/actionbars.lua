@@ -11,7 +11,7 @@ local buttonsize = {
 
 -- padding between bars and buttons
 -- going for a single value for everything
-local padding = 4
+local padding, padding_small = 4, 2
 local bar_inset, sidebar_inset = 10, 20 
 local artwork_offscreen = 20 -- how many pixels to move the bottom artwork below the screen edge
 
@@ -20,6 +20,10 @@ local xpoffset_before, xpsize, xpoffset_after = 2, 7, 2
 
 -- skull stuff
 local skulloffset = 78
+
+-- artwork offsets (angel + demon)
+local angel_offset = 128 + 64
+local demon_offset = 128 + 64 + 4 
 
 -- some locals for easier reference
 local num_buttons = NUM_ACTIONBAR_BUTTONS or 12
@@ -59,7 +63,7 @@ local config = {
 			-- intended for other modules to position by as well
 			-- *side holder is always hidden while in a vehicle
 			side = {
-				padding = padding,
+				padding = padding_small,
 				offset = sidebar_inset,
 				position = {
 					-- If the position table contains more tables, 
@@ -96,15 +100,15 @@ local config = {
 					--}
 				},
 				size = {
-					["0"] = { 1/1e3, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["1"] = { sidebar_inset + buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["2"] = { sidebar_inset + buttonsize.triple*2 + padding, buttonsize.triple*num_buttons + padding*(num_buttons-1) }
+					["0"] = { 1/1e3, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["1"] = { sidebar_inset + buttonsize.triple, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["2"] = { sidebar_inset + buttonsize.triple*2 + padding_small, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) }
 				}
 			},
 			
 			-- holder for pet bar
 			pet = {
-				padding = padding,
+				padding = padding_small,
 				position = {
 					point = "RIGHT",
 					anchor = "Side", 
@@ -112,9 +116,9 @@ local config = {
 					xoffset = 0,
 					yoffset = 0
 				},
-				size = { sidebar_inset + buttonsize.triple + padding, buttonsize.triple*num_pet_buttons + padding*(num_pet_buttons-1) },
+				size = { sidebar_inset + buttonsize.triple + padding_small, buttonsize.triple*num_pet_buttons + padding_small*(num_pet_buttons-1) },
 				-- we’re using a different size for vehicles since the quest tracker might be anchored to this
-				size_vehicle = { sidebar_inset, buttonsize.triple*num_pet_buttons + padding*(num_pet_buttons-1) }
+				size_vehicle = { sidebar_inset, buttonsize.triple*num_pet_buttons + padding_small*(num_pet_buttons-1) }
 			},
 			
 			-- holder for stance bar
@@ -124,12 +128,9 @@ local config = {
 					anchor = "Main", 
 					anchor_point = "TOP",
 					xoffset = 0,
-					yoffset = 60
+					yoffset = 91
 				},
-				-- This should be calculated on the fly from buttonsize and padding down in the bar settings,
-				-- so that the secure environment can update the size (?)
-				size = { buttonsize.triple*num_stance_buttons + padding*(num_stance_buttons-1), buttonsize.triple },
-				size_vehicle = { 0.0001, 0.0001 }
+				size = { 51, 51 }
 			},
 			
 			-- holder for menu buttons
@@ -140,7 +141,7 @@ local config = {
 					anchor = "UICenter", 
 					anchor_point = "BOTTOMRIGHT",
 					xoffset = -20,
-					yoffset = 20
+					yoffset = 20 + 10
 				},
 				size = { 61*3 + 10*2, 55 }
 			},
@@ -152,7 +153,7 @@ local config = {
 					anchor = "UICenter", 
 					anchor_point = "BOTTOMLEFT",
 					xoffset = 20,
-					yoffset = 20
+					yoffset = 20 + 10
 				},
 				size = { 61*2 + 10*2, 55 }
 			},
@@ -222,12 +223,12 @@ local config = {
 				flyout_direction = "UP",
 				growthX = "RIGHT", 
 				growthY = "UP",
-				padding = padding,
+				padding = padding_small,
 				offset = sidebar_inset,
 				bar_size = {
-					["0"] = { 0.0001, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["1"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["2"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) }
+					["0"] = { 0.0001, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["1"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["2"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) }
 				},
 				buttonsize = {
 					["1"] = buttonsize.triple,
@@ -238,11 +239,11 @@ local config = {
 				flyout_direction = "UP",
 				growthX = "RIGHT", 
 				growthY = "UP",
-				padding = padding,
+				padding = padding_small,
 				bar_size = {
-					["0"] = { 0.0001, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["1"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) },
-					["2"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding*(num_buttons-1) }
+					["0"] = { 0.0001, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["1"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) },
+					["2"] = { buttonsize.triple, buttonsize.triple*num_buttons + padding_small*(num_buttons-1) }
 				},
 				buttonsize = {
 					["1"] = buttonsize.triple,
@@ -259,19 +260,30 @@ local config = {
 			},
 			stance = {
 				position = { "BOTTOM", 0, 0 }, -- where the bar is anchored to its controller
-				flyout_direction = "UP",
 				growth = "RIGHT", 
-				padding = padding,
+				padding = padding_small,
 				buttonsize = buttonsize.triple,
-				bar_size = { buttonsize.triple*num_stance_buttons + padding*(num_stance_buttons-1), buttonsize.triple }
+				bar_size = {
+					[0] = { .0001, .0001 },
+					[1] = { buttonsize.triple, buttonsize.triple },
+					[2] = { buttonsize.triple*(num_stance_buttons-8) + padding_small*(num_stance_buttons-9), buttonsize.triple },
+					[3] = { buttonsize.triple*(num_stance_buttons-7) + padding_small*(num_stance_buttons-8), buttonsize.triple },
+					[4] = { buttonsize.triple*(num_stance_buttons-6) + padding_small*(num_stance_buttons-7), buttonsize.triple },
+					[5] = { buttonsize.triple*(num_stance_buttons-5) + padding_small*(num_stance_buttons-6), buttonsize.triple },
+					[6] = { buttonsize.triple*(num_stance_buttons-4) + padding_small*(num_stance_buttons-5), buttonsize.triple },
+					[7] = { buttonsize.triple*(num_stance_buttons-3) + padding_small*(num_stance_buttons-4), buttonsize.triple },
+					[8] = { buttonsize.triple*(num_stance_buttons-2) + padding_small*(num_stance_buttons-3), buttonsize.triple },
+					[9] = { buttonsize.triple*(num_stance_buttons-1) + padding_small*(num_stance_buttons-2), buttonsize.triple },
+					[10] = { buttonsize.triple*num_stance_buttons + padding_small*(num_stance_buttons-1), buttonsize.triple }
+				}
 			},
 			pet = {
-				position = { "RIGHT", -padding, 0 }, -- where the bar is anchored to its controller
+				position = { "RIGHT", -padding_small, 0 }, -- where the bar is anchored to its controller
 				flyout_direction = "LEFT",
 				growth = "DOWN",
-				padding = padding,
+				padding = padding_small,
 				buttonsize = buttonsize.triple,
-				bar_size = { buttonsize.triple, buttonsize.triple*num_pet_buttons + padding*(num_pet_buttons-1) }
+				bar_size = { buttonsize.triple, buttonsize.triple*num_pet_buttons + padding_small*(num_pet_buttons-1) }
 			}
 		}
 	},
@@ -280,12 +292,12 @@ local config = {
 			["1"] = {
 				left = {
 					size = { 256, 256 },
-					position = { "BOTTOM", -( (buttonsize.single*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", -( (buttonsize.single*num_buttons + padding*(num_buttons-1))/2 + angel_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Demon.tga]]
 				},
 				right = {
 					size = { 256, 256 },
-					position = { "BOTTOM", ( (buttonsize.single*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", ( (buttonsize.single*num_buttons + padding*(num_buttons-1))/2 + demon_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Angel.tga]]
 				},
 				center = {
@@ -312,12 +324,12 @@ local config = {
 			["2"] = {
 				left = {
 					size = { 256, 256 },
-					position = { "BOTTOM", -( (buttonsize.double*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", -( (buttonsize.double*num_buttons + padding*(num_buttons-1))/2 + angel_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Demon.tga]]
 				},
 				right = {
 					size = { 256, 256 },
-					position = { "BOTTOM", ( (buttonsize.double*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", ( (buttonsize.double*num_buttons + padding*(num_buttons-1))/2 + demon_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Angel.tga]]
 				},
 				center = {
@@ -344,12 +356,12 @@ local config = {
 			["3"] = {
 				left = {
 					size = { 256, 256 },
-					position = { "BOTTOM", -( (buttonsize.triple*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", -( (buttonsize.triple*num_buttons + padding*(num_buttons-1))/2 + angel_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Demon.tga]]
 				},
 				right = {
 					size = { 256, 256 },
-					position = { "BOTTOM", ( (buttonsize.triple*num_buttons + padding*(num_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", ( (buttonsize.triple*num_buttons + padding*(num_buttons-1))/2 + demon_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Angel.tga]]
 				},
 				center = {
@@ -376,12 +388,12 @@ local config = {
 			["vehicle"] = {
 				left = {
 					size = { 256, 256 },
-					position = { "BOTTOM", -( (buttonsize.vehicle*num_vehicle_buttons + padding*(num_vehicle_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", -( (buttonsize.vehicle*num_vehicle_buttons + padding*(num_vehicle_buttons-1))/2 + angel_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Demon.tga]]
 				},
 				right = {
 					size = { 256, 256 },
-					position = { "BOTTOM", ( (buttonsize.vehicle*num_vehicle_buttons + padding*(num_vehicle_buttons-1))/2 + 128 + 64 ), -artwork_offscreen },
+					position = { "BOTTOM", ( (buttonsize.vehicle*num_vehicle_buttons + padding*(num_vehicle_buttons-1))/2 + demon_offset ), -artwork_offscreen },
 					texture = path .. [[textures\DiabolicUI_Artwork_Angel.tga]]
 				},
 				center = {
@@ -861,7 +873,8 @@ local config = {
 		custom = {
 			exit = {
 				size = { 36, 36 },
-				position = { "TOPRIGHT", 164 + 36, 87 + 36 },
+				position = { "BOTTOMRIGHT", 200, 156 },
+				--position = { "TOPRIGHT", 164 + 36, 87 + 36 },
 				texture_size = { 64, 64 },
 				texture_position = { "CENTER", 0, 0 },
 				textures = {
@@ -869,6 +882,25 @@ local config = {
 					highlight = path .. [[textures\DiabolicUI_ExitButton_37x37_Highlight.tga]],
 					pushed = path .. [[textures\DiabolicUI_ExitButton_37x37_Pushed.tga]],
 					disabled = path .. [[textures\DiabolicUI_ExitButton_37x37_Disabled.tga]]
+				}
+			},
+			extra = {
+				size = { 38, 38 },
+				position = { "BOTTOMRIGHT", 250, 155 },
+				position_vehicle = { "BOTTOMRIGHT", 200, 155 },
+				icon = {
+					texcoords = { 5/64, 59/64, 5/64, 59/64 },
+					size = { 38, 38 },
+					position = { "CENTER", 0, 0 },
+					position_pushed = { "CENTER", 0, -2 }
+				},
+				border = {
+					size = { 64, 64 },
+					position = { "CENTER", 0, 0 },
+					textures = {
+						normal = path .. [[textures\DiabolicUI_Button_37x37_Normal.tga]],
+						highlight = path .. [[textures\DiabolicUI_Button_37x37_Highlight.tga]]
+					}
 				}
 			}
 		},
@@ -996,6 +1028,10 @@ local config = {
 					},
 					backdrop_color = { 0, 0, 0, .75 },
 					backdrop_border_color = { 1, 1, 1, 1 },
+					performance = {
+						font_object = DiabolicDialogSmallGray,
+						position = { "BOTTOMRIGHT", -6, -20  } -- relative to the micromenu's menubutton
+					}
 				},
 				barmenu = {
 					size = { 390, 620 },
@@ -1189,6 +1225,22 @@ local config = {
 			}
 
 		},
+		stance = {
+			button = {
+				size = { 51, 51 },
+				position = { "BOTTOM", .5, 0 },
+				texture_size = { 128, 128 },
+				texture_position = { "TOPLEFT", -(64 - 25), (64 - 26) },
+				textures = {
+					normal = path .. [[textures\DiabolicUI_Button_51x51_Normal.tga]],
+					pushed = path .. [[textures\DiabolicUI_Button_51x51_Normal.tga]]
+				}
+			},
+			window = {
+				size = { buttonsize.triple, buttonsize.triple * num_stance_buttons + padding*(num_stance_buttons-1) },
+				position = { "BOTTOM", -.5, 51 + 4 }
+			}
+		},
 		xp = {
 			font_object = DiabolicDialogNormal,
 			bar = {
@@ -1229,6 +1281,7 @@ local config = {
 local db = {
 	num_bars = 1, -- UnitLevel("player") < 80 and 1 or 2, -- number of main/bottom bars (1-3)
 	num_side_bars = 0, -- number of side bars (0-2)
+	cast_on_down = 0 -- this setting is only used for WotLK
 }
 
 Engine:NewStaticConfig("ActionBars", config)

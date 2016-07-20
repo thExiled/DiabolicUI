@@ -32,7 +32,7 @@ local Style = function(self, unit)
 
 	-- Artwork
 	-------------------------------------------------------------------
-	local Backdrop = self:CreateTexture(nil, "BACKGROUND")
+	local Backdrop = self:CreateTexture(nil, "BORDER")
 	Backdrop:SetSize(unpack(config.backdrop.texture_size))
 	Backdrop:SetPoint(unpack(config.backdrop.texture_position))
 	Backdrop:SetTexture(config.backdrop.texture)
@@ -53,6 +53,14 @@ local Style = function(self, unit)
 	BorderNormalHighlight:SetTexture(config.border.textures.highlight)
 	BorderNormalHighlight:Hide()
 
+	-- Threat
+	-------------------------------------------------------------------
+	local Threat = self:CreateTexture(nil, "BACKGROUND")
+	Threat:Hide()
+	Threat:SetSize(unpack(config.border.texture_size))
+	Threat:SetPoint(unpack(config.border.texture_position))
+	Threat:SetTexture(config.border.textures.threat)
+	
 
 	-- Health
 	-------------------------------------------------------------------
@@ -92,6 +100,7 @@ local Style = function(self, unit)
 	self.CastBar = CastBar
 	self.Health = Health
 	self.Name = Name
+	self.Threat = Threat
 
 	self.BorderNormal = BorderNormal
 	self.BorderNormalHighlight = BorderNormalHighlight

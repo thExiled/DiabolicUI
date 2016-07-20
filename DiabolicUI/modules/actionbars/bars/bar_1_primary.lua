@@ -63,16 +63,16 @@ BarWidget.OnEnable = function(self)
 		Bar:SetAttribute("_onstate-page", [[ 
 			if newstate == "possess" or newstate == "11" then
 				if HasVehicleActionBar() then
-					newstate = GetVehicleBarIndex();
-				elseif HasOverrideActionBar() then
-					newstate = GetOverrideBarIndex();
+					newstate = GetVehicleBarIndex(); -- 12
+				elseif HasOverrideActionBar() then 
+					newstate = GetOverrideBarIndex(); --14
 				elseif HasTempShapeshiftActionBar() then
-					newstate = GetTempShapeshiftBarIndex();
+					newstate = GetTempShapeshiftBarIndex(); --13
 				else
 					newstate = nil;
 				end
 				if not newstate then
-					newstate = 12;
+					newstate = 12; -- "possess"
 				end
 			end
 			self:SetAttribute("state", newstate);
@@ -107,7 +107,7 @@ BarWidget.OnEnable = function(self)
 	local _, player_class = UnitClass("player")
 
 	if Engine:IsBuild("MoP") then -- also applies to WoD and (possibly) Legion
-		tinsert(driver, "[overridebar][possessbar][shapeshift]possess")
+		tinsert(driver, "[vehicleui][overridebar][possessbar][shapeshift]possess")
 		tinsert(driver, "[bar:2]2; [bar:3]3; [bar:4]4; [bar:5]5; [bar:6]6")
 
 		if player_class == "DRUID" then
@@ -118,6 +118,8 @@ BarWidget.OnEnable = function(self)
 			tinsert(driver, "[bonusbar:1] 7")
 		elseif player_class == "ROGUE" then
 			tinsert(driver, ("[%s:%s] %s; "):format("form", GetNumShapeshiftForms() + 1, 7) .. "[form:1] 7; [form:3] 7")
+		elseif player_class == "WARRIOR" then
+			tinsert(driver, "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9")
 		end
 
 	elseif Engine:IsBuild("WotLK") then -- also applies to Cata
@@ -158,7 +160,7 @@ BarWidget.OnEnable = function(self)
 
 	twipe(driver)
 	if Engine:IsBuild("MoP") then -- also applies to WoD and (possibly) Legion
-		tinsert(driver, "[overridebar][possessbar][shapeshift]hide")
+		tinsert(driver, "[vehicleui][overridebar][possessbar][shapeshift]hide")
 	elseif Engine:IsBuild("WotLK") then
 		tinsert(driver, "[bonusbar:5]hide")
 	end

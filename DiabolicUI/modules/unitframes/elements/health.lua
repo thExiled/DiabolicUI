@@ -2,7 +2,9 @@ local _, Engine = ...
 local Handler = Engine:GetHandler("UnitFrame")
 
 -- Lua API
+local tostring, tonumber = tostring, tonumber
 local pairs, unpack = pairs, unpack
+local floor = math.floor
 
 -- WoW API
 local UnitClassification = UnitClassification
@@ -71,6 +73,19 @@ local colors = {
 	}
 }
 
+
+local short = function(value)
+	value = tonumber(value)
+	if not value then return "" end
+	if value >= 1e6 then
+		return ("%.1fm"):format(value / 1e6)
+	elseif value >= 1e3 or value <= -1e3 then
+		return ("%.1fk"):format(value / 1e3)
+	else
+		return tostring(value)
+	end	
+end
+
 local Update
 if Engine:IsBuild("Legion") then
 	Update = function(self, event, ...)
@@ -111,6 +126,42 @@ if Engine:IsBuild("Legion") then
 				r, g, b = unpack(colors.orb[1])
 			end
 			Health:SetStatusBarColor(r, g, b)
+		end
+		
+		if Health.Value then
+			if health == 0 or healthmax == 0 then
+				Health.Value:SetText("")
+			else
+				if Health.Value.showDeficit then
+					if Health.Value.showPercent then
+						if Health.Value.showMaximum then
+							Health.Value:SetFormattedText("%s / %s - %d%%", short(healthmax - health), short(healthmax), floor(health/healthmax * 100))
+						else
+							Health.Value:SetFormattedText("%s / %d%%", short(healthmax - health), floor(health/healthmax * 100))
+						end
+					else
+						if Health.Value.showMaximum then
+							Health.Value:SetFormattedText("%s / %s", short(healthmax - health), short(healthmax))
+						else
+							Health.Value:SetFormattedText("%s / %s", short(healthmax - health))
+						end
+					end
+				else
+					if Health.Value.showPercent then
+						if Health.Value.showMaximum then
+							Health.Value:SetFormattedText("%s / %s - %d%%", short(health), short(healthmax), floor(health/healthmax * 100))
+						else
+							Health.Value:SetFormattedText("%s / %d%%", short(health), floor(health/healthmax * 100))
+						end
+					else
+						if Health.Value.showMaximum then
+							Health.Value:SetFormattedText("%s / %s", short(health), short(healthmax))
+						else
+							Health.Value:SetFormattedText("%s / %s", short(health))
+						end
+					end
+				end
+			end
 		end
 		
 		if Health.PostUpdate then
@@ -161,6 +212,42 @@ else
 			Health:SetStatusBarColor(r, g, b)
 		end
 		
+		if Health.Value then
+			if health == 0 or healthmax == 0 then
+				Health.Value:SetText("")
+			else
+				if Health.Value.showDeficit then
+					if Health.Value.showPercent then
+						if Health.Value.showMaximum then
+							Health.Value:SetFormattedText("%s / %s - %d%%", short(healthmax - health), short(healthmax), floor(health/healthmax * 100))
+						else
+							Health.Value:SetFormattedText("%s / %d%%", short(healthmax - health), floor(health/healthmax * 100))
+						end
+					else
+						if Health.Value.showMaximum then
+							Health.Value:SetFormattedText("%s / %s", short(healthmax - health), short(healthmax))
+						else
+							Health.Value:SetFormattedText("%s / %s", short(healthmax - health))
+						end
+					end
+				else
+					if Health.Value.showPercent then
+						if Health.Value.showMaximum then
+							Health.Value:SetFormattedText("%s / %s - %d%%", short(health), short(healthmax), floor(health/healthmax * 100))
+						else
+							Health.Value:SetFormattedText("%s / %d%%", short(health), floor(health/healthmax * 100))
+						end
+					else
+						if Health.Value.showMaximum then
+							Health.Value:SetFormattedText("%s / %s", short(health), short(healthmax))
+						else
+							Health.Value:SetFormattedText("%s / %s", short(health))
+						end
+					end
+				end
+			end
+		end
+		
 		if Health.PostUpdate then
 			return Health:PostUpdate()
 		end
@@ -169,25 +256,29 @@ end
 	
 local Enable = function(self)
 	local Health = self.Health
-	if Health.frequent then
-	else
-		self:RegisterEvent("UNIT_HEALTH", Update)
-		self:RegisterEvent("UNIT_MAXHEALTH", Update)
-		self:RegisterEvent("UNIT_HAPPINESS", Update)
-		self:RegisterEvent("UNIT_FACTION", Update)
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
+	if Health then
+		if Health.frequent then
+		else
+			self:RegisterEvent("UNIT_HEALTH", Update)
+			self:RegisterEvent("UNIT_MAXHEALTH", Update)
+			self:RegisterEvent("UNIT_HAPPINESS", Update)
+			self:RegisterEvent("UNIT_FACTION", Update)
+			self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
+		end
 	end
 end
 
 local Disable = function(self)
 	local Health = self.Health
-	if Health.frequent then
-	else
-		self:UnregisterEvent("UNIT_HEALTH", Update)
-		self:UnregisterEvent("UNIT_MAXHEALTH", Update)
-		self:UnregisterEvent("UNIT_HAPPINESS", Update)
-		self:UnregisterEvent("UNIT_FACTION", Update)
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
+	if Health then 
+		if Health.frequent then
+		else
+			self:UnregisterEvent("UNIT_HEALTH", Update)
+			self:UnregisterEvent("UNIT_MAXHEALTH", Update)
+			self:UnregisterEvent("UNIT_HAPPINESS", Update)
+			self:UnregisterEvent("UNIT_FACTION", Update)
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
+		end
 	end
 end
 

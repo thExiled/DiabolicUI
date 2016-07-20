@@ -123,7 +123,7 @@ local colors = {
 	usable = { 1, 1, 1 }, -- normal icons
 	unusable = { .3, .3, .3 }, -- used when icons can't be desaturated
 	unusable_overlay = { 73/255, 28/255, 9/255, .7 }, -- used as an overlay to desaturated icons to darken them 
-	out_of_range = { .8, .1, .1 }, -- out of range  -- .8, .1, .1
+	out_of_range = { .8, 0, 0 }, -- out of range  -- .8, .1, .1
 	out_of_mana = { .3, .3, .7 }, -- out of mana -- .5, .5, 1
 
 	stack_text = { 1, 1, 1, 1 },
@@ -934,6 +934,15 @@ Button.Update = function(self)
 	
 	self:UpdateBindings()
 	self:UpdateLayers()
+	self:UpdateCount()
+	self:UpdateOverlayGlow()
+	self:UpdateFlyout()
+	
+	-- UpdateLayers also does this... redundant?
+	if GameTooltip:GetOwner() == self then
+		UpdateTooltip(self)
+	end
+	
 end
 
 -- Updates the current action of the button
@@ -1038,7 +1047,8 @@ Button.UpdateLayers = function(self)
 	if self.type_by_state == "pet" then
 		checked = self:IsCurrentlyActive() or self:IsAutoRepeat() 
 	else
-		checked = self:GetChecked() == true
+		local get_checked = self:GetChecked()
+		checked = get_checked == true or get_checked == 1
 	end
 	self._checked = checked
 	
@@ -1130,8 +1140,13 @@ end
 Button.UpdateBindings = function(self)
 	local key = self:GetKeyBind() or ""
 	local keybind = self.keybind
-	keybind:SetText(key)
-	keybind:Show()
+	if self.type_by_state == "stance" then
+		keybind:SetText("")
+		keybind:Hide()
+	else
+		keybind:SetText(key)
+		keybind:Show()
+	end
 end
 
 Button.GetKeyBind = function(self)
@@ -1299,8 +1314,39 @@ Button.IsFlashing = function(self)
 	return self.flashing == 1
 end
 
+Button.UpdateCount = function(self)
+	if not self:HasAction() then
+		self.stack:SetText("")
+		return
+	end
+	if self:IsConsumableOrStackable() then
+		local count = self:GetCount()
+		if count > (self.maxDisplayCount or 9999) then
+			self.stack:SetText("*")
+		else
+			self.stack:SetText(count)
+		end
+	else
+		local charges, maxCharges, chargeStart, chargeDuration = self:GetCharges()
+		if charges and maxCharges and maxCharges > 0 then
+			self.stack:SetText(charges)
+		else
+			self.stack:SetText("")
+		end
+	end
+end
+
+
 local overlay_cache = {}
 local num_overlays = 0
+
+local OverlayGlowAnimOutFinished = function(animGroup)
+	local overlay = animGroup:GetParent()
+	local button = overlay:GetParent()
+	overlay:Hide()
+	tinsert(overlay_cache, overlay)
+	button.OverlayGlow = nil
+end
 
 local OverlayGlow_OnHide = function(self)
 	if self.animOut:IsPlaying() then
@@ -1329,7 +1375,7 @@ Button.ShowOverlayGlow = function(self)
 	else
 		self.OverlayGlow = GetOverlayGlow()
 		local frameWidth, frameHeight = self:GetSize()
-		self.OverlayGlow:SetParent(self)
+		self.OverlayGlow:SetParent(self.border)
 		self.OverlayGlow:ClearAllPoints()
 		--Make the height/width available before the next frame:
 		self.OverlayGlow:SetSize(frameWidth * 1.4, frameHeight * 1.4)
@@ -1351,24 +1397,23 @@ Button.HideOverlayGlow = function(self)
 		end
 	end
 end
-local OverlayGlowAnimOutFinished = function(animGroup)
-	local overlay = animGroup:GetParent()
-	local button = overlay:GetParent()
-	overlay:Hide()
-	tinsert(overlay_cache, overlay)
-	button.OverlayGlow = nil
-end
 
 Button.UpdateOverlayGlow = function(self)
-	local spellId = self:GetSpellId()
-	if spellId and IsSpellOverlayed(spellId) then
-		ShowOverlayGlow(self)
-	else
-		HideOverlayGlow(self)
+	if self.OverlayGlow then
+		local spellId = self:GetSpellId()
+		if spellId and (IsSpellOverlayed and IsSpellOverlayed(spellId)) then
+			self:ShowOverlayGlow()
+		else
+			self:HideOverlayGlow()
+		end
 	end
 end
 
 Button.UpdateFlyout = function(self)
+	if not self.FlyoutBorder or not self.FlyoutBorderShadow then
+		return
+	end
+
 	self.FlyoutBorder:Hide()
 	self.FlyoutBorderShadow:Hide()
 
@@ -1528,7 +1573,9 @@ Button.GetLossOfControlCooldown = function(self) return 0, 0 end
 ActionButton.HasAction               = function(self) return HasAction(self.action_by_state) end
 ActionButton.GetActionText           = function(self) return GetActionText(self.action_by_state) end
 ActionButton.GetTexture              = function(self) return GetActionTexture(self.action_by_state) end
-ActionButton.GetCharges              = function(self) return GetActionCharges(self.action_by_state) end
+ActionButton.GetCharges              = function(self) 
+	return (Engine:IsBuild("MoP") and GetActionCharges(self.action_by_state))
+end
 ActionButton.GetCount                = function(self) return GetActionCount(self.action_by_state) end
 ActionButton.GetCooldown             = function(self) return GetActionCooldown(self.action_by_state) end
 ActionButton.IsAttack                = function(self) return IsAttackAction(self.action_by_state) end
@@ -1536,7 +1583,11 @@ ActionButton.IsEquipped              = function(self) return IsEquippedAction(se
 ActionButton.IsCurrentlyActive       = function(self) return IsCurrentAction(self.action_by_state) end
 ActionButton.IsAutoRepeat            = function(self) return IsAutoRepeatAction(self.action_by_state) end
 ActionButton.IsUsable                = function(self) return IsUsableAction(self.action_by_state) end
-ActionButton.IsConsumableOrStackable = function(self) return IsConsumableAction(self.action_by_state) or IsStackableAction(self.action_by_state) or (not IsItemAction(self.action_by_state) and GetActionCount(self.action_by_state) > 0) end
+ActionButton.IsConsumableOrStackable = function(self) 
+	return IsConsumableAction(self.action_by_state) 
+		or IsStackableAction(self.action_by_state) 
+		or (Engine:IsBuild("MoP") and (not IsItemAction(self.action_by_state) and GetActionCount(self.action_by_state) > 0))
+end
 ActionButton.IsUnitInRange           = function(self, unit) return IsActionInRange(self.action_by_state, unit) end
 ActionButton.SetTooltip              = function(self) return GameTooltip:SetAction(self.action_by_state) end
 ActionButton.GetSpellId              = function(self)
@@ -1651,8 +1702,8 @@ StanceButton.GetActionText = function(self) return select(2,GetShapeshiftFormInf
 StanceButton.GetTexture = function(self) return GetShapeshiftFormInfo(self.id) end
 StanceButton.IsCurrentlyActive = function(self) return select(3,GetShapeshiftFormInfo(self.id)) end
 StanceButton.IsUsable = function(self) 
-	return IsUsableAction(self._state_action)
-	-- return select(4,GetShapeshiftFormInfo(self.id)) 
+	--return IsUsableAction(self._state_action)
+	return select(4,GetShapeshiftFormInfo(self.id)) 
 end
 StanceButton.SetTooltip = function(self) return GameTooltip:SetShapeshift(self.id) end
 
@@ -1804,12 +1855,12 @@ ButtonWidget.OnEvent = function(self, event, ...)
 		for button in next, ActiveButtons do
 			local spellId = button:GetSpellId()
 			if spellId and spellId == arg1 then
-				ShowOverlayGlow(button)
+				button:ShowOverlayGlow()
 			else
 				if button.type_by_state == "action" then
 					local actionType, id = GetActionInfo(button.action_by_state)
 					if actionType == "flyout" and FlyoutHasSpell(id, arg1) then
-						ShowOverlayGlow(button)
+						button:ShowOverlayGlow()
 					end
 				end
 			end
@@ -1819,12 +1870,12 @@ ButtonWidget.OnEvent = function(self, event, ...)
 		for button in next, ActiveButtons do
 			local spellId = button:GetSpellId()
 			if spellId and spellId == arg1 then
-				HideOverlayGlow(button)
+				button:HideOverlayGlow()
 			else
 				if button.type_by_state == "action" then
 					local actionType, id = GetActionInfo(button.action_by_state)
 					if actionType == "flyout" and FlyoutHasSpell(id, arg1) then
-						HideOverlayGlow(button)
+						button:HideOverlayGlow()
 					end
 				end
 			end
@@ -1838,9 +1889,9 @@ ButtonWidget.OnEvent = function(self, event, ...)
 		end
 	
 	elseif event == "SPELL_UPDATE_CHARGES" then
-		-- for button in next, ActiveButtons do
-			-- button:UpdateCount()
-		-- end
+		for button in next, ActiveButtons do
+			button:UpdateCount()
+		end
 	
 	elseif event == "UPDATE_SUMMONPETS_ACTION" then
 		for button in next, ActiveButtons do
@@ -1898,6 +1949,15 @@ ButtonWidget.OnEvent = function(self, event, ...)
 				button:UpdateUsable()
 			end
 		end 
+	elseif event == "CVAR_UPDATE" and (arg1 == "ACTION_BUTTON_USE_KEY_DOWN" or arg1 == "LOCK_ACTIONBAR_TEXT") then
+		local cast_on_down = GetCVarBool("ActionButtonUseKeyDown")
+		for button in next, ButtonRegistry do
+			if cast_on_down then
+				button:RegisterForClicks("AnyDown")
+			else
+				button:RegisterForClicks("AnyUp")
+			end
+		end
 	end
 end
 
@@ -1960,6 +2020,7 @@ ButtonWidget.LoadEvents = function(self)
 	self:RegisterEvent("PLAYER_CONTROL_GAINED", "OnEvent")
 	self:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED", "OnEvent")
 
+	self:RegisterEvent("CVAR_UPDATE", "OnEvent") -- cast on up/down
 
   -- for items, as we want the count and similar updated!
 	self:RegisterEvent("BAG_UPDATE", "OnEvent")
@@ -2027,12 +2088,34 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	local button
 	if buttonType == "pet" then
 		button = setmetatable(CreateFrame("CheckButton", name , header, "PetActionButtonTemplate"), Button_MT)
-	elseif button == "stance" then
-		button = setmetatable(CreateFrame("CheckButton", name , header, "StanceButtonTemplate"), Button_MT)
-	--elseif button == "extra" then
+		button:UnregisterAllEvents()
+		button:SetScript("OnEvent", nil)
+		button:SetScript("OnUpdate", nil)
+		
+	elseif buttonType == "stance" then
+		if Engine:IsBuild("MoP") then
+			button = setmetatable(CreateFrame("CheckButton", name , header, "StanceButtonTemplate"), Button_MT)
+		else
+			button = setmetatable(CreateFrame("CheckButton", name , header, "ShapeshiftButtonTemplate"), Button_MT)
+		end
+		button:UnregisterAllEvents()
+		button:SetScript("OnEvent", nil)
+		
+	--elseif buttonType == "extra" then
 	--	button = setmetatable(CreateFrame("CheckButton", name , header, "ExtraActionButtonTemplate"), Button_MT)
+	--	button:UnregisterAllEvents()
+	--	button:SetScript("OnEvent", nil)
+	
 	else
 		button = setmetatable(CreateFrame("CheckButton", name , header, "SecureActionButtonTemplate, ActionButtonTemplate"), Button_MT)
+		button:RegisterForDrag("LeftButton", "RightButton")
+		
+		local cast_on_down = GetCVarBool("ActionButtonUseKeyDown")
+		if cast_on_down then
+			button:RegisterForClicks("AnyDown")
+		else
+			button:RegisterForClicks("AnyUp")
+		end
 	end
 	
 	button.config = header.config
@@ -2053,21 +2136,15 @@ ButtonWidget.New = function(self, buttonType, id, header)
 	button.action_by_state = button.id -- initial/current action
 	button.type_by_state = buttonType -- store the button type for faster reference
 
-	-- remove everything that the templates might have added, we don't want it
-	button:UnregisterAllEvents()
-	button:SetScript("OnEvent", nil)
-	button:SetScript("OnUpdate", nil)
-
 	button:SetID(id)
+
 	button:SetAttribute("type", buttonType) -- assign the correct button type for the secure templates
 
 	-- TODO: let the user control clicks and locks
-	button:RegisterForDrag("LeftButton", "RightButton")
-	button:RegisterForClicks("AnyUp")
 	button:SetAttribute("buttonlock", true)
 	button:SetAttribute("flyoutDirection", "UP")
 	button.action = 0 -- hack needed for the flyouts to not bug out
-	
+
 	-- Drag N Drop Fuctionality, allow the user to pick up and drop stuff on the buttons! 
 	-- params:
 	-- 		self = the actionbutton frame handle

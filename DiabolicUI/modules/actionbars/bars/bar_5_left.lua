@@ -185,7 +185,7 @@ BarWidget.OnEnable = function(self)
 	end
 	
 	local previous = Module:GetWidget("Bar: 4"):GetFrame()
-	Bar:SetPoint("TOPRIGHT", previous, "TOPLEFT", -config.structure.bars.padding, 0)
+	Bar:SetPoint("TOPRIGHT", previous, "TOPLEFT", -config.structure.controllers.side.padding, 0)
 
 	-- for testing
 	--Bar:SetBackdrop({ bgFile = BLANK_TEXTURE })
