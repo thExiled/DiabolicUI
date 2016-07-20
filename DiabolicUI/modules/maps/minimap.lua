@@ -380,7 +380,7 @@ Module.OnInit = function(self)
 	self.frame.widgets.compass:SetTexture("") 
 	self.frame.widgets.compass:SetDrawLayer("OVERLAY", 2) 
 
-	if Engine:IsBuild("WoD") and not Engine:IsBuild("Legion") then
+	if Engine:IsBuild("WoD") then 
 		self.frame.widgets.garrison = CreateFrame("Frame", nil, self.frame.scaffold.border) 
 		self.frame.widgets.garrison:EnableMouse(true) 
 		self.frame.widgets.garrison:SetScript("OnEnter", Garrison_OnEnter) 
@@ -588,7 +588,7 @@ Module.OnEnable = function(self)
 	self.frame.widgets.compass:SetTexCoord(0, 1, 0, 1) -- just to make sure old settings from WoW doesn't interfere
 	
 	-- garrison report button
-	if Engine:IsBuild("WoD") and not Engine:IsBuild("Legion") then
+	if Engine:IsBuild("WoD") then 
 		self.frame.widgets.garrison:ClearAllPoints()
 		self.frame.widgets.garrison:SetPoint(unpack(config.garrison.point))
 		self.frame.widgets.garrison:SetSize(unpack(config.garrison.size)) 
@@ -636,7 +636,7 @@ Module.OnEnable = function(self)
 	self.frame.widgets.coordinates:SetTextColor(unpack(config.text.colors.normal))
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	if Engine:IsBuild("WoD")and not Engine:IsBuild("Legion")  then
+	if Engine:IsBuild("WoD") then 
 		self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE", "OnEvent")
 		self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE", "OnEvent")
 		self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE", "OnEvent")
