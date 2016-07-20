@@ -1,6 +1,7 @@
 local _, Engine = ...
 local Module = Engine:GetModule("ActionBars")
 local ControllerWidget = Module:SetWidget("Controller: Stance")
+local L = Engine:GetLocale()
 
 -- Lua API
 local pairs = pairs
