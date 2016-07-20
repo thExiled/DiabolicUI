@@ -58,6 +58,7 @@ Module.OnEnable = function(self)
 	BlizzardUI:GetElement("UnitFrames"):Disable()
 
 	if Engine:IsBuild("Legion") then
+		BlizzardUI:GetElement("Menu_Option"):Remove(true, "InterfaceOptionsCombatPanelTargetOfTarget")
 	elseif Engine:IsBuild("WoD") then
 	elseif Engine:IsBuild("MoP") then
 		BlizzardUI:GetElement("Menu_Panel"):Remove(9, "InterfaceOptionsStatusTextPanel")

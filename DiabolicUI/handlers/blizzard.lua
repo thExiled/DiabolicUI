@@ -141,7 +141,7 @@ local disableUnitFrame = function(unit)
 		-- User placed frames don't animate
 		PlayerFrame:SetUserPlaced(true)
 		PlayerFrame:SetDontSavePosition(true)
-
+		
 	elseif unit == "pet" then
 		killUnitFrame(_G.PetFrame)
 	elseif unit == "target" then

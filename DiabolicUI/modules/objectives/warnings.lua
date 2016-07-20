@@ -142,12 +142,31 @@ Module.AddMessage = function(self, msg, type, r, g, b)
 	DEFAULT_CHAT_FRAME:AddMessage(msg, r, g, b)
 end
 
-Module.OnEvent = function(self, event, msg, ...)
+Module.OnEvent = function(self, event, ...)
 	if event == "UI_ERROR_MESSAGE" then
+		local msg_type, msg
+		if Engine:IsBuild("Legion") then
+			msg_type, msg = ...
+			if not self:ShouldDisplayMessageType(msg_type, msg) then
+				return 
+			end
+		else
+			msg = ...
+		end
 		self:AddMessage(msg, "error")
 	elseif event == "UI_INFO_MESSAGE" then
+		local msg_type, msg
+		if Engine:IsBuild("Legion") then
+			msg_type, msg = ...
+			if not self:ShouldDisplayMessageType(msg_type, msg) then
+				return 
+			end
+		else
+			msg = ...
+		end
 		self:AddMessage(msg, "info")
 	elseif event == "SYSMSG" then
+		local msg, r, g, b = ...
 		-- System messages are displayed by default in the chat anyway, 
 		-- so we're going to simply ignore them. 
 		-- local r, g, b = ...
@@ -175,6 +194,7 @@ Module.OnInit = function(self)
 	self.player = self.frames.player
 	self.message = self.frames.player.message
 	self.message_quest = self.frames.player.message_quest
+	
 end
 
 Module.OnEnable = function(self)
@@ -217,6 +237,41 @@ Module.OnEnable = function(self)
 	self:RegisterEvent("UI_ERROR_MESSAGE", "OnEvent")
 	self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent")
 	self:RegisterEvent("SYSMSG", "OnEvent")
+	
+	if Engine:IsBuild("Legion") then
+		-- copied from the Blizzard FrameXML file UIErrorsFrame.lua
+		local BLACK_LISTED_MESSAGE_TYPES = {
+			[LE_GAME_ERR_ABILITY_COOLDOWN] = true,
+			[LE_GAME_ERR_SPELL_COOLDOWN] = true,
+			[LE_GAME_ERR_SPELL_FAILED_ANOTHER_IN_PROGRESS] = true,
+
+			[LE_GAME_ERR_OUT_OF_HOLY_POWER] = true,
+			[LE_GAME_ERR_OUT_OF_POWER_DISPLAY] = true,
+			[LE_GAME_ERR_OUT_OF_SOUL_SHARDS] = true,
+			[LE_GAME_ERR_OUT_OF_FOCUS] = true,
+			[LE_GAME_ERR_OUT_OF_COMBO_POINTS] = true,
+			[LE_GAME_ERR_OUT_OF_CHI] = true,
+			[LE_GAME_ERR_OUT_OF_PAIN] = true,
+			[LE_GAME_ERR_OUT_OF_HEALTH] = true,
+			[LE_GAME_ERR_OUT_OF_RAGE] = true,
+			[LE_GAME_ERR_OUT_OF_ARCANE_CHARGES] = true,
+			[LE_GAME_ERR_OUT_OF_RANGE] = true,
+			[LE_GAME_ERR_OUT_OF_ENERGY] = true,
+			[LE_GAME_ERR_OUT_OF_LUNAR_POWER] = true,
+			[LE_GAME_ERR_OUT_OF_RUNIC_POWER] = true,
+			[LE_GAME_ERR_OUT_OF_INSANITY] = true,
+			[LE_GAME_ERR_OUT_OF_RUNES] = true,
+			[LE_GAME_ERR_OUT_OF_FURY] = true,
+			[LE_GAME_ERR_OUT_OF_MAELSTROM] = true,
+		}
+		
+		self.ShouldDisplayMessageType = function(self, messageType, msg)
+			if BLACK_LISTED_MESSAGE_TYPES[messageType] then
+				return false
+			end
+			return true
+		end
+	end
 
 	self.player:SetScript("OnUpdate", OnUpdate)
 	

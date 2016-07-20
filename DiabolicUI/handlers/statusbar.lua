@@ -12,7 +12,7 @@ local StatusBar = {}
 local StatusBar_MT = { __index = StatusBar }
 
 StatusBar.Update = function(self, elapsed)
-	local value, min, max = self._ignoresmoothing and self._value or self._displayvalue
+	local value = self._ignoresmoothing and self._value or self._displayvalue
 	local min, max = self._min, self._max
 	local orientation = self._orientation
 	local width, height = self.scaffold:GetSize()
@@ -151,6 +151,7 @@ StatusBar.Update = function(self, elapsed)
 
 end
 
+local smooth_minimum_value = 1 -- if a value is lower than this, we won't smoothe
 local smooth_HZ = .2 -- time for the smooth transition to complete
 local smooth_limit = 1/120 -- max updates per second
 StatusBar.OnUpdate = function(self, elapsed)
@@ -168,31 +169,34 @@ StatusBar.OnUpdate = function(self, elapsed)
 		if self.smoothing then
 			local goal = self._value
 			local display = self._displayvalue
-			
-			if goal > display then
-				local change = (goal-display)*(elapsed/(self._smooth_HZ or smooth_HZ))
-				if goal > display + change then
-					self._displayvalue = display + change
-				else
-					self._displayvalue = goal
-					self.smoothing = nil
-				end
-			elseif goal < display then
-				local change = (display-goal)*(elapsed/(self._smooth_HZ or smooth_HZ))
-				if goal < display - change then
-					self._displayvalue = display - change
-				else
-					self._displayvalue = goal
-					self.smoothing = nil
-				end
-			else
+			local change = (goal-display)*(elapsed/(self._smooth_HZ or smooth_HZ))
+			if display < smooth_minimum_value then
 				self._displayvalue = goal
 				self.smoothing = nil
+			else
+				if goal > display then
+					if goal > (display + change) then
+						self._displayvalue = display + change
+					else
+						self._displayvalue = goal
+						self.smoothing = nil
+					end
+				elseif goal < display then
+					if goal < (display + change) then
+						self._displayvalue = display + change
+					else
+						self._displayvalue = goal
+						self.smoothing = nil
+					end
+				else
+					self._displayvalue = goal
+					self.smoothing = nil
+				end
 			end
-
 		else
 			if self._displayvalue <= self._min or self._displayvalue >= self._max then
 				self.scaffold:SetScript("OnUpdate", nil)
+				self.smoothing = nil
 			end
 		end
 	end
