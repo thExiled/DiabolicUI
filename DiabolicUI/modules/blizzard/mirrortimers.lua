@@ -81,6 +81,18 @@ Module.UpdateAnchors = function(self)
 	-- TimerTrackerTimer1 { "TOP", UIParent, "TOP", 0, -155 - (24*numTimers }
 end
 
+--[[
+Message: ...\AddOns\DiabolicUI\modules\blizzard\mirrortimers.lua:89: attempt to index field 'border' (a nil value)
+Time: 07/20/16 19:51:51
+Count: 1
+Stack: [C]: ?
+...\AddOns\DiabolicUI\modules\blizzard\mirrortimers.lua:89: in function `Skin'
+...\AddOns\DiabolicUI\modules\blizzard\mirrortimers.lua:143: in function `StartTimer_OnShow'
+...\AddOns\DiabolicUI\modules\blizzard\mirrortimers.lua:158: in function <...\AddOns\DiabolicUI\modules\blizzard\mirrortimers.lua:158>
+[C]: ?
+[C]: in function `Show'
+Interface\FrameXML\Timer.lua:107: in function <Interface\FrameXML\Timer.lua:48>
+]]
 Module.Skin = function(self, frame)
 	local config = self.config
 
@@ -111,8 +123,8 @@ Module.MirrorTimer_Show = function(self, timer, value, maxvalue, scale, paused, 
 			timers[frame] = {}
 			timers[frame].frame = frame
 			timers[frame].bar = _G[frame:GetName().."StatusBar"]
-			timers[frame].msg = _G[frame:GetName().."Text"]
-			timers[frame].border = _G[frame:GetName().."Border"]
+			timers[frame].msg = _G[frame:GetName().."Text"] or _G[frame:GetName().."StatusBarTimeText"]
+			timers[frame].border = _G[frame:GetName().."Border"] or _G[frame:GetName().."StatusBarBorder"]
 			timers[frame].type = "mirror"
 			timers[frame].id = i
 			self:Skin(frame)
@@ -130,14 +142,13 @@ end
 Module.StartTimer_OnShow = function(self, frame)
 	local timers = self.timers
 	for i = 1, #TimerTracker.timerList do
-		--local frame = _G["TimerTrackerTimer"..i]
 		local frame = TimerTracker.timerList[i]
 		if frame and not timers[frame] then
 			timers[frame] = {}
 			timers[frame].frame = frame
 			timers[frame].bar = _G[frame:GetName().."StatusBar"] or frame.bar
-			timers[frame].msg = _G[frame:GetName().."TimeText"] or frame.timeText
-			timers[frame].border = _G[frame:GetName().."Border"]
+			timers[frame].msg = _G[frame:GetName().."TimeText"] or _G[frame:GetName().."StatusBarTimeText"] or frame.timeText
+			timers[frame].border = _G[frame:GetName().."Border"] or _G[frame:GetName().."StatusBarBorder"]
 			timers[frame].type = "timer"
 			timers[frame].id = i
 			self:Skin(frame)
