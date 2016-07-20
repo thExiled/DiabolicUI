@@ -130,6 +130,20 @@ local config = {
 		},
 		backdrop_color = { 0, 0, 0, .95 },
 		backdrop_border_color = { 1, 1, 1, 1 },
+		dummy_backdrop = {
+			bgFile = [[Interface\ChatFrame\ChatFrameBackground]],
+			edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
+			tile = false,
+			edgeSize = 16,
+			insets = { 
+				left = 5,
+				right = 4,
+				top = 5,
+				bottom = 4
+			}
+		},
+		dummy_backdrop_color = { 0, 0, 0, .95 },
+		dummy_backdrop_border_color = { .3, .3, .3, 1 },
 		statusbar = {
 			size = 3,
 			offsets = { -2, -2, 0, -1 }, -- make the bar align to the backdrop border edges

@@ -74,16 +74,31 @@ local colors = {
 }
 
 
-local short = function(value)
-	value = tonumber(value)
-	if not value then return "" end
-	if value >= 1e6 then
-		return ("%.1fm"):format(value / 1e6)
-	elseif value >= 1e3 or value <= -1e3 then
-		return ("%.1fk"):format(value / 1e3)
-	else
-		return tostring(value)
-	end	
+local short
+if GetLocale() == "zhCN" then
+	short = function(value)
+		value = tonumber(value)
+		if not value then return "" end
+		if value >= 1e8 then
+			return ("%.1f亿"):format(value / 1e8):gsub("%.?0+([km])$", "%1")
+		elseif value >= 1e4 or value <= -1e3 then
+			return ("%.1f万"):format(value / 1e4):gsub("%.?0+([km])$", "%1")
+		else
+			return tostring(value)
+		end 
+	end
+else
+	short = function(value)
+		value = tonumber(value)
+		if not value then return "" end
+		if value >= 1e6 then
+			return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+		elseif value >= 1e3 or value <= -1e3 then
+			return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
+		else
+			return floor(tostring(value))
+		end	
+	end
 end
 
 local Update

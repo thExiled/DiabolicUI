@@ -147,17 +147,31 @@ local player_level = UnitLevel("player")
 
 -- Utility Functions
 ------------------------------------------------------------
-
-local short = function(value)
-	value = tonumber(value)
-	if not value then return "" end
-	if value >= 1e6 then
-		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
-	elseif value >= 1e3 or value <= -1e3 then
-		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
-	else
-		return floor(tostring(value))
-	end	
+local short
+if GetLocale() == "zhCN" then
+	short = function(value)
+		value = tonumber(value)
+		if not value then return "" end
+		if value >= 1e8 then
+			return ("%.1f亿"):format(value / 1e8):gsub("%.?0+([km])$", "%1")
+		elseif value >= 1e4 or value <= -1e3 then
+			return ("%.1f万"):format(value / 1e4):gsub("%.?0+([km])$", "%1")
+		else
+			return tostring(value)
+		end 
+	end
+else
+	short = function(value)
+		value = tonumber(value)
+		if not value then return "" end
+		if value >= 1e6 then
+			return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+		elseif value >= 1e3 or value <= -1e3 then
+			return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
+		else
+			return floor(tostring(value))
+		end	
+	end
 end
 
 local colorize = function(msg, r, g, b)
@@ -450,9 +464,6 @@ Module.CreateBackdrop = function(self, object)
 	local config = self.config
 	local backdrops = self.backdrops or {}
 	
-	object:SetBackdrop(nil) -- a reset is needed first, or we'll get weird bugs
-	object.SetBackdrop = function() end -- kill off the original backdrop function
-	
 	local backdrop = CreateFrame("Frame", nil, object)
 	backdrop:SetFrameStrata(object:GetFrameStrata())
 	backdrop:SetFrameLevel(object:GetFrameLevel())
@@ -469,6 +480,13 @@ Module.CreateBackdrop = function(self, object)
 	hooksecurefunc(object, "SetParent", function(self) backdrop:SetFrameLevel(self:GetFrameLevel()) end)
 
 	backdrops[object] = backdrop
+
+	object:SetBackdrop(nil) -- a reset is needed first, or we'll get weird bugs
+	object.SetBackdrop = function() end -- kill off the original backdrop function
+	object.GetBackdrop = function() return config.dummy_backdrop end
+	object.GetBackdropColor = function() return unpack(config.dummy_backdrop_color) end
+	object.GetBackdropBorderColor = function() return unpack(config.dummy_backdrop_border_color) end
+
 end
 
 Module.StyleMenu = function(self, object)
