@@ -83,8 +83,8 @@ end
 
 Module.Skin = function(self, frame)
 	local config = self.config
-	local timer = self.timers[frame]
 
+	local timer = self.timers[frame]
 	timer.frame:SetFrameLevel(timer.frame:GetFrameLevel() + 5)
 	timer.border:ClearAllPoints()
 	timer.border:SetPoint(unpack(config.texture_position))
@@ -130,7 +130,8 @@ end
 Module.StartTimer_OnShow = function(self, frame)
 	local timers = self.timers
 	for i = 1, #TimerTracker.timerList do
-		local frame = _G["TimerTrackerTimer"..i]
+		--local frame = _G["TimerTrackerTimer"..i]
+		local frame = TimerTracker.timerList[i]
 		if frame and not timers[frame] then
 			timers[frame] = {}
 			timers[frame].frame = frame

@@ -81,8 +81,8 @@ ControllerWidget.OnEnable = function(self)
 			return
 		end
 		GameTooltip_SetDefaultAnchor(GameTooltip, self)
-		GameTooltip:AddLine("Stances") -- different text based on class
-		GameTooltip:AddLine("<Left-click> to toggle stance bar.", 0, .7, 0)
+		GameTooltip:AddLine(L["Stances"]) -- different text based on class
+		GameTooltip:AddLine(L["<Left-click> to toggle stance bar."], 0, .7, 0)
 		GameTooltip:Show()
 	end
 	StanceButton:SetScript("OnEnter", StanceButton.OnEnter)
