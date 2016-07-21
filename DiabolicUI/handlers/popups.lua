@@ -194,31 +194,6 @@ PopUp.Update = function(self, style_table)
 		self.body:SetBackdropBorderColor(unpack(style_table.body.backdrop_border_color))
 	end
 
-	if popup.text then
-		self.message:SetSpacing(0) -- or it will become truncated
-
-		self.message:ClearAllPoints()
-		self.message:SetPoint("TOP", 0, -style_table.body.message.insets[3])
-		self.message:SetPoint("LEFT", style_table.body.message.insets[1], 0)
-		self.message:SetPoint("RIGHT", -style_table.body.message.insets[2], 0)
-		self.message:SetFontObject(style_table.body.message.font_object)  
-		self.message:SetText(popup.text)
-		self.message:SetTextColor(unpack(style_table.body.message.font_color))
-		
-		-- unless I add height matching a line of text, the last line gets truncated no matter what
-		-- *I've only experienced this so far in WotLK, and it seems like a bug
-		local font_height = select(2, self.message:GetFontObject():GetFont()) * 4
-		self.message:SetHeight(self.message:GetStringHeight() + font_height)
-		self.message.spacing = font_height
-		self.message:Show()
-	else
-		if self.message:GetFontObject() then
-			self.message:SetHeight(0.0001)
-			self.message.spacing = nil
-			self.message:SetText("")
-			self.message:Hide()
-		end
-	end
 
 	if popup.hideOnEscape == 1 then
 	else
@@ -380,6 +355,7 @@ PopUp.Update = function(self, style_table)
 		button_width = button_width + style_table.footer.insets[2]
 		
 	end
+	
 	local footer_height = 0.0001
 	if num_buttons > 0 then
 		footer_height = footer_height + style_table.footer.insets[3]
@@ -396,10 +372,47 @@ PopUp.Update = function(self, style_table)
 	local width = min(style_table.maxwidth, max(button_width, style_table.minwidth))
 	self:SetWidth(width)
 
+	-- Now we can set up the message, since we've found our frame width
+	local message_height = 0.0001
+	if popup.text then
+		-- We need this, or the text will become truncated
+		self.message:SetSpacing(0) 
+		
+		-- If we don't set the width, but only the points, the fontstring will still truncate 
+		-- as if it had its original width (which is tiny), and this is what leads to the 
+		-- super long and narrow message body we've seen so far in Legion!
+		self.message:SetWidth(width - (style_table.body.message.insets[1] + style_table.body.message.insets[2]))
+
+		self.message:ClearAllPoints()
+		self.message:SetPoint("TOP", 0, -style_table.body.message.insets[3])
+		self.message:SetPoint("LEFT", style_table.body.message.insets[1], 0)
+		self.message:SetPoint("RIGHT", -style_table.body.message.insets[2], 0)
+		self.message:SetFontObject(style_table.body.message.font_object)  
+		self.message:SetText(popup.text)
+		self.message:SetTextColor(unpack(style_table.body.message.font_color))
+		
+		-- unless I add height matching a line of text, the last line gets truncated no matter what
+		-- *I've only experienced this so far in WotLK, and it seems like a bug
+		local font_height = select(2, self.message:GetFontObject():GetFont()) * 4
+		message_height = self.message:GetStringHeight() + font_height
+
+		self.message:Show()
+		self.message:SetHeight(message_height)
+		self.message.spacing = font_height
+		
+	else
+		if self.message:GetFontObject() then
+			self.message:SetHeight(0.0001)
+			self.message.spacing = nil
+			self.message:SetText("")
+			self.message:Hide()
+		end
+	end
+
 	-- figure out body height
 	local body_height = 0.0001 + style_table.body.insets[3] + style_table.body.insets[4]
 	if self.message:IsShown() then
-		body_height = body_height + self.message:GetHeight()
+		body_height = body_height + message_height
 		-- account for the weird fontstring bug that truncates when it shouldn't
 		if self.message.spacing then
 			body_height = body_height - self.message.spacing
@@ -413,7 +426,7 @@ PopUp.Update = function(self, style_table)
 	-- figure out the frame height
 	local frame_height = 0.0001
 	if self.header:IsShown() then
-		frame_height = frame_height + self.header:GetHeight()
+		frame_height = frame_height + style_table.header.height
 		frame_height = frame_height + style_table.padding -- padding to body
 	end
 	frame_height = frame_height + body_height
@@ -627,7 +640,6 @@ Handler.ShowPopUp = function(self, id, style_table)
 			frame = new
 		end
 	end
-	
 
 	-- show it
 	frame.id = id
