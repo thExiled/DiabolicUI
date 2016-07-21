@@ -99,6 +99,8 @@ L["Normal"] = true
 L["You should rest at an Inn."] = true
 
 -- stance bar
+L["Stances"] = true
+L["<Left-click> to toggle stance bar."] = true
 
 -- added to the interface options menu in WotLK
 L["Cast action keybinds on key down"] = true

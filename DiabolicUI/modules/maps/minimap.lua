@@ -320,7 +320,7 @@ Module.OnInit = function(self)
 	self.frame.visibility:SetFrameLevel(0)
 	
 	Minimap:SetParent(self.frame) -- parent the minimap to our dummy
-	Minimap:SetFrameLevel(1) 
+	Minimap:SetFrameLevel(2) 
 --	Minimap:Show() -- make sure the map is shown
 	Minimap:HookScript("OnHide", function() self.frame.visibility:Hide() end)
 	Minimap:HookScript("OnShow", function() self.frame.visibility:Show() end)
@@ -334,13 +334,13 @@ Module.OnInit = function(self)
 	if Engine:IsBuild("WoD") then
 		self.frame.scaffold.model = CreateFrame("PlayerModel", nil, self.frame.visibility)
 		self.frame.scaffold.model:SetAllPoints()
-		self.frame.scaffold.model:SetFrameLevel(6)
+		self.frame.scaffold.model:SetFrameLevel(3)
 	end
 	]]
 
 	self.frame.scaffold.border = CreateFrame("Frame", nil, self.frame.visibility)
 	self.frame.scaffold.border:SetAllPoints()
-	self.frame.scaffold.border:SetFrameLevel(10)
+	self.frame.scaffold.border:SetFrameLevel(4)
 	
 	
 	self.frame.custom = {}
@@ -351,12 +351,12 @@ Module.OnInit = function(self)
 	self.frame.custom.map:ClearAllPoints() 
 	self.frame.custom.map:SetPoint("TOPLEFT", 0, 0) 
 	self.frame.custom.map:SetFrameStrata("LOW") 
-	self.frame.custom.map:SetFrameLevel(5)
+	self.frame.custom.map:SetFrameLevel(2)
 	
 	self.frame.custom.map.content = Minimap
 	self.frame.custom.map.content:SetAllPoints(self.frame.custom.map)
 	self.frame.custom.map.content:SetFrameStrata("LOW") 
-	self.frame.custom.map.content:SetFrameLevel(5)
+	self.frame.custom.map.content:SetFrameLevel(2)
 
 	self.frame.custom.border = self.frame.scaffold.border:CreateTexture()
 	self.frame.custom.border:SetDrawLayer("OVERLAY", 0)
@@ -380,7 +380,7 @@ Module.OnInit = function(self)
 	self.frame.widgets.compass:SetTexture("") 
 	self.frame.widgets.compass:SetDrawLayer("OVERLAY", 2) 
 
-	if Engine:IsBuild("WoD") and not Engine:IsBuild("Legion") then
+	if Engine:IsBuild("WoD") then 
 		self.frame.widgets.garrison = CreateFrame("Frame", nil, self.frame.scaffold.border) 
 		self.frame.widgets.garrison:EnableMouse(true) 
 		self.frame.widgets.garrison:SetScript("OnEnter", Garrison_OnEnter) 
@@ -428,7 +428,7 @@ Module.OnInit = function(self)
 	if QueueStatusMinimapButton then
 		self.frame.widgets.queue = QueueStatusMinimapButton 
 		self.frame.widgets.queue:SetParent(self.frame.scaffold.border) 
-		self.frame.widgets.queue:SetFrameLevel(20)
+		self.frame.widgets.queue:SetFrameLevel(5)
 		self.frame.widgets.queue:ClearAllPoints() 
 		self.frame.widgets.queue:SetPoint("CENTER", -64, -64)
 		self.frame.widgets.queue:SetHighlightTexture("")
@@ -588,7 +588,7 @@ Module.OnEnable = function(self)
 	self.frame.widgets.compass:SetTexCoord(0, 1, 0, 1) -- just to make sure old settings from WoW doesn't interfere
 	
 	-- garrison report button
-	if Engine:IsBuild("WoD") and not Engine:IsBuild("Legion") then
+	if Engine:IsBuild("WoD") then 
 		self.frame.widgets.garrison:ClearAllPoints()
 		self.frame.widgets.garrison:SetPoint(unpack(config.garrison.point))
 		self.frame.widgets.garrison:SetSize(unpack(config.garrison.size)) 
@@ -636,7 +636,7 @@ Module.OnEnable = function(self)
 	self.frame.widgets.coordinates:SetTextColor(unpack(config.text.colors.normal))
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	if Engine:IsBuild("WoD")and not Engine:IsBuild("Legion")  then
+	if Engine:IsBuild("WoD") then 
 		self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE", "OnEvent")
 		self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE", "OnEvent")
 		self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE", "OnEvent")

@@ -272,6 +272,16 @@ BarWidget.OnEnable = function(self)
 		self:Build(DraenorZoneAbilityFrame.SpellButton)
 	end
 	
+	if ZoneAbilityFrame then 
+		ZoneAbilityFrame:SetParent(Bar)
+		ZoneAbilityFrame:SetSize(Bar:GetSize())
+		ZoneAbilityFrame:ClearAllPoints()
+		ZoneAbilityFrame:SetPoint("BOTTOMLEFT", Bar, "BOTTOMLEFT", 0, 0)
+		ZoneAbilityFrame.ignoreFramePositionManager = true
+		
+		self:Build(ZoneAbilityFrame.SpellButton)
+	end
+
 	self.Bar = Bar
 end
 

@@ -1328,11 +1328,20 @@ Engine.UpdateScale = function(self)
 	local pixelperfect_minimum_width = 1600 --1920 -- for anything less than this, UI (down)scaling will always be used
 	local widescreen = 1.6 -- minimum aspect ratio for a screen to be considered widescreen
 
-	local resolution = ({GetScreenResolutions()})[GetCurrentResolution()]
+	local resolution
+	if Engine:IsBuild("Legion") then
+		local monitorIndex = (tonumber(GetCVar("gxMonitor")) or 0) + 1
+		resolution = select(GetCurrentResolution(monitorIndex), GetScreenResolutions(monitorIndex))
+	else
+		resolution = ({GetScreenResolutions()})[GetCurrentResolution()]
+	end
 	local screen_width = tonumber(strmatch(resolution, "(%d+)x%d+")) 
 	local screen_height = tonumber(strmatch(resolution, "%d+x(%d+)"))
 	local using_scale = tonumber(GetCVar("useUiScale"))
 	local aspect_ratio = round(screen_width / screen_height, accuracy)
+	
+	
+
 
 	-- Somebody using AMD EyeFinity?
 	-- 	*we're blatently assuming we're talking about 3x widescreen monitors,
@@ -1385,9 +1394,6 @@ Engine.UpdateScale = function(self)
 				-- so to be safe and not sorry we're using our 
 				-- out of combat wrapper here.
 				Engine:Wrap(function()
-					--local resolution = ({GetScreenResolutions()})[GetCurrentResolution()]
-					--local screen_width = tonumber(strmatch(resolution, "(%d+)x%d+"))
-					--local screen_height = tonumber(strmatch(resolution, "%d+x(%d+)"))
 					if Engine:IsBuild("Cata") then 
 						if screen_width >= pixelperfect_minimum_width then
 							-- In Cataclysm the scaling system changed, 
@@ -1612,10 +1618,12 @@ Engine.Init = function(self, event, ...)
 	ChatCommand:Register("autoscale", function() 
 		local db = self:GetConfig("UI")
 		db.autoscale = not db.autoscale
+		db.hasbeenqueried = true
 		if db.autoscale then
 			print(L["Auto scaling of the UI has been enabled."])
 		else
 			print(L["Auto scaling of the UI has been disabled."])
+			Engine:ReloadUI() -- to get back the UI scale slider
 		end
 		self:UpdateScale()
 	end)

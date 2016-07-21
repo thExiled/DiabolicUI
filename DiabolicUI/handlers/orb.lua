@@ -4,8 +4,7 @@ local Handler = Engine:NewHandler("Orb")
 -- Lua API
 local select, type, unpack = select, type, unpack
 local setmetatable = setmetatable
-local abs = math.abs
-local sqrt = math.sqrt
+local math_max, abs, sqrt = math.max, math.abs, math.sqrt
 
 -- WoW API
 local CreateFrame = CreateFrame
@@ -15,8 +14,8 @@ local Orb_MT = { __index = Orb }
 
 
 Orb.Update = function(self, elapsed)
-	
-	local value, min, max = self._displayvalue, self._min, self._max
+	local value = self._ignoresmoothing and self._value or self.smoothing and self._displayvalue or self._value
+	local min, max = self._min, self._max
 	local width, height = self.scaffold:GetSize()
 	local spark = self.overlay.spark
 	
@@ -27,21 +26,28 @@ Orb.Update = function(self, elapsed)
 	end
 		
 	local new_height
-	if max > 0 and max > min then
-		new_height = value/max * height
+	if value > 0 and value > min and max > min then
+		new_height = (value-min)/(max-min) * height
 	else
 		new_height = 0
 	end
-
-	-- local scrollrange = self.scrollframe:GetVerticalScrollRange() -- this doesn't always return the correct values
-	if value == min or max == 0 then
+	
+	if value <= min or max == min then
 		-- this just bugs out at small values in Legion, 
 		-- so it's easier to simply hide it. 
 		self.scrollframe:Hide()
 	else
-		local display_height = new_height == 0 and 0.0001 or new_height -- heights can't be 0 in Legion
+		local new_size
+		local mult = max > min and ((value-min)/(max-min)) or min
+		if max > min then
+			new_size = mult * width
+		else
+			new_size = 0
+			mult = 0.0001
+		end
+		local display_size = math_max(new_size, 0.0001) -- sizes can't be 0 in Legion
 
-		self.scrollframe:SetHeight(display_height)
+		self.scrollframe:SetHeight(display_size)
 		self.scrollframe:SetVerticalScroll(height - new_height)
 		
 		if not self.scrollframe:IsShown() then
@@ -103,6 +109,7 @@ Orb.Update = function(self, elapsed)
 	end
 end
 
+local smooth_minimum_value = 1 -- if a value is lower than this, we won't smoothe
 local smooth_HZ = .2 -- time for the smooth transition to complete
 local smooth_limit = 1/120 -- max updates per second
 Orb.OnUpdate = function(self, elapsed)
@@ -115,34 +122,45 @@ Orb.OnUpdate = function(self, elapsed)
 	if self.smoothing then
 		local goal = self._value
 		local display = self._displayvalue
-		
-		if goal > display then
-			local change = (goal-display)*(elapsed/smooth_HZ)
-			if goal > display + change then
-				self._displayvalue = display + change
-			else
-				self._displayvalue = goal
-				self.smoothing = nil
-			end
-		elseif goal < display then
-			local change = (display-goal)*(elapsed/smooth_HZ)
-			if goal < display - change then
-				self._displayvalue = display - change
-			else
-				self._displayvalue = goal
-				self.smoothing = nil
-			end
-		else
+		local change = (goal-display)*(elapsed/(self._smooth_HZ or smooth_HZ))
+		if display < smooth_minimum_value then
 			self._displayvalue = goal
 			self.smoothing = nil
+		else
+			if goal > display then
+				if goal > (display + change) then
+					self._displayvalue = display + change
+				else
+					self._displayvalue = goal
+					self.smoothing = nil
+				end
+			elseif goal < display then
+				if goal < (display + change) then
+					self._displayvalue = display + change
+				else
+					self._displayvalue = goal
+					self.smoothing = nil
+				end
+			else
+				self._displayvalue = goal
+				self.smoothing = nil
+			end
 		end
-
 	else
 		if self._displayvalue <= self._min or self._displayvalue >= self._max then
 			self.scaffold:SetScript("OnUpdate", nil)
+			self.smoothing = nil
 		end
 	end
 	self:Update(elapsed)
+end
+
+Orb.SetSmoothHZ = function(self, HZ)
+	self._smooth_HZ = smooth_HZ
+end
+
+Orb.DisableSmoothing = function(self, disable)
+	self._ignoresmoothing = disable
 end
 
 -- sets the value the orb should move towards
@@ -153,10 +171,12 @@ Orb.SetValue = function(self, value)
 	elseif value < min then
 		value = min
 	end
-	if self._displayvalue > max then
-		self._displayvalue = max
-	elseif self._displayvalue < min then
-		self._displayvalue = min
+	if not self._ignoresmoothing then
+		if self._displayvalue > max then
+			self._displayvalue = max
+		elseif self._displayvalue < min then
+			self._displayvalue = min
+		end
 	end
 	self._value = value
 	if value ~= self._displayvalue then
